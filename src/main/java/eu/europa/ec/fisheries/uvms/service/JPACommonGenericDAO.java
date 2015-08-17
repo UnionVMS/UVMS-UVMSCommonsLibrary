@@ -3,11 +3,12 @@ package eu.europa.ec.fisheries.uvms.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
  * This class is responsible for all application level database interaction.
  * It provides unified apis for all basic CRUD operations like Create, Read, Update, Delete.
  */
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JPACommonGenericDAO.class);
