@@ -24,7 +24,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     private static final Logger LOG = LoggerFactory.getLogger(JPACommonGenericDAO.class);
 
     @Override
-    public T createEntity(final T entity) {
+    public T createEntity(final T entity) throws DAOException {
         try {
             LOG.debug("Persisting entity : " + entity.getClass().getSimpleName());
             getEntityManager().persist(entity);
@@ -37,7 +37,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     }
 
     @Override
-    public T updateEntity(final T entity) {
+    public T updateEntity(final T entity) throws DAOException {
         try {
             LOG.debug("Updating entity : " + entity.getClass().getSimpleName());
             getEntityManager().merge(entity);
@@ -50,7 +50,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     }
 
     @Override
-    public T findEntityById(final Class<T> entityClass, final Object id) {
+    public T findEntityById(final Class<T> entityClass, final Object id) throws DAOException {
         T obj;
         try {
             LOG.debug("Finding entity : " + entityClass.getSimpleName() + " with ID : " + id.toString());
@@ -65,7 +65,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> findEntityByNativeQuery(String nativeQuery) {
+    public List<T> findEntityByNativeQuery(String nativeQuery) throws DAOException {
         List<T> objectList;
         try {
             LOG.debug("Finding entity by native query : " + nativeQuery);
@@ -80,7 +80,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> findEntityByNativeQuery(String nativeQuery, Map<String, String> parameters) {
+    public List<T> findEntityByNativeQuery(String nativeQuery, Map<String, String> parameters) throws DAOException {
         List<T> objectList;
         try {
             LOG.debug("Finding entity by native query : " + nativeQuery);
@@ -98,7 +98,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     }
 
     @Override
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery) {
+    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery) throws DAOException {
         List<T> objectList;
         try {
             LOG.debug("Finding entity for query : " + hqlQuery);
@@ -113,7 +113,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters) {
+    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters) throws DAOException {
         List objectList;
         try {
             LOG.debug("Finding entity for query : " + hqlQuery);
@@ -133,7 +133,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters, final int maxResultLimit) {
+    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters, final int maxResultLimit) throws DAOException {
         List objectList;
         try {
             LOG.debug("Finding entity for query : " + hqlQuery);
@@ -155,7 +155,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(final Class<T> entityClass, final String queryName) {
+    public List<T> findEntityByNamedQuery(final Class<T> entityClass, final String queryName) throws DAOException {
         List objectList;
         try {
             LOG.debug("Finding entity for query : " + queryName);
