@@ -42,12 +42,14 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findEntityByNativeQuery(String nativeQuery) {
         LOG.debug("Finding entity for query : " + nativeQuery);
         return getEntityManager().createNativeQuery(nativeQuery).getResultList();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findEntityByNativeQuery(String nativeQuery, Map<String, String> parameters) {
         LOG.debug("Finding entity for query : " + nativeQuery);
         Query query = getEntityManager().createNativeQuery(nativeQuery);
