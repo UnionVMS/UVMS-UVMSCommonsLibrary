@@ -29,8 +29,8 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             LOG.debug("Persisting entity : " + entity.getClass().getSimpleName());
             getEntityManager().persist(entity);
         } catch (Exception e) {
-            LOG.error("Error occured during Persisting entity : " + entity.getClass().getSimpleName());
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Error occurred during Persisting entity : " + entity.getClass().getSimpleName());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return entity;
@@ -43,8 +43,8 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             getEntityManager().merge(entity);
         } catch (Exception e) {
             LOG.error("Error occurred during updating entity : " + entity.getClass().getSimpleName());
-            LOG.error("HibernateException cause: ", e.getCause());
-            throw e;
+            LOG.error("Exception cause: ", e.getCause());
+            throw new CommonGenericDAOException("", e);
         }
         return entity;
     }
@@ -57,7 +57,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             obj = getEntityManager().find(entityClass, id);
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity : " + entityClass.getSimpleName() + " with ID : " + id.toString());
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return obj;
@@ -72,8 +72,8 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = getEntityManager().createNativeQuery(nativeQuery).getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity by native query");
-            LOG.error("HibernateException cause: ", e.getCause());
-            throw e;
+            LOG.error("Exception cause: ", e.getCause());
+            throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
@@ -91,8 +91,8 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity by native query");
-            LOG.error("HibernateException cause: ", e.getCause());
-            throw e;
+            LOG.error("Exception cause: ", e.getCause());
+            throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
@@ -105,8 +105,8 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = getEntityManager().createQuery(hqlQuery, entityClass).getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("HibernateException cause: ", e.getCause());
-            throw e;
+            LOG.error("Exception cause: ", e.getCause());
+            throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
@@ -125,7 +125,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return objectList;
@@ -148,13 +148,14 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("HibernateException cause: ", e.getCause());
-            throw e;
+            LOG.error("Exception cause: ", e.getCause());
+            throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findEntityByNamedQuery(final Class<T> entityClass, final String queryName) throws CommonGenericDAOException {
         List objectList;
         try {
@@ -163,13 +164,14 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters) throws CommonGenericDAOException {
         List objectList;
         try {
@@ -181,13 +183,14 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters, int maxResultLimit) throws CommonGenericDAOException {
         List objectList;
         try {
@@ -202,13 +205,14 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = query.getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return objectList;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findAllEntity(final Class<T> entityClass) throws CommonGenericDAOException {
         List objectList;
         try {
@@ -216,7 +220,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             objectList = getEntityManager().createQuery("from " + entityClass.getSimpleName(), entityClass).getResultList();
         } catch (Exception e) {
             LOG.error("Error occurred while finding all entity list for : " + entityClass.getSimpleName());
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
         return objectList;
@@ -229,7 +233,7 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
             getEntityManager().remove(getEntityManager().contains(entity) ? entity : getEntityManager().merge(entity));
         } catch (Exception e) {
             LOG.error("Error occurred during deleting entity : " + entity.getClass().getSimpleName());
-            LOG.error("HibernateException cause: ", e.getCause());
+            LOG.error("Exception cause: ", e.getCause());
             throw new CommonGenericDAOException("", e);
         }
     }
