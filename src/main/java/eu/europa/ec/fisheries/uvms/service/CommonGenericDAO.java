@@ -1,5 +1,7 @@
 package eu.europa.ec.fisheries.uvms.service;
 
+import eu.europa.ec.fisheries.uvms.service.exception.CommonGenericDAOException;
+
 import java.util.List;
 import java.util.Map;
 

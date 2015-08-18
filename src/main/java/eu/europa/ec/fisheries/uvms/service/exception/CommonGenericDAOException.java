@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.service.exception;
 
-public class CommonGenericDAOException extends Exception{
+public class CommonGenericDAOException extends Exception {
 
     public CommonGenericDAOException() {
     }
