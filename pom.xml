@@ -18,7 +18,7 @@
         <geotools.version>14-M1</geotools.version>
     </properties>
 	
-<!-- 	<distributionManagement>
+	<distributionManagement>
 		<repository>
 			<id>digit-releases</id>
 			<name>DG DIGIT Repository</name>
@@ -35,7 +35,7 @@
 		<developerConnection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</developerConnection>
 		<connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</connection>
    		<url>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</url>
-	</scm> -->	
+	</scm>	
 
 	<dependencies>
 
@@ -111,7 +111,7 @@
                 </configuration>
             </plugin>
 
-<!-- 			<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.2</version>
@@ -148,7 +148,7 @@
 						</goals>
 					</execution>
   				</executions>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</build>
 </project>
