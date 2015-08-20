@@ -99,22 +99,22 @@
 					</providerImplementations>
 					<tagBase>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons</tagBase>
 					<tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
-					<goals>deploy,site</goals>
+					<!-- <goals>deploy,site</goals>
 					<preparationGoals>clean package</preparationGoals>
-					<arguments>-DskipTests -DskipITs</arguments>
-					<autoVersionSubmodules>false</autoVersionSubmodules>
-					<releaseProfiles>!wildfly</releaseProfiles>
+					<arguments>-DskipTests -DskipITs</arguments> -->
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<!-- <releaseProfiles>!wildfly</releaseProfiles> -->
 				</configuration>
 			</plugin>
 
-			<plugin>
+<!-- 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8</version>
 				<configuration>
 					<deployAtEnd>true</deployAtEnd>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>
