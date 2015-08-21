@@ -9,7 +9,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jms.*;
 
 /**
- * //TODO create test
+ * //TODO create temp
  */
 public abstract class AbstractConsumer implements MessageConsumer {
 

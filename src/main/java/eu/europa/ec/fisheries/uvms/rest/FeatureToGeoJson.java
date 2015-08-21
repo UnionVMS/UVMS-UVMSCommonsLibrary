@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * //TODO create test
+ * //TODO create temp
  */
 public class FeatureToGeoJson {
 

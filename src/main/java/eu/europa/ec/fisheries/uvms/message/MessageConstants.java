@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.message;
 
 /**
- * //TODO create test
+ * //TODO create temp
  */
 public class MessageConstants {
 

@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.test;
+package eu.europa.ec.fisheries.uvms.temp;
 
 import eu.europa.ec.fisheries.schema.movement.mobileterminal.v1.MobileTerminalId;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;

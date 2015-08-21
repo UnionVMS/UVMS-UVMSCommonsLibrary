@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.test;
+package eu.europa.ec.fisheries.uvms.temp;
 
 import java.util.Random;
 

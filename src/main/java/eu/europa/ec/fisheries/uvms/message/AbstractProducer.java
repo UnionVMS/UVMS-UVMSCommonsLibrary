@@ -12,7 +12,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 /**
- * //TODO create test
+ * //TODO create temp
  */
 public abstract class AbstractProducer implements MessageProducer {
 

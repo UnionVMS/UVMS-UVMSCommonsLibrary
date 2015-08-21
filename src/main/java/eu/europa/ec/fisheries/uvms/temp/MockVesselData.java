@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.test;
+package eu.europa.ec.fisheries.uvms.temp;
 
 import eu.europa.ec.fisheries.wsdl.vessel.types.CarrierSource;
 import eu.europa.ec.fisheries.wsdl.vessel.types.Vessel;
