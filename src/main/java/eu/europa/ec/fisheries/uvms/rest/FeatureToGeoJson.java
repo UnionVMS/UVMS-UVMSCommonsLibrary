@@ -18,8 +18,9 @@ import java.util.List;
  */
 public class FeatureToGeoJson {
 
-    public JSONObject convert(SimpleFeatureCollection featureCollection) {
-        return buildFeatureCollection(featureCollection);
+    public String convert(SimpleFeatureCollection featureCollection) {
+        JSONObject jsonFeatureCollection = buildFeatureCollection(featureCollection);
+        return jsonFeatureCollection.toJSONString();
     }
 
     @SuppressWarnings("unchecked")
@@ -53,7 +54,7 @@ public class FeatureToGeoJson {
         Collection<Property> properties = simpleFeature.getProperties();
         for (Property property : properties) {
             if (!property.getName().getLocalPart().equals("geometry")){
-                obj.put(property.getName().toString(), property.getValue() == null ? "" : property.getValue().toString());
+                obj.put(property.getName().toString(), property.getValue() == null ? "" : property.getValue());
             }
         }
         return obj;

@@ -16,6 +16,9 @@
 		<javaee.version>7.0</javaee.version>
         <jackson.version>2.6.0</jackson.version>
         <geotools.version>14-M1</geotools.version>
+        <movement.model.version>1.0.3-SNAPSHOT</movement.model.version>
+        <vessel.model.version>1.0.6-SNAPSHOT</vessel.model.version>
+
     </properties>
 	
 	<distributionManagement>
@@ -58,6 +61,18 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+            <artifactId>movement-model</artifactId>
+            <version>${movement.model.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.vessel</groupId>
+            <artifactId>vessel-model</artifactId>
+            <version>${vessel.model.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.geotools</groupId>
