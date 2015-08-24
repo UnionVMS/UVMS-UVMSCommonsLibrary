@@ -16,10 +16,15 @@ import java.util.List;
 /**
  * //TODO create temp
  */
-public class FeatureToGeoJson {
+public class FeatureToGeoJsonMapper {
 
     public String convert(SimpleFeatureCollection featureCollection) {
         JSONObject jsonFeatureCollection = buildFeatureCollection(featureCollection);
+        return jsonFeatureCollection.toJSONString();
+    }
+
+    public String convert(SimpleFeature feature) {
+        JSONObject jsonFeatureCollection = buildFeature(feature);
         return jsonFeatureCollection.toJSONString();
     }
 

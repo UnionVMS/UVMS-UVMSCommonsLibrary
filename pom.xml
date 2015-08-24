@@ -16,9 +16,6 @@
 		<javaee.version>7.0</javaee.version>
         <jackson.version>2.6.0</jackson.version>
         <geotools.version>14-M1</geotools.version>
-        <movement.model.version>1.0.3-SNAPSHOT</movement.model.version>
-        <vessel.model.version>1.0.6-SNAPSHOT</vessel.model.version>
-
     </properties>
 	
 	<distributionManagement>
@@ -69,15 +66,15 @@
 </dependency>
 
         <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>movement-model</artifactId>
-            <version>${movement.model.version}</version>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.8.2</version>
         </dependency>
 
         <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.vessel</groupId>
-            <artifactId>vessel-model</artifactId>
-            <version>${vessel.model.version}</version>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sos-v20</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <dependency>
