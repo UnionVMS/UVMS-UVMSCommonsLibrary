@@ -16,5 +16,6 @@ public class MessageConstants {
     public static final String QUEUE_VESSEL = "java:/jms/queue/UVMSVessel"; //response queue
     public static final String QUEUE_VESSEL_EVENT = "java:/jms/queue/UVMSVesselEvent"; //request queue, create event
     public static final String QUEUE_MODULE_MOVEMENT = "java:/jms/queue/UVMSMovementEvent";
+    public static final String QUEUE_MODULE_AUDIT = "java:/jms/queue/UVMSAuditEvent";
 
 }
