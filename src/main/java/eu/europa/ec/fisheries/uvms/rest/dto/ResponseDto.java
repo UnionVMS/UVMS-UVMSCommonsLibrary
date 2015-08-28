@@ -9,29 +9,39 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ResponseDto<T> {
 
     private T data;
-    private final ResponseCode code;
+    private int code;
     private String msg;
 
-    public ResponseDto(T data, ResponseCode code) {
+    public ResponseDto(T data, int code) {
         this.data = data;
         this.code = code;
     }
 
-    public ResponseDto(ResponseCode code) {
+    public ResponseDto(int code) {
         this.code = code;
     }
 
-    public ResponseDto(ResponseCode code, String msg) {
+    public ResponseDto(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
+    
+    public ResponseDto(T data, int code, String msg) {
+    	this.data = data;
+        this.code = code;
+        this.msg = msg;
+    }
+    
+    public ResponseDto() {
+    }
+    
     
     public T getData() {
         return data;
     }
 
-    public String getCode() {
-        return code.getCode();
+    public int getCode() {
+        return code;
     }
 
     @Override
