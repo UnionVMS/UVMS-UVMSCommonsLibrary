@@ -19,9 +19,9 @@ import java.util.Set;
  * This class is responsible for all application level database interaction.
  * It provides unified apis for all basic CRUD operations like Create, Read, Update, Delete.
  */
-public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
+public abstract class AbstractCrudService<T> implements CrudService<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JPACommonGenericDAO.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCrudService.class);
 
     @Override
     public T createEntity(final T entity) throws CommonGenericDAOException {

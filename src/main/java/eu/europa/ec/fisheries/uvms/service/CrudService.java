@@ -7,7 +7,7 @@ import javax.persistence.Query;
 import java.util.List;
 import java.util.Map;
 
-public interface CommonGenericDAO<T> {
+public interface CrudService<T> {
 
     T createEntity(T entity) throws CommonGenericDAOException;
 
