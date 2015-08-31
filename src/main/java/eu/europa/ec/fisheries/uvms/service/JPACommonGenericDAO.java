@@ -238,6 +238,6 @@ public abstract class JPACommonGenericDAO<T> implements CommonGenericDAO<T> {
         }
     }
 
-    protected abstract EntityManager getEntityManager();
+    public abstract EntityManager getEntityManager();
 
 }

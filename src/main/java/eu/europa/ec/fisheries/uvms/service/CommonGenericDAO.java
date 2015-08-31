@@ -2,6 +2,8 @@ package eu.europa.ec.fisheries.uvms.service;
 
 import eu.europa.ec.fisheries.uvms.service.exception.CommonGenericDAOException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +34,7 @@ public interface CommonGenericDAO<T> {
     List<T> findAllEntity(Class<T> entityClass) throws CommonGenericDAOException;
 
     void deleteEntity(T entity, Object id) throws CommonGenericDAOException;
+
+    EntityManager getEntityManager();
+
 }
