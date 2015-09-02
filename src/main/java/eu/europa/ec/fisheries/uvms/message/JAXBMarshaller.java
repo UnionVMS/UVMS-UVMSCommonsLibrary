@@ -25,7 +25,7 @@ public class JAXBMarshaller {
      * @return
      * @throws
      */
-    public static <T> String marshallJaxBObjectToString(T data) throws JAXBException {
+    public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
 
         JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
         Marshaller marshaller = jaxbContext.createMarshaller();
