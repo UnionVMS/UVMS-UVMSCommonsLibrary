@@ -41,7 +41,7 @@ public class JAXBMarshaller {
      *
      * @param <R>
      * @param textMessage
-     * @param clazz pperException
+     * @param clazz
      * @return
      * @throws
      */
