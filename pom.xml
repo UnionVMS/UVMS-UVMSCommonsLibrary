@@ -5,7 +5,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -34,10 +34,10 @@
     </distributionManagement>
 
     <scm>
-        <developerConnection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0
+        <developerConnection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons
         </developerConnection>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0</connection>
-        <url>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0</url>
+        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</connection>
+        <url>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</url>
     </scm>
 
     <dependencies>
