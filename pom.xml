@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.fisheries.uvms</groupId>
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -35,10 +34,10 @@
     </distributionManagement>
 
     <scm>
-        <developerConnection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons
+        <developerConnection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0
         </developerConnection>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</connection>
-        <url>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/uvms-commons</url>
+        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0</connection>
+        <url>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons/uvms-commons-1.0</url>
     </scm>
 
     <dependencies>
