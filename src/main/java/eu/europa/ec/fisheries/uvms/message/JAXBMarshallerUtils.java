@@ -13,9 +13,9 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JAXBMarshaller {
+public class JAXBMarshallerUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger(JAXBMarshaller.class);
+    private static Logger LOG = LoggerFactory.getLogger(JAXBMarshallerUtils.class);
 
     /**
      * Marshalls a JAXB Object to a XML String representation
