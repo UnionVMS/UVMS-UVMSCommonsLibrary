@@ -46,7 +46,10 @@ public class UnionVMSFeatureFilter implements ContainerRequestFilter {
         }
 
         if (!hasFeature(servletRequest.getRemoteUser(), feature, null, null)) {
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("User cannot access the resource.").build());
+            requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
+            		.header("content-type", "text/plain")
+            		.entity("User cannot access the resource.")
+            		.build());
         }
     }
 

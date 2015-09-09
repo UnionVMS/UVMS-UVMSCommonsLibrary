@@ -26,11 +26,15 @@ public enum UnionVMSFeature {
     manageMobileTerminals,
     /** Mobile terminal plugins */
     mobileTerminalPlugins,
+    /** Accessing mobile terminal configuration */
+    mobileTerminalConfig,
 
     /** Viewing positions */
     viewPositions,
     /** Managing positions */
     managePositions,
+    /** Accessing positions configuration */
+    positionsConfig,
 
     /** Viewing exchange logs */
     viewExchangeLog,
@@ -46,6 +50,8 @@ public enum UnionVMSFeature {
     viewTransmissionStatus,
     /** Starting and stopping transmissions */
     manageTransmissionStatus,
+    /** Accessing exchange log configuration */
+    exchangeConfig,
 
     /** Viewing polling logs */
     viewPollingLogs,
@@ -53,7 +59,11 @@ public enum UnionVMSFeature {
     manageProgramPolls,
     /** Creating new polls */
     managePolls,
+    /** Viewing pollable channels */
+    viewPollableChannels,
 
     /** Viewing audit logs */
-    viewAuditLogs
+    viewAuditLogs,
+    /** Accessing audit log configuration */
+    auditLogConfig
 }
