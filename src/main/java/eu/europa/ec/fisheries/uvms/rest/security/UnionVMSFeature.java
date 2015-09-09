@@ -38,6 +38,8 @@ public enum UnionVMSFeature {
 
     /** Viewing exchange logs */
     viewExchangeLog,
+	/** Updating exchange log */
+	updateExchangeLog,
     /** Resending exchange logs */
     resendExchangeLog,
     /** Forwarding exchange logs */
