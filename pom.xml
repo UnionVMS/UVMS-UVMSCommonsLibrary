@@ -16,8 +16,6 @@
         <javaee.version>7.0</javaee.version>
         <jackson.version>2.6.0</jackson.version>
         <geotools.version>14-M1</geotools.version>
-        <information-service.version>1.5.0</information-service.version>
-        <jjwt.version>0.4</jjwt.version>
     </properties>
 
     <distributionManagement>
@@ -105,19 +103,6 @@
             <version>${javaee.version}</version>
             <scope>provided</scope>
         </dependency>
-
-		<dependency>
-			<groupId>eu.europa.ec.mare.usm</groupId>
-			<artifactId>Information-Service</artifactId>
-			<version>${information-service.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>${jjwt.version}</version>
-		</dependency>
-
     </dependencies>
 
     <repositories>
