@@ -29,12 +29,12 @@ public enum UnionVMSFeature {
     /** Accessing mobile terminal configuration */
     mobileTerminalConfig,
 
-    /** Viewing positions */
-    viewPositions,
-    /** Managing positions */
-    managePositions,
-    /** Accessing positions configuration */
-    positionsConfig,
+    /** Viewing movements */
+    viewMovements,
+    /** Managing movements */
+    manageMovements,
+    /** Accessing movement configuration */
+    movementConfig,
 
     /** Viewing exchange logs */
     viewExchangeLog,
