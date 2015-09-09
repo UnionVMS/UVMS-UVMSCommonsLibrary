@@ -33,6 +33,10 @@ public enum UnionVMSFeature {
     viewMovements,
     /** Managing movements */
     manageMovements,
+	/** View movement search groups */
+	viewMovementGroups,
+	/** Manage movement search groups */
+	manageMovementGroups,
     /** Accessing movement configuration */
     movementConfig,
 
