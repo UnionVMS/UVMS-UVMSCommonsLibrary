@@ -8,5 +8,4 @@ public interface MessageProducer {
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
     void sendModuleResponseMessage(TextMessage message, String text);
-
 }

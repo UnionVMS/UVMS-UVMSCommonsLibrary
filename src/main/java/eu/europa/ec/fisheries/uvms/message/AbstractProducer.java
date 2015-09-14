@@ -3,7 +3,8 @@ package eu.europa.ec.fisheries.uvms.message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -11,25 +12,20 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-/**
- * //TODO create temp
- */
 public abstract class AbstractProducer implements MessageProducer {
 
     final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
-
-    @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
-    private ConnectionFactory connectionFactory;
 
     private Connection connection = null;
     private Session session = null;
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
 
         try {
 
-            connectToQueue();
+            connectQueue();
             TextMessage message = session.createTextMessage();
             message.setJMSReplyTo(replyTo);
             message.setText(text);
@@ -50,14 +46,11 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
-    private void connectToQueue() throws JMSException {
-        connection = connectionFactory.createConnection();
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        connection.start();
-    }
+    protected abstract ConnectionFactory getConnectionFactory();
 
     @Override
-    public void sendModuleResponseMessage(TextMessage message, String text){
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendModuleResponseMessage(TextMessage message, String text) {
         try {
             LOG.info("Sending message back to recipient from" + getModuleName() + " with correlationId {} on queue: {}", message.getJMSMessageID(),
                     message.getJMSReplyTo());
@@ -74,13 +67,19 @@ public abstract class AbstractProducer implements MessageProducer {
 
     protected abstract String getModuleName();
 
-    private void connectQueue() throws JMSException {
-        connection = connectionFactory.createConnection();
+    protected abstract Destination getDestination();
+
+    protected Session getSession() {
+        return session;
+    }
+
+    protected void connectQueue() throws JMSException {
+        connection = getConnectionFactory().createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
     }
 
-    private void disconnectQueue() {
+    protected void disconnectQueue() {
         try {
             connection.stop();
             connection.close();
@@ -88,6 +87,4 @@ public abstract class AbstractProducer implements MessageProducer {
             LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
         }
     }
-
-    protected abstract Destination getDestination();
 }
