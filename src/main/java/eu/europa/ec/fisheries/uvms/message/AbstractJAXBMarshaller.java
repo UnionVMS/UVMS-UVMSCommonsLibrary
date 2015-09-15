@@ -13,9 +13,9 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JAXBMarshallerUtils {
+public abstract class AbstractJAXBMarshaller {
 
-    private static Logger LOG = LoggerFactory.getLogger(JAXBMarshallerUtils.class);
+    private static Logger LOG = LoggerFactory.getLogger(AbstractJAXBMarshaller.class);
 
     /**
      * Marshalls a JAXB Object to a XML String representation
@@ -25,7 +25,7 @@ public class JAXBMarshallerUtils {
      * @return
      * @throws
      */
-    public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+    protected <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
 
         JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -45,7 +45,7 @@ public class JAXBMarshallerUtils {
      * @return
      * @throws
      */
-    public static <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz) throws JAXBException, JMSException {
+    protected <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz) throws JAXBException, JMSException {
         JAXBContext jc = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         StringReader sr = new StringReader(textMessage.getText());

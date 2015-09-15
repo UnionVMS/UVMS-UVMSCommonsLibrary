@@ -10,10 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * //TODO create temp
- */
-
-/**
  * This class is responsible for all application level database interaction.
  * It provides unified apis for all basic CRUD operations like Create, Read, Update, Delete.
  */

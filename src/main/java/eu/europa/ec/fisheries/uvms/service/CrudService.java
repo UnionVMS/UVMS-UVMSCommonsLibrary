@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.service;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,5 @@ public interface CrudService<T> {
     List<T> findAllEntity(Class<T> entityClass);
 
     void deleteEntity(T entity, Object id);
-
-    EntityManager getEntityManager();
-
+    
 }
