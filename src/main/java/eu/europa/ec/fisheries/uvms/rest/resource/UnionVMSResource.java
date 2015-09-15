@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
 
 
-public class UnionVMSResource {
+public abstract class UnionVMSResource {
 
 	public Response createSuccessResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_OK);
