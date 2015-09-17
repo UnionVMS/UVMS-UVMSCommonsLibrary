@@ -13,9 +13,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * //TODO create temp
- */
 public class FeatureToGeoJsonMapper {
 
     public String convert(SimpleFeatureCollection featureCollection) {
