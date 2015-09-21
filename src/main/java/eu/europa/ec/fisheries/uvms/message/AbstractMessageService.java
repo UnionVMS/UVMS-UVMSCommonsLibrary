@@ -3,33 +3,34 @@ package eu.europa.ec.fisheries.uvms.message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
-public abstract class AbstractProducer implements MessageProducer {
+/**
+ * //TODO create test
+ */
+public abstract class AbstractMessageService implements MessageService {
 
-    final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
+    final static Logger LOG = LoggerFactory.getLogger(AbstractMessageService.class);
 
     private Connection connection = null;
     private Session session = null;
 
+    private static final long MILLISECONDS = 60000;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
+    public String sendModuleMessage(String text) throws MessageException {
 
         try {
 
-            connectQueue();
+            connectToQueue();
             TextMessage message = session.createTextMessage();
-            message.setJMSReplyTo(replyTo);
+            message.setJMSReplyTo(getResponseDestination());
             message.setText(text);
-            session.createProducer(getDestination()).send(message);
+            session.createProducer(getEventDestination()).send(message);
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
@@ -54,7 +55,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             LOG.info("Sending message back to recipient from" + getModuleName() + " with correlationId {} on queue: {}", message.getJMSMessageID(),
                     message.getJMSReplyTo());
-            connectQueue();
+            connectToQueue();
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             session.createProducer(message.getJMSReplyTo()).send(response);
@@ -65,18 +66,40 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
-    protected abstract String getModuleName();
 
-    protected abstract Destination getDestination();
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    @SuppressWarnings(value = "unchecked")
+    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+        try {
 
-    protected Session getSession() {
-        return session;
+            if (correlationId == null || correlationId.isEmpty()) {
+                throw new MessageException("No CorrelationID provided!");
+            }
+
+            connectToQueue();
+
+            return (T) session.createConsumer(getResponseDestination(), "JMSCorrelationID='" + correlationId + "'").receive(getMilliseconds());
+
+        } catch (Exception e) {
+            LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
+            throw new MessageException("Error when retrieving message: " + e.getMessage());
+        } finally {
+            try {
+                connection.stop();
+                connection.close();
+            } catch (JMSException e) {
+                LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
+            }
+        }
     }
 
-    protected void connectQueue() throws JMSException {
+
+    protected Session connectToQueue() throws JMSException {
         connection = getConnectionFactory().createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
+        return session;
     }
 
     protected void disconnectQueue() {
@@ -86,5 +109,15 @@ public abstract class AbstractProducer implements MessageProducer {
         } catch (JMSException e) {
             LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
         }
+    }
+
+    protected abstract Destination getEventDestination();
+
+    protected abstract Destination getResponseDestination();
+
+    protected abstract String getModuleName();
+
+    protected long getMilliseconds() {
+        return MILLISECONDS;
     }
 }
