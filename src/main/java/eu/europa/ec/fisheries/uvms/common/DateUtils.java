@@ -1,11 +1,16 @@
 package eu.europa.ec.fisheries.uvms.common;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -30,11 +35,31 @@ public class DateUtils {
      * @throws DatatypeConfigurationException
      */
     public static XMLGregorianCalendar getCurrentDate() throws DatatypeConfigurationException {
-		GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
         
         return now;
+    }
+
+    public static String dateToString(Date date) {
+        String dateString = null;
+        if (date != null) {
+            DateFormat df = new SimpleDateFormat(DATE_TIME_FILTER_FORMAT);
+            dateString = df.format(date);
+        }
+        return dateString;
+    }
+
+    public static Date stringToDate(String dateString) throws IllegalArgumentException {
+        if (dateString != null) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_TIME_FILTER_FORMAT).withOffsetParsed();
+            DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
+            GregorianCalendar cal = dateTime.toGregorianCalendar();
+            return cal.getTime();
+        } else {
+            return null;
+        }
     }
 
 }
