@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.rest.mapper;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import eu.europa.ec.fisheries.uvms.exception.ModelMarshallException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class JSONMarshallerTest {
 
     @Test
-    public void testMarshallJsonStringToObject() throws IOException {
+    public void testMarshallJsonStringToObject() throws ModelMarshallException, IOException {
 
         JSONMarshaller jsonMarshaller = new JSONMarshaller();
         URL url = Resources.getResource("testMarshallJsonStringToObject.json");
@@ -23,10 +24,6 @@ public class JSONMarshallerTest {
         assertEquals("greg", user.getName());
         assertEquals(29, user.getAge());
         assertEquals(3, user.getMessages().size());
-
-    }
-
-    private class JSONMarshaller extends eu.europa.ec.fisheries.uvms.rest.mapper.JSONMarshaller {
 
     }
 
