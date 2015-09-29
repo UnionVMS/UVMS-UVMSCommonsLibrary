@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class JSONMarshallerTest {
 
     @Test
-    public void testMarshallJsonStringToObject() throws ModelMarshallException, IOException {
+    public void testMarshallJsonStringToObject() throws IOException, ModelMarshallException {
 
         JSONMarshaller jsonMarshaller = new JSONMarshaller();
         URL url = Resources.getResource("testMarshallJsonStringToObject.json");
