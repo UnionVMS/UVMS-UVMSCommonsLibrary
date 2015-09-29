@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class AbstractJSONMarshallerTest {
+public class JSONMarshallerTest {
 
     @Test
     public void testMarshallJsonStringToObject() throws IOException {
@@ -26,7 +26,7 @@ public class AbstractJSONMarshallerTest {
 
     }
 
-    private class JSONMarshaller extends AbstractJSONMarshaller {
+    private class JSONMarshaller extends eu.europa.ec.fisheries.uvms.rest.mapper.JSONMarshaller {
 
     }
 
