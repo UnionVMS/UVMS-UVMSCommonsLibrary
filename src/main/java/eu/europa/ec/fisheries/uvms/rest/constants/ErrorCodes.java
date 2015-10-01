@@ -5,5 +5,6 @@ public interface ErrorCodes {
 	String ENTRY_NOT_FOUND = "error_entry_not_found";
 	String INPUT_NOT_SUPPORTED = "INPUT_NOT_SUPPORTED";
     String UPDATE_FAILED = "UPDATE_FAILED";
+	String NOT_AUTHORIZED = "error_user_not_authorized";
 
 }
