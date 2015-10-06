@@ -2,7 +2,6 @@ package eu.europa.ec.fisheries.uvms.common;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -23,14 +22,15 @@ public class DateUtils {
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
     public static DateTimeFormatter FILTER_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_FILTER_FORMAT);
 
-    private DateUtils(){
+    private DateUtils() {
 
     }
-    
+
     /**
      * Get current timestamp in XMLGreorianCalender format
+     *
      * @see {@link XMLGregorianCalendar}
-     * 
+     *
      * @return current timestamp
      * @throws DatatypeConfigurationException
      */
@@ -38,14 +38,16 @@ public class DateUtils {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
-        
+
         return now;
     }
+
+    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     public static String dateToString(Date date) {
         String dateString = null;
         if (date != null) {
-            DateFormat df = new SimpleDateFormat(DATE_TIME_FILTER_FORMAT);
+            DateFormat df = new SimpleDateFormat(FORMAT);
             dateString = df.format(date);
         }
         return dateString;
@@ -53,7 +55,7 @@ public class DateUtils {
 
     public static Date stringToDate(String dateString) throws IllegalArgumentException {
         if (dateString != null) {
-            DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_TIME_FILTER_FORMAT).withOffsetParsed();
+            DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();
             DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
             GregorianCalendar cal = dateTime.toGregorianCalendar();
             return cal.getTime();
