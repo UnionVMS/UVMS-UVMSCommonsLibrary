@@ -12,8 +12,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.LoggerFactory;
 
 public class DateUtils {
+
+    final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATE_TIME_FILTER_FORMAT = "yyyy-MM-dd HH:mm:ss";

@@ -26,7 +26,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during Persisting entity : " + entity.getClass().getSimpleName());
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return entity;
     }
@@ -39,7 +39,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during updating entity : " + entity.getClass().getSimpleName());
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return entity;
     }
@@ -53,7 +53,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity : " + entityClass.getSimpleName() + " with ID : " + id.toString());
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return obj;
     }
@@ -68,7 +68,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity by native query");
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -87,7 +87,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity by native query");
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -101,7 +101,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -121,7 +121,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -144,7 +144,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : " + hqlQuery);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -160,7 +160,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -179,7 +179,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -201,7 +201,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during finding entity for query : {}", queryName);
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -216,7 +216,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred while finding all entity list for : " + entityClass.getSimpleName());
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
         return objectList;
     }
@@ -230,7 +230,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         } catch (Exception e) {
             LOG.error("Error occurred during deleting entity : " + entity.getClass().getSimpleName());
             LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("");
+            throw new ServiceException("", e);
         }
     }
 
