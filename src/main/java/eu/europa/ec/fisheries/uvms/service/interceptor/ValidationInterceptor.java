@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.service.interceptor;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.interceptor.AroundInvoke;
@@ -17,21 +18,42 @@ import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
 @Interceptor
 public class ValidationInterceptor {
 	
+	private static ValidatorFactory factory;
+	
+	private static Validator validator;
+	
 	public static String INPUT_VALIDATION_FAILED = "INPUT_VALIDATION_FAILED";
+	
+	static {
+		factory = Validation.buildDefaultValidatorFactory();
+    	validator = factory.getValidator();
+	}
 	
 	@AroundInvoke
 	public Object validateInputDto(final InvocationContext ic) throws Exception {
 		Object[] params = ic.getParameters();
 		for (Object param : params) {
-			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-	    	Validator validator = factory.getValidator();
-	    	Set<ConstraintViolation<Object>> constraintViolations = validator.validate(param);    	
-	    	if (!constraintViolations.isEmpty()) {
-	    		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_BAD_REQUEST, INPUT_VALIDATION_FAILED);
-	    		Response response = Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(dto).build();
-	    		return response;
-	    	}
+			if(param instanceof List) {
+				List paramList = (List)param;
+				for(Object obj : paramList) {
+					Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj);
+					if (!constraintViolations.isEmpty()) {
+			    		return badRequest();
+			    	}
+				}
+			} else {
+				Set<ConstraintViolation<Object>> constraintViolations = validator.validate(param);    	
+		    	if (!constraintViolations.isEmpty()) {
+		    		return badRequest();
+		    	}
+			}	    	
 		}
 		return ic.proceed();
+	}
+	
+	public Response badRequest() {
+		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_BAD_REQUEST, INPUT_VALIDATION_FAILED);
+		Response response = Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(dto).build();
+		return response;
 	}
 }
