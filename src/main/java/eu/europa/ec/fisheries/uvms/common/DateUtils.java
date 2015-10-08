@@ -10,6 +10,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class DateUtils {
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATE_TIME_FILTER_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
@@ -45,8 +47,6 @@ public class DateUtils {
         return now;
     }
 
-    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-
     public static String dateToString(Date date) {
         String dateString = null;
         if (date != null) {
@@ -56,15 +56,17 @@ public class DateUtils {
         return dateString;
     }
 
-    public static Date stringToDate(String dateString) throws IllegalArgumentException {
-        if (dateString != null) {
-            DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();
-            DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
-            GregorianCalendar cal = dateTime.toGregorianCalendar();
-            return cal.getTime();
-        } else {
-            return null;
-        }
+    public static String parseUTCDateToString(Date date) {
+        return dateToString(date);
     }
+
+    public static DateTime nowUTC() throws IllegalArgumentException {
+        return new DateTime(DateTimeZone.UTC);
+    }
+
+    public static DateTime nowUTCMinusHours(final DateTime now, final int hours) throws IllegalArgumentException {
+        return now.minusHours(hours);
+    }
+
 
 }
