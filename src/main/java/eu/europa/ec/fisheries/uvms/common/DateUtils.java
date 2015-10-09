@@ -68,5 +68,15 @@ public class DateUtils {
         return now.minusHours(hours);
     }
 
+    public static Date stringToDate(String dateString) throws IllegalArgumentException {
+        if (dateString != null) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();
+            DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
+            GregorianCalendar cal = dateTime.toGregorianCalendar();
+            return cal.getTime();
+        } else {
+            return null;
+        }
+    }
 
 }
