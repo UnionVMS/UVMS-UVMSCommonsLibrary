@@ -16,7 +16,7 @@ public class JSONMarshaller {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    protected <T> T marshallJsonStringToObject(final String json, final Class clazz) throws ModelMarshallException {
+    public <T> T marshallJsonStringToObject(final String json, final Class clazz) throws ModelMarshallException {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return (T) mapper.readValue(json, clazz);

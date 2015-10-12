@@ -11,7 +11,7 @@ public class QueryParameter {
         this.parameters = new HashMap();
         this.parameters.put(name, value);
     }
-    public static QueryParameter with(String name,Object value){
+    public static QueryParameter with(String name, Object value){
         return new QueryParameter(name, value);
     }
     public QueryParameter and(String name,Object value){

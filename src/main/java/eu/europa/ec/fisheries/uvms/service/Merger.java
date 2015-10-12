@@ -22,17 +22,17 @@ public abstract class Merger<I,O> {
     /**
      * Merge a collection of items
      *
-     * @param inputs items to merge
-     * @return
-     * @throws ServiceException
-     */
-    public boolean merge(final Collection<I> inputs) throws ServiceException {
-        Map<Object, FlaggedEntry> incommingRecords = createIncomming(inputs);
-        Map<Object, FlaggedEntry> currentRecords = createCurrent(inputs, incommingRecords);
+        * @param inputs items to merge
+        * @return
+        * @throws ServiceException
+                */
+        public boolean merge(final Collection<I> inputs) throws ServiceException {
+            Map<Object, FlaggedEntry> incommingRecords = createIncomming(inputs);
+            Map<Object, FlaggedEntry> currentRecords = createCurrent(inputs, incommingRecords);
 
-        merge(incommingRecords, currentRecords);
+            merge(incommingRecords, currentRecords);
 
-        return save(currentRecords);
+            return save(currentRecords);
     }
 
     private boolean save(final Map<Object, FlaggedEntry> current) throws ServiceException {
