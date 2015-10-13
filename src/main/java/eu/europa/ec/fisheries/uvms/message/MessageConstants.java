@@ -21,5 +21,6 @@ public class MessageConstants {
     public static final String QUEUE_MODULE_MOVEMENT = "java:/jms/queue/UVMSMovementEvent";
     public static final String QUEUE_AUDIT_EVENT = "java:/jms/queue/UVMSAuditEvent";
     public static final String QUEUE_AUDIT = "java:/jms/queue/UVMSAudit";
+    public static final String QUEUE_REPORTING = "java:/jms/queue/UVMSReporting";
 
 }
