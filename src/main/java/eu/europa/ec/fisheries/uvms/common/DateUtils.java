@@ -77,4 +77,15 @@ public class DateUtils {
         }
     }
 
+    public static XMLGregorianCalendar dateToXmlGregorian(Date timestamp) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(timestamp);
+        XMLGregorianCalendar xmlCalendar = null;
+        try {
+            xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+        } catch (DatatypeConfigurationException ex) {
+        }
+        return xmlCalendar;
+    }
+
 }
