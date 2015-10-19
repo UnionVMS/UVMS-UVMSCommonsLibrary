@@ -66,6 +66,10 @@ public class DateUtils {
         return now.minusHours(hours);
     }
 
+    public static DateTime nowUTCMinusSeconds(final DateTime now, final Float hours) throws IllegalArgumentException {
+        return now.minusSeconds((int) (hours * 3600));
+    }
+
     public static Date stringToDate(String dateString) throws IllegalArgumentException {
         if (dateString != null) {
             DateTimeFormatter formatter = DateTimeFormat.forPattern(FORMAT).withOffsetParsed();

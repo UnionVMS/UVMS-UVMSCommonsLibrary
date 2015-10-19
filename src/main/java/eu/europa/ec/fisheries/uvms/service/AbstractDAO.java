@@ -234,6 +234,22 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         }
     }
 
+    @Override
+    public void deleteEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters) throws ServiceException {
+        try {
+            LOG.debug("Deleting entity : " + entityClass.getSimpleName());
+            Query query = getEntityManager().createNamedQuery(queryName);
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+            query.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Error occurred during deleting entity : " + entityClass.getSimpleName());
+            LOG.error("Exception cause: ", e.getCause());
+            throw new ServiceException("", e);
+        }
+    }
+
     public abstract EntityManager getEntityManager();
 
 }
