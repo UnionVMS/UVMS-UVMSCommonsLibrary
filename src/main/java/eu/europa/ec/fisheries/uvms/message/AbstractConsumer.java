@@ -21,7 +21,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
     private Connection connection = null;
     private Session session = null;
 
-    private static long MILLISECONDS = 60000;
+    private static long MILLISECONDS = 600000;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
