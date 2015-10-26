@@ -1,11 +1,12 @@
 package eu.europa.ec.fisheries.uvms.rest;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class FeatureToGeoJsonMapper {
 
-    public String convert(SimpleFeatureCollection featureCollection) {
+    public String convert(FeatureCollection featureCollection) {
         JSONObject jsonFeatureCollection = buildFeatureCollection(featureCollection);
         return jsonFeatureCollection.toJSONString();
     }
@@ -26,12 +27,12 @@ public class FeatureToGeoJsonMapper {
     }
 
     @SuppressWarnings("unchecked")
-    private JSONObject buildFeatureCollection(SimpleFeatureCollection featureCollection) {
+    private JSONObject buildFeatureCollection(FeatureCollection featureCollection) {
         List<JSONObject> features = new LinkedList<>();
-        SimpleFeatureIterator simpleFeatureIterator = featureCollection.features();
+        FeatureIterator simpleFeatureIterator = featureCollection.features();
         while (simpleFeatureIterator.hasNext()) {
-            SimpleFeature simpleFeature = simpleFeatureIterator.next();
-            features.add(buildFeature(simpleFeature));
+            Feature simpleFeature = simpleFeatureIterator.next();
+            features.add(buildFeature((SimpleFeature) simpleFeature));
         }
 
         JSONObject obj = new JSONObject();
@@ -66,7 +67,6 @@ public class FeatureToGeoJsonMapper {
     private JSONObject buildGeometry(Geometry geometry) {
         GeometryJSON gjson = new GeometryJSON();
         Object obj = JSONValue.parse(gjson.toString(geometry));
-        JSONObject jsonObj = (JSONObject) obj;
-        return jsonObj;
+        return (JSONObject) obj;
     }
 }
