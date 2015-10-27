@@ -60,8 +60,6 @@ public abstract class AbstractConsumer implements MessageConsumer {
         return connectionFactory;
     }
 
-    protected abstract Destination getDestination();
-
     protected long getMilliseconds() {
         return MILLISECONDS;
     }
