@@ -22,7 +22,7 @@ public class FeatureToGeoJsonJacksonMapper {
 
     private static final String TYPE = "type";
     private static final String FEATURE_COLLECTION = "FeatureCollection";
-    private static final String FEATURES = "Features";
+    private static final String FEATURES = "features";
     private static final String FEATURE = "Feature";
     private static final String GEOMETRY = "geometry";
     private static final String PROPERTIES = "properties";
