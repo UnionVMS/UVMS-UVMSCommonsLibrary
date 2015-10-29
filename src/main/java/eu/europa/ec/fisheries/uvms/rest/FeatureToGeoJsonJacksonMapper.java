@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.geom.GeometryJSON;
@@ -66,7 +67,8 @@ public class FeatureToGeoJsonJacksonMapper {
         Collection<Property> properties = simpleFeature.getProperties();
         for (Property property : properties) {
             if (!property.getName().getLocalPart().equals(GEOMETRY)){
-                obj.put(property.getName().toString(), property.getValue() == null ? "" : property.getValue().toString());
+                obj.put(property.getName().toString(), property.getValue() == null ?
+                        StringUtils.EMPTY : property.getValue().toString());
             }
         }
         return obj;
