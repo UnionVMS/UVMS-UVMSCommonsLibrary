@@ -6,14 +6,17 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 /**
  * //TODO create test
  */
 public abstract class AbstractConsumer implements MessageConsumer {
 
-    final static Logger LOG = LoggerFactory.getLogger(AbstractConsumer.class);
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractConsumer.class);
 
     @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
