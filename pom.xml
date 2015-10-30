@@ -15,7 +15,7 @@
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <javaee.version>7.0</javaee.version>
-        <jackson.version>2.6.0</jackson.version>
+        <jackson.version>2.4.1</jackson.version>
         <geotools.version>14-M1</geotools.version>
     </properties>
 
@@ -49,6 +49,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
