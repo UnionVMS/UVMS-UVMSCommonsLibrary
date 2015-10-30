@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.message;
 
-import java.io.StringReader;
-import java.io.StringWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
@@ -9,16 +9,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public abstract class AbstractJAXBMarshaller {
 
-    private static Logger LOG = LoggerFactory.getLogger(AbstractJAXBMarshaller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractJAXBMarshaller.class);
 
     /**
-     * Marshalls a JAXB Object to a XML String representation
+     * Marshalls a JAXB Object to a XML String representation.
      *
      * @param <T>
      * @param data
