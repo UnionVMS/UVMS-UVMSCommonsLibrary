@@ -37,13 +37,7 @@ public abstract class AbstractMessageService implements MessageService {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
-            try {
-                connection.stop();
-                connection.close();
-            } catch (JMSException e) {
-                LOG.error("[ Error when closing JMS connection ] {}", e.getStackTrace());
-                throw new MessageException("[ Error when sending message. ]", e);
-            }
+            disconnectQueue();
         }
     }
 
@@ -85,12 +79,7 @@ public abstract class AbstractMessageService implements MessageService {
             LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
             throw new MessageException("Error when retrieving message: " + e.getMessage());
         } finally {
-            try {
-                connection.stop();
-                connection.close();
-            } catch (JMSException e) {
-                LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
-            }
+            disconnectQueue();
         }
     }
 
@@ -104,8 +93,10 @@ public abstract class AbstractMessageService implements MessageService {
 
     protected void disconnectQueue() {
         try {
-            connection.stop();
-            connection.close();
+            if (connection != null) {
+                connection.stop();
+                connection.close();
+            }
         } catch (JMSException e) {
             LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
         }
