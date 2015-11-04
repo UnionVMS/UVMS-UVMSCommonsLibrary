@@ -29,7 +29,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+    public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
         try {
 
             if (correlationId == null || correlationId.isEmpty()) {
@@ -38,15 +38,21 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
             connectToQueue();
 
-            return (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(getMilliseconds());
+            T recievedMessage = (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(timeoutInMillis);
+
+            if (recievedMessage == null) {
+                throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
+            }
 
         } catch (Exception e) {
             LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
             throw new MessageException("Error when retrieving message: " + e.getMessage());
         } finally {
             try {
-                connection.stop();
-                connection.close();
+                if (connection != null) {
+                    connection.stop();
+                    connection.close();
+                }
             } catch (JMSException e) {
                 LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
             }
@@ -59,7 +65,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
         connection.start();
     }
 
-    protected ConnectionFactory getConnectionFactory(){
+    protected ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
 
