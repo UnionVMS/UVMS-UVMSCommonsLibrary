@@ -12,7 +12,6 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.transaction.Transactional;
 
 /**
  * //TODO create test
@@ -32,8 +31,12 @@ public abstract class AbstractProducer implements MessageProducer {
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
 
         try {
-
             connectToQueue();
+
+            if (connection == null || session == null) {
+                throw new MessageException("[ Connection or session is null, cannot send message ] ");
+            }
+
             TextMessage message = session.createTextMessage();
             message.setJMSReplyTo(replyTo);
             message.setText(text);
