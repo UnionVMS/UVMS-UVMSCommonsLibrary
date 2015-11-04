@@ -44,6 +44,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
                 throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
             }
 
+            return recievedMessage;
+
         } catch (Exception e) {
             LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
             throw new MessageException("Error when retrieving message: " + e.getMessage());
