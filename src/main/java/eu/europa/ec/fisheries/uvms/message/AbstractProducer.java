@@ -45,8 +45,10 @@ public abstract class AbstractProducer implements MessageProducer {
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             try {
-                connection.stop();
-                connection.close();
+                if (connection != null) {
+                    connection.stop();
+                    connection.close();
+                }
             } catch (JMSException e) {
                 LOG.error("[ Error when closing JMS connection ] {}", e.getStackTrace());
                 throw new MessageException("[ Error when sending message. ]", e);
