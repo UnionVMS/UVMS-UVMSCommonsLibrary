@@ -8,6 +8,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
@@ -61,6 +62,41 @@ public abstract class AbstractConsumer implements MessageConsumer {
         }
     }
 
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    @SuppressWarnings(value = "unchecked")
+    public <T> T getMessage(String correlationId, Class type) throws MessageException {
+        try {
+
+            if (correlationId == null || correlationId.isEmpty()) {
+                throw new MessageException("No CorrelationID provided!");
+            }
+
+            connectToQueue();
+
+            T recievedMessage = (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(MILLISECONDS);
+
+            if (recievedMessage == null) {
+                throw new MessageException("Message either null or timeout occured. Timeout was set to: " + MILLISECONDS);
+            }
+
+            return recievedMessage;
+
+        } catch (Exception e) {
+            LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
+            throw new MessageException("Error when retrieving message: " + e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.stop();
+                    connection.close();
+                }
+            } catch (JMSException e) {
+                LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
+            }
+        }
+    }
+
     private void connectToQueue() throws JMSException {
         connection = getConnectionFactory().createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -73,5 +109,10 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
     protected long getMilliseconds() {
         return MILLISECONDS;
+    }
+
+    @Override
+    public Destination getDestination() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
