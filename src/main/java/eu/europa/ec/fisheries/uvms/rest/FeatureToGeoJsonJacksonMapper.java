@@ -13,6 +13,8 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +74,7 @@ public class FeatureToGeoJsonJacksonMapper {
 
                 if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), property.getValue() == null ?
-                            0D : Double.parseDouble(value.toString()));
+                            0D : (double)value);
                 }
                 else {
                     obj.put(property.getName().toString(), property.getValue() == null ?
