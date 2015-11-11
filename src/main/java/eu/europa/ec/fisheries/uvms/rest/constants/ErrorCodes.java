@@ -6,5 +6,5 @@ public interface ErrorCodes {
 	String INPUT_NOT_SUPPORTED = "INPUT_NOT_SUPPORTED";
     String UPDATE_FAILED = "UPDATE_FAILED";
 	String NOT_AUTHORIZED = "error_user_not_authorized";
-
+	String INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
 }
