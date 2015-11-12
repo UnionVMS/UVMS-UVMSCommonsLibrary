@@ -23,11 +23,11 @@ public interface DAO<T> {
 
     List<T> findEntityByHqlQuery(Class<T> entityClass, String hqlQuery, Map<Integer, String> parameters, int maxResultLimit) throws ServiceException;
 
-    List<T> findEntityByNamedQuery(Class<T> entityClass, String queryName) throws ServiceException;
+    List<T> findEntityByNamedQuery(String queryName) throws ServiceException;
 
-    List<T> findEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters) throws ServiceException;
+    List<T> findEntityByNamedQuery(String queryName, Map<String, String> parameters) throws ServiceException;
 
-    List<T> findEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters, int maxResultLimit) throws ServiceException;
+    List<T> findEntityByNamedQuery(String queryName, Map<String, String> parameters, int maxResultLimit) throws ServiceException;
 
     List<T> findAllEntity(Class<T> entityClass) throws ServiceException;
 
