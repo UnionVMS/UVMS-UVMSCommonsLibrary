@@ -24,7 +24,7 @@ public abstract class AbstractJAXBMarshaller {
      * @return
      * @throws
      */
-    protected static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+    protected <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
 
         JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -44,7 +44,7 @@ public abstract class AbstractJAXBMarshaller {
      * @return
      * @throws
      */
-    protected static <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz) throws JAXBException, JMSException {
+    protected <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz) throws JAXBException, JMSException {
         JAXBContext jc = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         StringReader sr = new StringReader(textMessage.getText());
