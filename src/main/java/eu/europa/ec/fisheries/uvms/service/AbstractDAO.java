@@ -14,7 +14,7 @@ import java.util.Set;
  * This class is responsible for all application level database interaction.
  * It provides unified apis for all basic CRUD operations like Create, Read, Update, Delete.
  */
-public abstract class AbstractDAO<T> implements DAO<T> {
+public abstract class AbstractDAO<T> implements DAO<T> { //  FIXME rename to BaseDAO
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDAO.class);
 
