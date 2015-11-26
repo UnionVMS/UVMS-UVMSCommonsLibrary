@@ -1,249 +1,136 @@
 package eu.europa.ec.fisheries.uvms.service;
 
 import eu.europa.ec.fisheries.uvms.exception.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * This class is responsible for all application level database interaction.
- * It provides unified apis for all basic CRUD operations like Create, Read, Update, Delete.
- */
-public abstract class AbstractDAO<T> implements DAO<T> { //  FIXME rename to BaseDAO
-
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractDAO.class);
+@Slf4j
+public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //TODO rename to AbstractJpaDAO
 
     @Override
     public T createEntity(final T entity) throws ServiceException {
-        try {
-            LOG.debug("Persisting entity : " + entity.getClass().getSimpleName());
-            getEntityManager().persist(entity);
-        } catch (Exception e) {
-            LOG.error("Error occurred during Persisting entity : " + entity.getClass().getSimpleName());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
+        log.debug("Persisting entity : " + entity.getClass().getSimpleName());
+        getEntityManager().persist(entity);
         return entity;
     }
 
     @Override
     public T updateEntity(final T entity) throws ServiceException {
-        try {
-            LOG.debug("Updating entity : " + entity.getClass().getSimpleName());
-            getEntityManager().merge(entity);
-        } catch (Exception e) {
-            LOG.error("Error occurred during updating entity : " + entity.getClass().getSimpleName());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
+        log.debug("Updating entity : " + entity.getClass().getSimpleName());
+        getEntityManager().merge(entity);
         return entity;
     }
 
     @Override
-    public T findEntityById(final Class<T> entityClass, final Object id) throws ServiceException {
-        T obj;
-        try {
-            LOG.debug("Finding entity : " + entityClass.getSimpleName() + " with ID : " + id.toString());
-            obj = getEntityManager().find(entityClass, id);
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity : " + entityClass.getSimpleName() + " with ID : " + id.toString());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
-        return obj;
+    public T findEntityById(final Class<T> type, final Object id) throws ServiceException {
+        log.debug("Finding entity : " + type.getSimpleName() + " with ID : " + id.toString());
+        return getEntityManager().find(type, id);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<T> findEntityByNativeQuery(String nativeQuery) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity by native query : " + nativeQuery);
-            objectList = getEntityManager().createNativeQuery(nativeQuery).getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity by native query");
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
-        return objectList;
+    public List<T> findEntityByNativeQuery(final Class<T> type, final String nativeQuery) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        return getEntityManager().createNativeQuery(nativeQuery, type).getResultList();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<T> findEntityByNativeQuery(String nativeQuery, Map<String, String> parameters) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity by native query : " + nativeQuery);
-            Query query = getEntityManager().createNativeQuery(nativeQuery);
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity by native query");
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public List<T> findEntityByNativeQuery(final Class<T> type, final String nativeQuery, final Map<String, String> parameters) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        Query query = getEntityManager().createNativeQuery(nativeQuery, type);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return objectList;
+        return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity for query : " + hqlQuery);
-            objectList = getEntityManager().createQuery(hqlQuery, entityClass).getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
-        return objectList;
+    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        return getEntityManager().createQuery(hqlQuery, type).getResultList();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters) throws ServiceException {
-        List objectList;
-        try {
-            LOG.debug("Finding entity for query : " + hqlQuery);
-            Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
-            Query query = getEntityManager().createQuery(hqlQuery, entityClass);
-            for (Map.Entry<Integer, String> entry : rawParameters) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, String> parameters) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
+        TypedQuery<T> query = getEntityManager().createQuery(hqlQuery, type);
+        for (Map.Entry<Integer, String> entry : rawParameters) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return objectList;
+        return query.getResultList();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<T> findEntityByHqlQuery(final Class<T> entityClass, final String hqlQuery, final Map<Integer, String> parameters, final int maxResultLimit) throws ServiceException {
-        List objectList;
-        try {
-            LOG.debug("Finding entity for query : " + hqlQuery);
-            Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
-            Query query = getEntityManager().createQuery(hqlQuery, entityClass);
-            for (Map.Entry<Integer, String> entry : rawParameters) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            if (maxResultLimit > 0) {
-                query.setMaxResults(maxResultLimit);
-            }
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : " + hqlQuery);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, String> parameters, final int maxResultLimit) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
+        TypedQuery<T> query = getEntityManager().createQuery(hqlQuery, type);
+        for (Map.Entry<Integer, String> entry : rawParameters) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return objectList;
+        if (maxResultLimit > 0) {
+            query.setMaxResults(maxResultLimit);
+        }
+        return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(final String queryName) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity for query : " + queryName);
-            Query query = getEntityManager().createNamedQuery(queryName);
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
-        return objectList;
+    public List<T> findEntityByNamedQuery(final Class<T> type, final String queryName) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
+        return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(String queryName, Map<String, String> parameters) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity for query : " + queryName);
-            Query query = getEntityManager().createNamedQuery(queryName);
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public List<T> findEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, String> parameters) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return objectList;
+        return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(String queryName, Map<String, String> parameters, int maxResultLimit) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding entity for query : " + queryName);
-            Query query = getEntityManager().createNamedQuery(queryName);
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            if (maxResultLimit > 0) {
-                query.setMaxResults(maxResultLimit);
-            }
-            objectList = query.getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred during finding entity for query : {}", queryName);
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public List<T> findEntityByNamedQuery(final Class<T> type, String queryName, final Map<String, String> parameters, final int maxResultLimit) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
-        return objectList;
+        if (maxResultLimit > 0) {
+            query.setMaxResults(maxResultLimit);
+        }
+        return query.getResultList();
     }
 
     @Override
-    public List<T> findAllEntity(final Class<T> entityClass) throws ServiceException {
-        List<T> objectList;
-        try {
-            LOG.debug("Finding all entity list for : " + entityClass.getSimpleName());
-            objectList = getEntityManager().createQuery("from " + entityClass.getSimpleName(), entityClass).getResultList();
-        } catch (Exception e) {
-            LOG.error("Error occurred while finding all entity list for : " + entityClass.getSimpleName());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
-        return objectList;
+    public List<T> findAllEntity(final Class<T> type) throws ServiceException {
+        log.debug("Finding all entity list for : " + type.getClass().getSimpleName());
+        return getEntityManager().createQuery("from " + type.getSimpleName(), type).getResultList();
     }
 
     @Override
-    public void deleteEntity(final T entity, final Object id) throws ServiceException {
-        try {
-            LOG.debug("Deleting entity : " + entity.getClass().getSimpleName());
-            Object ref = getEntityManager().getReference(entity.getClass(), id);
-            getEntityManager().remove(ref);
-        } catch (Exception e) {
-            LOG.error("Error occurred during deleting entity : " + entity.getClass().getSimpleName());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
-        }
+    public void deleteEntity(final T type, final Object id) throws ServiceException {
+        log.debug("Deleting entity : " + type.getClass().getSimpleName());
+        Object ref = getEntityManager().getReference(type.getClass(), id);
+        getEntityManager().remove(ref);
     }
 
     @Override
-    public void deleteEntityByNamedQuery(Class<T> entityClass, String queryName, Map<String, String> parameters) throws ServiceException {
-        try {
-            LOG.debug("Deleting entity : " + entityClass.getSimpleName());
-            Query query = getEntityManager().createNamedQuery(queryName);
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            query.executeUpdate();
-        } catch (Exception e) {
-            LOG.error("Error occurred during deleting entity : " + entityClass.getSimpleName());
-            LOG.error("Exception cause: ", e.getCause());
-            throw new ServiceException("", e);
+    public void deleteEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, String> parameters) throws ServiceException {
+        log.debug("Deleting entity : " + type.getClass().getSimpleName());
+        Query query = getEntityManager().createNamedQuery(queryName);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
+        query.executeUpdate();
     }
 
     public abstract EntityManager getEntityManager();
