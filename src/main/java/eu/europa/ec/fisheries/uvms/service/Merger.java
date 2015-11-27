@@ -7,16 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Merger<I,O> {
+
     private class FlaggedEntry {
+
         private final O item;
 
         private boolean created;
+
         private boolean updated;
+
         private boolean deleted;
 
         private FlaggedEntry(final O convertedItem) {
             this.item = convertedItem;
         }
+
     }
 
     /**
@@ -27,35 +32,56 @@ public abstract class Merger<I,O> {
      * @throws ServiceException
      */
     public boolean merge(final Collection<I> inputs) throws ServiceException {
-        Map<Object, FlaggedEntry> incommingRecords = createIncomming(inputs);
-        Map<Object, FlaggedEntry> currentRecords = createCurrent(inputs, incommingRecords);
 
-        merge(incommingRecords, currentRecords);
+        Map<Object, FlaggedEntry> incomingRecords = createIncomming(inputs);
+
+        Map<Object, FlaggedEntry> currentRecords = createCurrent(inputs, incomingRecords);
+
+        merge(incomingRecords, currentRecords);
 
         return save(currentRecords);
     }
 
     private boolean save(final Map<Object, FlaggedEntry> current) throws ServiceException {
+
         boolean updated=false;
+
         for (Merger<I, O>.FlaggedEntry flaggedItem : current.values()) {
+
             if (flaggedItem.created) {
+
                 insert(flaggedItem.item);
+
                 updated|=true;
+
             } else if (flaggedItem.updated) {
+
                 update(flaggedItem.item);
+
                 updated|=true;
+
             } else if (flaggedItem.deleted) {
+
                 delete(flaggedItem.item);
+
                 updated|=true;
+
             }
+
         }
+
         return updated;
+
     }
 
-    private void merge(final Map<Object, FlaggedEntry> incomming, final Map<Object, FlaggedEntry> current) throws ServiceException {
-        for (Merger<I, O>.FlaggedEntry flaggedItem : incomming.values()) {
+    private void merge(final Map<Object, FlaggedEntry> incoming, final Map<Object, FlaggedEntry> current) throws ServiceException {
+
+        for (Merger<I, O>.FlaggedEntry flaggedItem : incoming.values()) {
+
             merge(flaggedItem, current);
+
         }
+
     }
 
     private void merge(final Merger<I, O>.FlaggedEntry incommingItem, final Map<Object, FlaggedEntry> current) throws ServiceException {
