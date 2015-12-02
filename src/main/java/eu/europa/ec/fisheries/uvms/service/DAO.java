@@ -11,6 +11,8 @@ public interface DAO<T> {
 
     T updateEntity(T entity) throws ServiceException;
 
+    T saveOrUpdateEntity(T entity) throws ServiceException;
+
     T findEntityById(Class<T> type, Object id) throws ServiceException;
 
     List<T> findEntityByNativeQuery(Class<T> type, String hqlQuery) throws ServiceException;
