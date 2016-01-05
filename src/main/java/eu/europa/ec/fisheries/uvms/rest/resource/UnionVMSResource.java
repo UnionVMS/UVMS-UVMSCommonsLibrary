@@ -1,6 +1,8 @@
 package eu.europa.ec.fisheries.uvms.rest.resource;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
@@ -30,5 +32,22 @@ public abstract class UnionVMSResource {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMsgCode);
 		Response response = Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity(dto).build();
 		return response;
+	}
+
+	public Response createAccessForbiddenResponse() {
+		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_FORBIDDEN);
+		return Response.status(Response.Status.FORBIDDEN)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
+				.entity(dto)
+				.build();
+	}
+
+
+	public Response createAccessForbiddenResponse(String errorMsgCode) {
+		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_FORBIDDEN, errorMsgCode);
+		return Response.status(Response.Status.FORBIDDEN)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
+				.entity(dto)
+				.build();
 	}
 }
