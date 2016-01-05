@@ -37,7 +37,6 @@ public abstract class UnionVMSResource {
 	public Response createAccessForbiddenResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_FORBIDDEN);
 		return Response.status(Response.Status.FORBIDDEN)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
 				.entity(dto)
 				.build();
 	}
@@ -46,7 +45,6 @@ public abstract class UnionVMSResource {
 	public Response createAccessForbiddenResponse(String errorMsgCode) {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_FORBIDDEN, errorMsgCode);
 		return Response.status(Response.Status.FORBIDDEN)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
 				.entity(dto)
 				.build();
 	}
