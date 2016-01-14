@@ -13,6 +13,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.core.Response;
 
+import eu.europa.ec.fisheries.uvms.rest.constants.ErrorCodes;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
 
 @Interceptor
@@ -22,8 +23,7 @@ public class ValidationInterceptor {
 	
 	private static Validator validator;
 	
-	public static String INPUT_VALIDATION_FAILED = "INPUT_VALIDATION_FAILED";
-	
+
 	static {
 		factory = Validation.buildDefaultValidatorFactory();
     	validator = factory.getValidator();
@@ -52,7 +52,7 @@ public class ValidationInterceptor {
 	}
 	
 	public Response badRequest() {
-		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_BAD_REQUEST, INPUT_VALIDATION_FAILED);
+		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_BAD_REQUEST, ErrorCodes.INPUT_VALIDATION_FAILED);
 		Response response = Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(dto).build();
 		return response;
 	}
