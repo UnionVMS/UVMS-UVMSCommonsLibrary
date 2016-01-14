@@ -16,7 +16,7 @@ import javax.jms.Session;
  */
 public abstract class AbstractConsumer implements MessageConsumer {
 
-    private final static Logger LOG = LoggerFactory.getLogger(AbstractConsumer.class);
+    protected final static Logger LOG = LoggerFactory.getLogger(AbstractConsumer.class);
 
     @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;

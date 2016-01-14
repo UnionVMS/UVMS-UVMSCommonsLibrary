@@ -18,7 +18,7 @@ import javax.jms.TextMessage;
  */
 public abstract class AbstractProducer implements MessageProducer {
 
-    final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
+    protected final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
 
     @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;

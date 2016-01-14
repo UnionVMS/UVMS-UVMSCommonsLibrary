@@ -12,13 +12,14 @@ public interface MessageConstants {
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "java:/jms/queue/UVMSMovement";
     String QUEUE_DATASOURCE_INTERNAL = "java:/jms/queue/UVMSMovementModel";
-    String QUEUE_VESSEL = "java:/jms/queue/UVMSVessel"; //response queue
-    String QUEUE_VESSEL_EVENT = "java:/jms/queue/UVMSVesselEvent"; //request queue, create event
+    String QUEUE_ASSET = "java:/jms/queue/UVMSAsset"; //response queue
+    String QUEUE_ASSET_EVENT = "java:/jms/queue/UVMSAssetEvent"; //request queue, create event
     String QUEUE_MODULE_MOVEMENT = "java:/jms/queue/UVMSMovementEvent";
     String QUEUE_AUDIT_EVENT = "java:/jms/queue/UVMSAuditEvent";
     String QUEUE_AUDIT = "java:/jms/queue/UVMSAudit";
     String QUEUE_REPORTING = "java:/jms/queue/UVMSReporting";
     String QUEUE_USM = "java:/jms/queue/UVMSUserEvent";
     String QUEUE_USM4UVMS = "java:/jms/queue/USM4UVMS";
+    String QUEUE_CONFIG = "java:/jms/queue/UVMSConfigEvent";
 
 }
