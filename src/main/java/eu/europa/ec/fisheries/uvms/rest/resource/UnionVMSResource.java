@@ -34,6 +34,12 @@ public abstract class UnionVMSResource {
 		return response;
 	}
 
+	public Response createScNotFoundErrorResponse(String errorMsgCode) {
+		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_NOT_FOUND, errorMsgCode);
+		Response response = Response.status(HttpServletResponse.SC_NOT_FOUND).entity(dto).build();
+		return response;
+	}
+
 	public Response createAccessForbiddenResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_FORBIDDEN);
 		return Response.status(Response.Status.FORBIDDEN)
