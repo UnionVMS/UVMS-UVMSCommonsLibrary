@@ -5,18 +5,31 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.5-SNAPSHOT</version>
+    <version>1.6-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-        <release.branch.name>salome</release.branch.name>
+        <release.branch.name>uvms-1.0.0</release.branch.name>
         <sl4j.version>1.7.12</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <javaee.version>7.0</javaee.version>
         <jackson.version>2.4.1</jackson.version>
         <geotools.version>14-M1</geotools.version>
+        <jts.version>1.13</jts.version>
+        <junit.version>4.11</junit.version>
+        <guava.version>18.0</guava.version>
+        <joda.time.version>2.8.2</joda.time.version>
+        <h2database.version>1.4.182</h2database.version>
+        <apache.commons.version>3.4</apache.commons.version>
+        <lombok.version>1.16.4</lombok.version>
+        <ninja.squad.version>1.6.0</ninja.squad.version>
+        <h2spatial.version>1.2.0</h2spatial.version>
+        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+        <maven.release.plugin.version>2.5.2</maven.release.plugin.version>
+        <maven.scm.provider.version>2.1.1</maven.scm.provider.version>
+        <maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
     </properties>
 
     <distributionManagement>
@@ -33,7 +46,7 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/releases/${release.branch.name}/uvms-commons</connection>
+        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/releases/${release.branch.name}/Libraries/uvms-commons</connection>
     </scm>
 
     <dependencies>
@@ -41,7 +54,7 @@
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
-            <version>1.13</version>
+            <version>${jts.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -55,21 +68,21 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>${guava.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.8.2</version>
+            <version>${joda.time.version}</version>
         </dependency>
 
         <dependency>
@@ -107,31 +120,31 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.182</version>
+            <version>${h2database.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>${apache.commons.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.4</version>
+            <version>${lombok.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.ninja-squad</groupId>
             <artifactId>DbSetup</artifactId>
-            <version>1.6.0</version>
+            <version>${ninja.squad.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2spatial-ext</artifactId>
-            <version>1.2.0</version>
+            <version>${h2spatial.version}</version>
         </dependency>
 
     </dependencies>
@@ -148,7 +161,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -158,12 +171,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.2</version>
+                <version>${maven.release.plugin.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
                         <artifactId>maven-scm-provider-svnjava</artifactId>
-                        <version>2.1.1</version>
+                        <version>${maven.scm.provider.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -179,7 +192,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>${maven.deploy.plugin.version}</version>
                 <configuration>
                     <deployAtEnd>true</deployAtEnd>
                 </configuration>
