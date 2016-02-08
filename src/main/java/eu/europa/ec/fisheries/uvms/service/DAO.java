@@ -35,7 +35,7 @@ public interface DAO<T> {
 
     void deleteEntity(Object persistentObject);
 
-    void deleteEntity(T entity, Object id) throws ServiceException;
+    void deleteEntity(Class<T> entity, Object id) throws ServiceException;
 
     void deleteEntityByNamedQuery(Class<T> type, String queryName, Map<String, String> parameters) throws ServiceException;
 }

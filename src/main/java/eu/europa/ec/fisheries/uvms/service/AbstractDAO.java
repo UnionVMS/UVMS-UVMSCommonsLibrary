@@ -124,7 +124,7 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //
     }
 
     @Override
-    public void deleteEntity(final T type, final Object id) {
+    public void deleteEntity(Class<T> type, final Object id) {
         log.debug("Deleting entity : " + type.getClass().getSimpleName());
         Object ref = getEntityManager().getReference(type.getClass(), id);
         getEntityManager().remove(ref);
