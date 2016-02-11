@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.geom.GeometryJSON;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.opengis.feature.Feature;
@@ -57,7 +58,17 @@ public class FeatureToGeoJsonMapper {
         Collection<Property> properties = simpleFeature.getProperties();
         for (Property property : properties) {
             if (!property.getName().getLocalPart().equals("geometry")){
-                obj.put(property.getName().toString(), property.getValue() == null ? "" : property.getValue());
+                if (property.getValue() instanceof Collection) {
+                    JSONArray jsonArray = new JSONArray();
+
+                    for(Object propValue: (Collection)property.getValue()) {
+                        jsonArray.add(propValue.toString());
+                    }
+
+                    obj.put(property.getName().toString(), jsonArray);
+                } else {
+                    obj.put(property.getName().toString(), property.getValue() == null ? "" : property.getValue());
+                }
             }
         }
         return obj;
