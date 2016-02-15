@@ -28,6 +28,13 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //
     }
 
     @Override
+    public int updateEntityByNamedQuery(final String queryName) throws ServiceException {
+        log.debug("Updating entity");
+        Query namedQuery = getEntityManager().createNamedQuery(queryName);
+        return namedQuery.executeUpdate();
+    }
+
+    @Override
     public T saveOrUpdateEntity(final T entity) throws ServiceException {
         log.debug("Saving or Updating entity : " + entity.getClass().getSimpleName());
         T persistedEntity = getEntityManager().merge(entity);
