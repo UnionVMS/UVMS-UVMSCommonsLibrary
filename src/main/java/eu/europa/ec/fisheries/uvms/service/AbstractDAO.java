@@ -2,15 +2,20 @@ package eu.europa.ec.fisheries.uvms.service;
 
 import eu.europa.ec.fisheries.uvms.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Slf4j
+@Transactional(Transactional.TxType.REQUIRED)
 public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //TODO rename to AbstractJpaDAO
 
     @Override
