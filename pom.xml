@@ -5,12 +5,12 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7.2-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-        <release.branch.name>uvms-1.0.0</release.branch.name>
+        <release.branch.name><!-- INSERT BRANCH NAME --></release.branch.name>
         <sl4j.version>1.7.12</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
@@ -46,7 +46,7 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/Libraries/uvms-commons</connection>
+        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/releases/${release.branch.name}/Libraries/uvms-commons</connection>
     </scm>
 
     <dependencies>
