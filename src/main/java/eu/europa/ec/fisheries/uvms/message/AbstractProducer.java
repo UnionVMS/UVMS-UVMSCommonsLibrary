@@ -33,6 +33,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connectToQueue();
 
+            LOG.debug("Sending message:[{}], with replyTo: [{}]", text, replyTo);
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
@@ -41,6 +42,7 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
+            LOG.debug("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
@@ -63,6 +65,7 @@ public abstract class AbstractProducer implements MessageProducer {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
+        LOG.debug("Connecting to queue: {}", getDestination());
     }
 
     protected abstract Destination getDestination();
