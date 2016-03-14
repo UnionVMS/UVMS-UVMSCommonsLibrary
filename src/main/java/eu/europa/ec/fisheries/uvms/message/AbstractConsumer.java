@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Session;
+import javax.jms.*;
 
 /**
  * //TODO create test
@@ -43,7 +40,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
             if (recievedMessage == null) {
                 throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
             } else {
-                LOG.debug("JMS message received: {}", recievedMessage);
+                LOG.debug("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage)recievedMessage).getText());
             }
 
             return recievedMessage;
