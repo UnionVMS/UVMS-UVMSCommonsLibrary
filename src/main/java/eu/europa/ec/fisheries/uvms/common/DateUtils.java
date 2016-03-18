@@ -57,7 +57,7 @@ public class DateUtils {
     }
 
     public static DateTime nowUTC() throws IllegalArgumentException {
-        return new DateTime(DateTimeZone.UTC);
+        return new DateTime(DateTimeZone.UTC).toLocalDateTime().toDateTime();
     }
 
     public static DateTime nowUTCMinusHours(final DateTime now, final int hours) throws IllegalArgumentException {
