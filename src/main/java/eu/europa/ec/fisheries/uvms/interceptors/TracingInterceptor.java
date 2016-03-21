@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.interceptors;
 
+import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
-
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -9,22 +9,25 @@ import javax.interceptor.InvocationContext;
 public class TracingInterceptor {
 
     @AroundInvoke
-    public Object logCall(InvocationContext context) throws Exception{
+    public Object logCall(InvocationContext context) throws Exception {
 
-        Object[] parameters = context.getParameters();
-        String params = "";
-        for (Object parameter : parameters) {
-            params += " " + parameter.toString();
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+
+        try {
+
+            Object[] parameters = context.getParameters();
+            String params = "";
+            for (Object parameter : parameters) {
+                params += " " + parameter.toString();
+            }
+
+            log.info(String.format("invocation of method %s with parameters %s", context.getMethod(), params));
+
+            return context.proceed();
+
         }
-
-        log.info(
-                String.format(
-                        "User invoke method %s with parameters %s",
-                        context.getMethod(),
-                        params
-                )
-        );
-
-        return context.proceed();
+        finally{
+            log.info(String.format("Elapsed time ==> " + stopwatch));
+        }
     }
 }
