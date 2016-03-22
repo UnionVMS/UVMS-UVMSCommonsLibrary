@@ -2,6 +2,8 @@ package eu.europa.ec.fisheries.uvms.interceptors;
 
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ObjectUtils;
+
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -18,8 +20,9 @@ public class TracingInterceptor {
             Object[] parameters = context.getParameters();
             String params = "";
             for (Object parameter : parameters) {
-                params += " " + parameter.toString();
+               params += " " + String.valueOf(parameter);
             }
+
 
             log.info(String.format("invocation of method %s with parameters %s", context.getMethod(), params));
 
