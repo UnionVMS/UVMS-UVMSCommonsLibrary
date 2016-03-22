@@ -6,8 +6,6 @@ public interface MessageConstants {
     String CONNECTION_TYPE = "javax.jms.MessageListener";
     String DESTINATION_TYPE_QUEUE = "javax.jms.Queue";
 
-    String QUEUE_MODULE_SPATIAL = "java:/jms/queue/UVMSSpatialEvent";
-    String QUEUE_MODULE_SPATIAL_NAME = "UVMSSpatialEvent";
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "java:/jms/queue/UVMSMovement";
@@ -17,9 +15,16 @@ public interface MessageConstants {
     String QUEUE_MODULE_MOVEMENT = "java:/jms/queue/UVMSMovementEvent";
     String QUEUE_AUDIT_EVENT = "java:/jms/queue/UVMSAuditEvent";
     String QUEUE_AUDIT = "java:/jms/queue/UVMSAudit";
-    String QUEUE_REPORTING = "java:/jms/queue/UVMSReporting";
     String QUEUE_USM = "java:/jms/queue/UVMSUserEvent";
     String QUEUE_USM4UVMS = "java:/jms/queue/USM4UVMS";
     String QUEUE_CONFIG = "java:/jms/queue/UVMSConfigEvent";
+
+    String QUEUE_MODULE_REPORTING_NAME = "UVMSReportingEvent";
+    String QUEUE_REPORTING_EVENT = "java:/jms/queue/UVMSReportingEvent";
+    String QUEUE_REPORTING = "java:/jms/queue/UVMSReporting";
+
+    String QUEUE_MODULE_SPATIAL_NAME = "UVMSSpatialEvent";
+    String QUEUE_MODULE_SPATIAL = "java:/jms/queue/UVMSSpatialEvent";
+    String QUEUE_SPATIAL = "java:/jms/queue/UVMSSpatial";
 
 }
