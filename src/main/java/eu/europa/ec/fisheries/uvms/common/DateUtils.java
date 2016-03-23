@@ -18,6 +18,8 @@ public class DateUtils {
 
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
+    static final public DateTime START_OF_TIME = new DateTime( 0000, 1, 1, 0, 0, 0, DateTimeZone.UTC );
+
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
