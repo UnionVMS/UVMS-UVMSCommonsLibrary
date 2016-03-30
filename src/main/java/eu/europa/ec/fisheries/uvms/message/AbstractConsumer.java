@@ -1,19 +1,17 @@
 package eu.europa.ec.fisheries.uvms.message;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
-/**
- * //TODO create test
- */
+@Slf4j
 public abstract class AbstractConsumer implements MessageConsumer {
-
-    protected final static Logger LOG = LoggerFactory.getLogger(AbstractConsumer.class);
 
     @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
@@ -28,7 +26,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
     @SuppressWarnings(value = "unchecked")
     public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
         try {
-            LOG.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
+            log.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new MessageException("No CorrelationID provided!");
             }
@@ -40,13 +38,13 @@ public abstract class AbstractConsumer implements MessageConsumer {
             if (recievedMessage == null) {
                 throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
             } else {
-                LOG.debug("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage)recievedMessage).getText());
+                log.debug("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage)recievedMessage).getText());
             }
 
             return recievedMessage;
 
         } catch (Exception e) {
-            LOG.error("[ Error when retrieving message. ] {}", e.getMessage());
+            log.error("[ Error when retrieving message. ] {}", e.getMessage());
             throw new MessageException("Error when retrieving message: " + e.getMessage());
         } finally {
             try {
@@ -55,7 +53,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
                     connection.close();
                 }
             } catch (JMSException e) {
-                LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
+                log.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
             }
         }
     }
@@ -71,7 +69,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
         connection = getConnectionFactory().createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        LOG.debug("Connected to {}", getDestination());
+        log.debug("Connected to {}", getDestination());
     }
 
     protected ConnectionFactory getConnectionFactory() {
