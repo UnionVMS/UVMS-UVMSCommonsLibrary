@@ -27,4 +27,6 @@ public interface MessageConstants {
     String QUEUE_MODULE_SPATIAL = "java:/jms/queue/UVMSSpatialEvent";
     String QUEUE_SPATIAL = "java:/jms/queue/UVMSSpatial";
 
+    String QUEUE_MODULE_RULES = "java:/jms/queue/UVMSRulesEvent";
+
 }
