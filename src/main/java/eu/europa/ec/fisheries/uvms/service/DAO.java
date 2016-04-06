@@ -11,8 +11,6 @@ public interface DAO<T> {
 
     T updateEntity(T entity) throws ServiceException;
 
-    int updateEntityByNamedQuery(String queryName) throws ServiceException;
-
     T saveOrUpdateEntity(T entity) throws ServiceException;
 
     T findEntityById(Class<T> type, Object id) throws ServiceException;
