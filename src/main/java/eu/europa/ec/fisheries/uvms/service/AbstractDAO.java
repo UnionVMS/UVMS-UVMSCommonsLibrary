@@ -113,7 +113,7 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //
 
     @Override
     public List<T> findEntityByNamedQuery(final Class<T> type, String queryName, final Map<String, String> parameters, final int maxResultLimit) throws ServiceException {
-        log.info("Requesting {} with parameters {} and limit {}" , queryName, parameters, maxResultLimit);
+        log.info("Requesting {} with parameters {} and limit {}", queryName, parameters, maxResultLimit);
         TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
@@ -154,5 +154,6 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //
     }
 
     public abstract EntityManager getEntityManager();
+
 
 }
