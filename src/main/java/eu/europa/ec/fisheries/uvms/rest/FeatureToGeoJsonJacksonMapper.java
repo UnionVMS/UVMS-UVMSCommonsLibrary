@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.lang.StringUtils;
@@ -11,10 +12,8 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
-
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +71,14 @@ public class FeatureToGeoJsonJacksonMapper {
 
             if (!property.getName().getLocalPart().equals(GEOMETRY)){
 
-                if (Double.class.equals(property.getType().getBinding())) {
+                if (ArrayList.class.equals(property.getType().getBinding())){
+                    ArrayNode arrayNode = mapper.createArrayNode();
+                    for (Object o : (ArrayList)property.getValue()){
+                        arrayNode.add(o.toString());
+                    }
+                    obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }
+                else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), property.getValue() == null ?
                             0D : (double)value);
                 }
