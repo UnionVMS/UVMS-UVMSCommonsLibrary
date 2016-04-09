@@ -70,20 +70,19 @@ public class FeatureToGeoJsonJacksonMapper {
             final Object value = property.getValue();
 
             if (!property.getName().getLocalPart().equals(GEOMETRY)){
-
                 if (ArrayList.class.equals(property.getType().getBinding())){
                     ArrayNode arrayNode = mapper.createArrayNode();
-                    for (Object o : (ArrayList)property.getValue()){
+                    for (Object o : (ArrayList)value){
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
-                    obj.put(property.getName().toString(), property.getValue() == null ?
+                    obj.put(property.getName().toString(), value == null ?
                             0D : (double)value);
                 }
                 else {
-                    obj.put(property.getName().toString(), property.getValue() == null ?
+                    obj.put(property.getName().toString(), value == null ?
                             StringUtils.EMPTY : value.toString());
                 }
             }
