@@ -13,9 +13,6 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-/**
- * //TODO create test
- */
 public abstract class AbstractProducer implements MessageProducer {
 
     protected final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);

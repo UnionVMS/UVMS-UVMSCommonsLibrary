@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public abstract class AbstractDAO<T extends Serializable> implements DAO<T> { //TODO rename to AbstractJpaDAO
+public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
 
     @Override
     public T createEntity(final T entity) throws ServiceException {

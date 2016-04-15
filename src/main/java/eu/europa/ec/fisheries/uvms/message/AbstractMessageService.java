@@ -3,14 +3,15 @@ package eu.europa.ec.fisheries.uvms.message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
-/**
- * //TODO create test
- */
 public abstract class AbstractMessageService implements MessageService {
 
     final static Logger LOG = LoggerFactory.getLogger(AbstractMessageService.class);
