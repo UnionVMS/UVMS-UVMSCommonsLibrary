@@ -23,8 +23,7 @@ public class TracingInterceptor {
                params += " " + String.valueOf(parameter);
             }
 
-
-            log.info(String.format("invocation of method %s with parameters %s", context.getMethod(), params));
+            log.debug(String.format("invocation of method %s with parameters %s", context.getMethod(), params));
 
             return context.proceed();
 
