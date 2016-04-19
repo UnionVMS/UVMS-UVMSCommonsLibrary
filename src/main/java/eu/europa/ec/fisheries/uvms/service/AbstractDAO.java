@@ -24,6 +24,8 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     public T updateEntity(final T entity) throws ServiceException {
         log.info("Updating entity {}", entity);
         T merge = getEntityManager().merge(entity);
+        getEntityManager().flush();
+        getEntityManager().refresh(merge);
         log.info("to {}", merge);
         return merge;
     }
