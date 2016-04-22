@@ -21,11 +21,8 @@
         <junit.version>4.11</junit.version>
         <guava.version>18.0</guava.version>
         <joda.time.version>2.8.2</joda.time.version>
-        <h2database.version>1.4.182</h2database.version>
         <apache.commons.version>3.4</apache.commons.version>
         <lombok.version>1.16.4</lombok.version>
-        <ninja.squad.version>1.6.0</ninja.squad.version>
-        <h2spatial.version>1.2.0</h2spatial.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
         <maven.release.plugin.version>2.5.2</maven.release.plugin.version>
         <maven.scm.provider.version>2.1.1</maven.scm.provider.version>
@@ -100,14 +97,13 @@
             <version>${geotools.version}</version>
         </dependency>
 
-        
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${sl4j.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -127,12 +123,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2database.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache.commons.version}</version>
@@ -148,18 +138,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ninja-squad</groupId>
-            <artifactId>DbSetup</artifactId>
-            <version>${ninja.squad.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>h2spatial-ext</artifactId>
-            <version>${h2spatial.version}</version>
         </dependency>
 
     </dependencies>
