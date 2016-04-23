@@ -109,6 +109,7 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -145,12 +146,6 @@
             <artifactId>unitils-inject</artifactId>
             <version>3.4.2</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.extension</groupId>
-            <artifactId>arquillian-transaction-jta</artifactId>
-            <version>1.0.0.Alpha3</version>
         </dependency>
 
     </dependencies>
