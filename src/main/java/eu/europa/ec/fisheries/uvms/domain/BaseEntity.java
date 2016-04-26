@@ -13,7 +13,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class BaseEntity implements Serializable {
 
-    private final @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private final Long id;
 
     protected BaseEntity(){
         this.id = null;
