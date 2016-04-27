@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -24,7 +23,6 @@ public class Audit implements Serializable {
     Audit() {
     }
 
-    @Builder
     public Audit(Date createdOn) {
         this.createdOn = createdOn;
     }
