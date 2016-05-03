@@ -2,13 +2,16 @@ package eu.europa.ec.fisheries.uvms.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@SuppressWarnings("serial")
 @Embeddable
 @EqualsAndHashCode
 @ToString
