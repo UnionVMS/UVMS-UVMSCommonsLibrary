@@ -22,6 +22,7 @@ public class DateUtils {
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+    final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
@@ -90,6 +91,13 @@ public class DateUtils {
         } catch (DatatypeConfigurationException ex) {
         }
         return xmlCalendar;
+    }
+
+    public static String stringToUTC(String dateTime){
+        Date date = DateUtils.stringToDate(dateTime);
+        DateFormat df = new SimpleDateFormat(DATE_TIME);
+        String dateString = df.format(date);
+        return dateString;
     }
 
 }
