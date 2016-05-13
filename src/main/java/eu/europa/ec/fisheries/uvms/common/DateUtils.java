@@ -99,5 +99,11 @@ public class DateUtils {
         String dateString = df.format(date);
         return dateString;
     }
+	
+	public static Date getNowDateUTC(){
+        DateTimeZone zone = DateTimeZone.getDefault();
+        long utc = zone.convertLocalToUTC(new Date().getTime(), false);
+        return new Date(utc);
+    }
 
 }
