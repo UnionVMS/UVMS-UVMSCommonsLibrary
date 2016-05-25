@@ -15,7 +15,7 @@ import lombok.ToString;
 public class BaseEntity implements Serializable {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_gen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
 
     protected BaseEntity(){
