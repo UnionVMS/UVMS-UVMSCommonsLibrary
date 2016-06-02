@@ -28,7 +28,7 @@
         <maven.scm.provider.version>2.1.1</maven.scm.provider.version>
         <maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
         <hibernate.version>4.3.5.Final</hibernate.version>
-
+        <uvms.test.version>0.0.2-SNAPSHOT</uvms.test.version>
     </properties>
 
 
@@ -158,6 +158,13 @@
             <groupId>org.unitils</groupId>
             <artifactId>unitils-inject</artifactId>
             <version>3.4.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>uvms-test</artifactId>
+            <version>${uvms.test.version}</version>
             <scope>test</scope>
         </dependency>
 

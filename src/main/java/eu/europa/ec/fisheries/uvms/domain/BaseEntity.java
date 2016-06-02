@@ -2,6 +2,10 @@ package eu.europa.ec.fisheries.uvms.domain;
 
 import java.io.Serializable;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +28,23 @@ public class BaseEntity implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public List<Field> listMembers(){
+        List<Field> fields = new ArrayList<>();
+        try {
+            Field[] declaredFields = this.getClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+                if(!field.getName().contains("this") &&
+                        field.getModifiers() != Modifier.STATIC + Modifier.PUBLIC + Modifier.FINAL
+                        && field.getModifiers() != Modifier.STATIC + Modifier.PRIVATE + Modifier.FINAL) {
+                    fields.add(field);
+                }
+            }
+        } catch (Exception e){
+            //Handle your exception here.
+        }
+        return fields;
     }
 
 }
