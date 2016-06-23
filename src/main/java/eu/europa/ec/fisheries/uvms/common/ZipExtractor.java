@@ -45,4 +45,15 @@ public abstract class ZipExtractor {
         zis.close();
 
     }
+
+    public static void renameFiles(Path absolutePath, String newFileName) {
+        if (absolutePath != null) {
+            for (final File file : absolutePath.toFile().listFiles()) {
+                String[] fileNameSplits = file.getName().split("\\.");
+                int extensionIndex = fileNameSplits.length - 1; // extension is assumed to be the last part
+                File newFile = new File(file.getParent() + File.separator + newFileName + "." + fileNameSplits[extensionIndex]);
+                boolean status = file.renameTo(newFile);
+            }
+        }
+    }
 }
