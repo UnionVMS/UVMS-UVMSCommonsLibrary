@@ -5,7 +5,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.0.11-SNAPSHOT</version>
+    <version>2.0.9-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -48,6 +48,15 @@
     <scm>
         <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/releases/${release.branch.name}/Libraries/uvms-commons</connection>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>release-dev</id>
+            <properties>
+                <release.branch.name>dev</release.branch.name>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
 
