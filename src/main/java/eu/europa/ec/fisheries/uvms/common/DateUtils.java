@@ -106,4 +106,20 @@ public class DateUtils {
         return new Date(utc);
     }
 
+    public static Date parseToUTCDate(String dateString, String format) throws IllegalArgumentException {
+        try {
+            if (dateString != null) {
+                DateTimeFormatter formatter = DateTimeFormat.forPattern(format).withOffsetParsed();
+                DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
+                GregorianCalendar cal = dateTime.toGregorianCalendar();
+                return cal.getTime();
+            } else {
+                return null;
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.error(e.getMessage());
+            throw new IllegalArgumentException(e);
+        }
+    }
+
 }
