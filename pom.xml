@@ -9,6 +9,9 @@
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
+	
+	
+	
     <properties>
         <release.branch.name>uvms-2.0.6-kili</release.branch.name>
         <sl4j.version>1.7.12</sl4j.version>
