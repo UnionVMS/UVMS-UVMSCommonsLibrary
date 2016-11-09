@@ -13,14 +13,11 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.message;
 
 import lombok.extern.slf4j.Slf4j;
+
 import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 @Slf4j
 public abstract class AbstractConsumer implements MessageConsumer {
