@@ -17,10 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vividsolutions.jts.geom.Geometry;
+import eu.europa.ec.fisheries.uvms.mapper.GeometryMapper;
+import eu.europa.ec.fisheries.uvms.model.StringWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -104,6 +105,11 @@ public class FeatureToGeoJsonJacksonMapper {
 
     @SuppressWarnings("unchecked")
     private JsonNode buildGeometry(Geometry geometry) throws IOException {
-        return mapper.readTree(new GeometryJSON().toString(geometry));
+        JsonNode jsonNode = null;
+        StringWrapper stringWrapper = GeometryMapper.INSTANCE.geometryToJson(geometry);
+        if (stringWrapper != null){
+            jsonNode = mapper.readTree(stringWrapper.getValue());
+        }
+        return jsonNode;
     }
 }
