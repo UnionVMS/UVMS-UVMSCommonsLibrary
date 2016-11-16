@@ -25,11 +25,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaginatedResponse<T>  {
 
-    @JsonProperty("resultList")
     private List<T> resultList;
-
-    @JsonProperty("totalItemsCount")
     private int totalItemsCount;
+    private int code;
+    private String msg;
+
+
 
     public PaginatedResponse(List<T> resultList, int totalItemsCount) {
         this.setResultList(resultList);
@@ -41,23 +42,35 @@ public class PaginatedResponse<T>  {
         this.setTotalItemsCount(resultList.size());
     }
 
-    @JsonProperty("resultList")
     public List<T> getResultList() {
         return resultList;
     }
 
-    @JsonProperty("resultList")
     public void setResultList(List<T> resultList) {
         this.resultList = resultList;
     }
 
-    @JsonProperty("totalItemsCount")
     public int getTotalItemsCount() {
         return totalItemsCount;
     }
 
-    @JsonProperty("totalItemsCount")
     public void setTotalItemsCount(int totalItemsCount) {
         this.totalItemsCount = totalItemsCount;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }
