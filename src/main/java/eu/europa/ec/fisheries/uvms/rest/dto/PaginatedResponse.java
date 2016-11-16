@@ -30,47 +30,39 @@ public class PaginatedResponse<T>  {
     private int code;
     private String msg;
 
-
-
-    public PaginatedResponse(List<T> resultList, int totalItemsCount) {
-        this.setResultList(resultList);
-        this.setTotalItemsCount(totalItemsCount);
-    }
-
-    public PaginatedResponse(List<T> resultList) {
-        this.setResultList(resultList);
-        this.setTotalItemsCount(resultList.size());
-    }
-
     public List<T> getResultList() {
         return resultList;
     }
 
-    public void setResultList(List<T> resultList) {
+    public PaginatedResponse<T> setResultList(List<T> resultList) {
         this.resultList = resultList;
+        return this;
     }
 
     public int getTotalItemsCount() {
         return totalItemsCount;
     }
 
-    public void setTotalItemsCount(int totalItemsCount) {
+    public PaginatedResponse<T> setTotalItemsCount(int totalItemsCount) {
         this.totalItemsCount = totalItemsCount;
+        return this;
     }
 
     public int getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public PaginatedResponse<T> setCode(int code) {
         this.code = code;
+        return this;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public PaginatedResponse<T> setMsg(String msg) {
         this.msg = msg;
+        return this;
     }
 }
