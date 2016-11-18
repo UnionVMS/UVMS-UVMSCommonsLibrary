@@ -12,10 +12,12 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.rest.resource;
 
+import eu.europa.ec.fisheries.uvms.rest.dto.PaginatedResponse;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 
 public abstract class UnionVMSResource {
@@ -28,6 +30,13 @@ public abstract class UnionVMSResource {
 
 	public <T> Response createSuccessResponse(T data) {
 		ResponseDto<T> dto = new ResponseDto<T>(data, HttpServletResponse.SC_OK);
+		Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
+		return response;
+	}
+
+	public <T> Response createSuccessPaginatedResponse(List<T> data, int totalItemsCount) {
+		PaginatedResponse<T> dto = new PaginatedResponse<T>();
+		dto.setResultList(data).setTotalItemsCount(totalItemsCount).setCode(HttpServletResponse.SC_OK);
 		Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
 		return response;
 	}

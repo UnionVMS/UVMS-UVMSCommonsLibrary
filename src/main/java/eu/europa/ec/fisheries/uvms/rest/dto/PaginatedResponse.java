@@ -25,39 +25,44 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaginatedResponse<T>  {
 
-    @JsonProperty("resultList")
     private List<T> resultList;
-
-    @JsonProperty("totalItemsCount")
     private int totalItemsCount;
+    private int code;
+    private String msg;
 
-    public PaginatedResponse(List<T> resultList, int totalItemsCount) {
-        this.setResultList(resultList);
-        this.setTotalItemsCount(totalItemsCount);
-    }
-
-    public PaginatedResponse(List<T> resultList) {
-        this.setResultList(resultList);
-        this.setTotalItemsCount(resultList.size());
-    }
-
-    @JsonProperty("resultList")
     public List<T> getResultList() {
         return resultList;
     }
 
-    @JsonProperty("resultList")
-    public void setResultList(List<T> resultList) {
+    public PaginatedResponse<T> setResultList(List<T> resultList) {
         this.resultList = resultList;
+        return this;
     }
 
-    @JsonProperty("totalItemsCount")
     public int getTotalItemsCount() {
         return totalItemsCount;
     }
 
-    @JsonProperty("totalItemsCount")
-    public void setTotalItemsCount(int totalItemsCount) {
+    public PaginatedResponse<T> setTotalItemsCount(int totalItemsCount) {
         this.totalItemsCount = totalItemsCount;
+        return this;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public PaginatedResponse<T> setCode(int code) {
+        this.code = code;
+        return this;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public PaginatedResponse<T> setMsg(String msg) {
+        this.msg = msg;
+        return this;
     }
 }
