@@ -47,7 +47,14 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/${release.branch.name}/Libraries/uvms-commons</connection>
+        <connection>
+            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+        </connection>
+        <developerConnection>
+            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+        </developerConnection>
+        <url>https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+        <tag>HEAD</tag>
     </scm>
 
     <profiles>
