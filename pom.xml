@@ -5,7 +5,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.0.13-SNAPSHOT</version>
+    <version>2.0.14-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -47,9 +47,14 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://emsanerac@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/UVMS-UVMSCommonsLibrary.git</connection>
-        <developerConnection>scm:git:https://emsanerac@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/UVMS-UVMSCommonsLibrary.git</developerConnection>
-        <url>https://emsanerac@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+        <connection>
+            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+        </connection>
+        <developerConnection>
+            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+        </developerConnection>
+        <url>https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+        <tag>HEAD</tag>
     </scm>
 
     <profiles>
@@ -244,6 +249,10 @@
                     </dependency>
                 </dependencies>
                 <configuration>
+                    <providerImplementations>
+                        <svn>javasvn</svn>
+                    </providerImplementations>
+                    <tagBase>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons</tagBase>
                     <tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
