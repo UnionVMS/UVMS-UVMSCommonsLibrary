@@ -48,9 +48,9 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
             if (recievedMessage == null) {
                 throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
-            } else {
+            } /*else {
                 log.debug("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage)recievedMessage).getText());
-            }
+            }*/
 
             return recievedMessage;
 
