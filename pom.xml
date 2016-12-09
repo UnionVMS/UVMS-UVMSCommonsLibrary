@@ -34,13 +34,13 @@
 
     <repositories>
         <repository>
+            <id>OSGEO GeoTools repo</id>
+            <url>http://download.osgeo.org/webdav/geotools</url>
+        </repository>
+        <repository>
             <id>focus-repo</id>
             <name>Focus nexus repository</name>
             <url>http://nexus.focus.fish/</url>
-        </repository>
-        <repository>
-            <id>OSGEO GeoTools repo</id>
-            <url>http://download.osgeo.org/webdav/geotools</url>
         </repository>
     </repositories>
 
