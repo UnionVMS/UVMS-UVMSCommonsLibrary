@@ -103,6 +103,11 @@ public class FeatureToGeoJsonJacksonMapper {
 
     @SuppressWarnings("unchecked")
     private JsonNode buildGeometry(Geometry geometry) throws IOException {
-        return mapper.readTree(new GeometryJSON().toString(geometry));
+        JsonNode jsonNode = null;
+        StringWrapper stringWrapper = GeometryMapper.INSTANCE.geometryToJson(geometry);
+        if (stringWrapper != null){
+            jsonNode = mapper.readTree(stringWrapper.getValue());
+        }
+        return jsonNode;
     }
 }

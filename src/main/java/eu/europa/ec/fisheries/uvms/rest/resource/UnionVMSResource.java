@@ -32,6 +32,13 @@ public abstract class UnionVMSResource {
 		Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
 		return response;
 	}
+
+    public <T> Response createSuccessPaginatedResponse(List<T> data, int totalItemsCount) {
+        PaginatedResponse<T> dto = new PaginatedResponse<T>();
+        dto.setResultList(data).setTotalItemsCount(totalItemsCount).setCode(HttpServletResponse.SC_OK);
+        Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
+        return response;
+    }
 	
 	public Response createErrorResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -45,4 +45,7 @@ public interface MessageConstants {
     String UPLOAD_QUEUE = "jms/queue/UVMSUpload";
 
 
+    String QUEUE_MODULE_ACTIVITY_NAME = "UVMSActivityEvent";
+    String QUEUE_MODULE_ACTIVITY = "java:/jms/queue/UVMSActivityEvent";
+    String QUEUE_ACTIVITY = "java:/jms/queue/UVMSActivity";
 }
