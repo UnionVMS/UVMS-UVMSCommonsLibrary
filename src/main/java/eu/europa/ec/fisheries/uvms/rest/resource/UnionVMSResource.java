@@ -16,7 +16,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.europa.ec.fisheries.uvms.rest.dto.PaginatedResponse;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
+
+import java.util.List;
 
 
 public abstract class UnionVMSResource {

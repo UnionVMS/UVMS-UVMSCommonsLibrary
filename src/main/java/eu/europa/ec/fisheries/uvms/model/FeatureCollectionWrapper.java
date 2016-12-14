@@ -20,6 +20,12 @@ import org.geotools.feature.FeatureCollection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+/**
+ * This class is required by Mapstruct, which requires target attribute.
+ * See {@link GeometryWrapper} for more details.
+ *
+ * Eventual improvement is to generalize the Wrappers or even to remove them.
+ */
 public class FeatureCollectionWrapper {
 
     private FeatureCollection value;

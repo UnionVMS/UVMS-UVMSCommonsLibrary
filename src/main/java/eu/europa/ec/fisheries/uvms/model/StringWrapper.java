@@ -19,6 +19,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+/**
+ * This class is required by Mapstruct, which requires target attribute.
+ * See {@link GeometryWrapper} for more details.
+ *
+ * Eventual improvement is to generalize the Wrappers or even to remove them.
+ */
 public class StringWrapper {
 
     private String value;
