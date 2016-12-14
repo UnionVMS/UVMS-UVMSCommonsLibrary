@@ -15,8 +15,7 @@ package eu.europa.ec.fisheries.uvms.message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Queue;
-import javax.jms.Topic;
+import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -26,6 +25,23 @@ import javax.naming.NamingException;
 public class JMSUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
+
+    public static ConnectionFactory lookupConnectionFactory(InitialContext ctx, String connectionFactory) {
+        try {
+            return (QueueConnectionFactory) ctx.lookup(connectionFactory);
+        } catch (NamingException ne) {
+            //if we did not find the connection factory we might need to add java:/ at the start
+            LOG.debug("Connection Factory lookup failed for " + connectionFactory);
+            String wfName = "java:/" + connectionFactory;
+            try {
+                LOG.debug("trying " + wfName);
+                return (QueueConnectionFactory) ctx.lookup(wfName);
+            } catch (Exception e) {
+                LOG.error("Connection Factory lookup failed for both " + connectionFactory  + " and " + wfName);
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public static Queue lookupQueue(InitialContext ctx, String queue) {
         try {
