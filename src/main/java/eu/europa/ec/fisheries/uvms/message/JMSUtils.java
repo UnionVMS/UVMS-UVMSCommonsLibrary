@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Queue;
+import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -32,12 +33,29 @@ public class JMSUtils {
         } catch (NamingException e) {
             //if we did not find the queue we might need to add java:/ at the start
             LOG.debug("Queue lookup failed for " + queue);
-            String wfQueueName = "java:/"+ queue;
+            String wfQueueName = "java:/" + queue;
             try {
                 LOG.debug("trying " + wfQueueName);
                 return (Queue)ctx.lookup(wfQueueName);
             } catch (Exception e2) {
                 LOG.error("Queue lookup failed for both " + queue + " and " + wfQueueName);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static Topic lookupTopic(InitialContext ctx, String topic) {
+        try {
+            return (Topic) ctx.lookup(topic);
+        } catch (NamingException e) {
+            //if we did not find the queue we might need to add java:/ at the start
+            LOG.debug("Queue lookup failed for " + topic);
+            String wfTopicName = "java:/" + topic;
+            try {
+                LOG.debug("trying " + wfTopicName);
+                return (Topic)ctx.lookup(wfTopicName);
+            } catch (Exception e2) {
+                LOG.error("Topic lookup failed for both " + topic + " and " + wfTopicName);
                 throw new RuntimeException(e);
             }
         }

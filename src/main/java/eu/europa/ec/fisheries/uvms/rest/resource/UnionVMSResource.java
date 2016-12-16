@@ -16,7 +16,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.europa.ec.fisheries.uvms.rest.dto.PaginatedResponse;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
+
+import java.util.List;
 
 
 public abstract class UnionVMSResource {
@@ -32,6 +35,13 @@ public abstract class UnionVMSResource {
 		Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
 		return response;
 	}
+
+    public <T> Response createSuccessPaginatedResponse(List<T> data, int totalItemsCount) {
+        PaginatedResponse<T> dto = new PaginatedResponse<T>();
+        dto.setResultList(data).setTotalItemsCount(totalItemsCount).setCode(HttpServletResponse.SC_OK);
+        Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
+        return response;
+    }
 	
 	public Response createErrorResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
