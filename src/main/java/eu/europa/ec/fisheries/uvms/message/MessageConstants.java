@@ -19,6 +19,7 @@ public interface MessageConstants {
 
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
+  
     String COMPONENT_RESPONSE_QUEUE = "java:/jms/queue/UVMSMovement";
     String QUEUE_DATASOURCE_INTERNAL = "java:/jms/queue/UVMSMovementModel";
     String QUEUE_ASSET = "java:/jms/queue/UVMSAsset"; //response queue
