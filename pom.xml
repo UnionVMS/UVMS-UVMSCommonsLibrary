@@ -234,7 +234,7 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>uvms-test</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>${uvms.test.version}</version>
             <scope>test</scope>
         </dependency>
 
