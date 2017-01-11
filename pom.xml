@@ -66,8 +66,9 @@
             </properties>
         </profile>
 		<profile>
-            <id>weblogic</id>
+            <id>weblogic-weblogic</id>
 				<properties>
+					<archive.classifier>weblogic-weblogic</archive.classifier> 					
 				</properties>				
             <build>
                 <plugins>
@@ -94,14 +95,54 @@
 								 <goal>jar</goal>
 							   </goals>
 							   <configuration>
-								 <classifier>weblogic</classifier>
+								 <classifier>weblogic-weblogic</classifier>
 							   </configuration>
 							 </execution>
 						   </executions>
 						 </plugin>					
                 </plugins>
             </build>
-        </profile>			
+        </profile>	
+
+		<profile>
+            <id>weblogic-activemq</id>
+				<properties>
+					<archive.classifier>weblogic-activemq</archive.classifier> 					
+				</properties>				
+            <build>
+                <plugins>
+				  <plugin>
+                      <groupId>eu.europa.ec.fisheries.uvms.containerconversion</groupId>
+                      <artifactId>uvms-wildfly-weblogic-convertor</artifactId>
+                      <version>${uvms-wildfly-weblogic-convertor}</version>
+                      <executions>
+					  <execution>
+						<phase>process-resources</phase>
+						<goals>
+						  <goal>convertUVMSCommons</goal>
+						</goals>
+					  </execution>
+					</executions>
+				  </plugin>	
+					
+				 <plugin>
+					<artifactId>maven-jar-plugin</artifactId>
+						   <executions>
+							 <execution>
+							   <phase>package</phase>
+							   <goals>
+								 <goal>jar</goal>
+							   </goals>
+							   <configuration>
+								 <classifier>weblogic-activemq</classifier>
+							   </configuration>
+							 </execution>
+						   </executions>
+						 </plugin>					
+                </plugins>
+            </build>
+        </profile>	
+		
     </profiles>
 
     <dependencies>
