@@ -31,7 +31,7 @@
         <hibernate.version>4.3.5.Final</hibernate.version>
         <uvms.test.version>0.0.2</uvms.test.version>
 
-        <uvms-wildfly-weblogic-convertor>1.7.1</uvms-wildfly-weblogic-convertor>
+        <uvms-wildfly-weblogic-convertor>1.6.0</uvms-wildfly-weblogic-convertor>
         <scm.connection>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
     </properties>
 
@@ -87,6 +87,38 @@
 				</properties>				
             <build>
                 <plugins>
+					<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.compiler.plugin.version}</version>					
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<excludes>
+						<exclude>../../../../**/main/**/*.java</exclude>
+						</excludes>
+						<testExcludes>
+						<exclude>**/.ade_path/**</exclude>
+						</testExcludes>
+					</configuration>
+				</plugin>		
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+						  <execution>
+							<id>add-source</id>
+							<phase>generate-sources</phase>
+							<goals>
+							  <goal>add-source</goal>
+							</goals>
+							<configuration>
+							  <sources>
+								  <source>${basedir}/src_weblogic/main/java</source>
+							  </sources>
+							</configuration>
+						  </execution>
+						</executions>
+					</plugin>						
 				  <plugin>
                       <groupId>eu.europa.ec.fisheries.uvms.containerconversion</groupId>
                       <artifactId>uvms-wildfly-weblogic-convertor</artifactId>
@@ -114,7 +146,7 @@
 							   </configuration>
 							 </execution>
 						   </executions>
-						 </plugin>					
+				</plugin>					
                 </plugins>
             </build>
         </profile>	
