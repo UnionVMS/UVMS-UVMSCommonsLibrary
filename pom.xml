@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.fisheries.uvms</groupId>
     <artifactId>uvms-commons</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <version>2.0.14-SNAPSHOT</version>
     <name>uvms-commons</name>
@@ -30,9 +31,9 @@
         <maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
         <hibernate.version>4.3.5.Final</hibernate.version>
         <uvms.test.version>0.0.2</uvms.test.version>
-
-        <uvms-wildfly-weblogic-convertor>1.7.1</uvms-wildfly-weblogic-convertor>
+        <uvms-wildfly-weblogic-convertor>1.7.2-SNAPSHOT</uvms-wildfly-weblogic-convertor>
         <scm.connection>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
+
     </properties>
 
     <scm>
@@ -53,112 +54,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <profiles>
-        <profile>
-            <id>dg-mare</id>
-            <distributionManagement>
-                <repository>
-                    <id>digit-releases</id>
-                    <name>DG DIGIT Repository</name>
-                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>digit-snapshots</id>
-                    <name>DG DIGIT Snapshot Repository</name>
-                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
-                </snapshotRepository>
-            </distributionManagement>
-
-            <properties>
-                <scm.connection>scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git</scm.connection>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>release-dev</id>
-            <properties>
-                <release.branch.name>dev</release.branch.name>
-            </properties>
-        </profile>
-		<profile>
-            <id>weblogic-weblogic</id>
-				<properties>
-					<archive.classifier>weblogic-weblogic</archive.classifier> 					
-				</properties>				
-            <build>
-                <plugins>
-				  <plugin>
-                      <groupId>eu.europa.ec.fisheries.uvms.containerconversion</groupId>
-                      <artifactId>uvms-wildfly-weblogic-convertor</artifactId>
-                      <version>${uvms-wildfly-weblogic-convertor}</version>
-                      <executions>
-					  <execution>
-						<phase>process-resources</phase>
-						<goals>
-						  <goal>convertUVMSCommons</goal>
-						</goals>
-					  </execution>
-					</executions>
-				  </plugin>	
-					
-				 <plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-						   <executions>
-							 <execution>
-							   <phase>package</phase>
-							   <goals>
-								 <goal>jar</goal>
-							   </goals>
-							   <configuration>
-								 <classifier>weblogic-weblogic</classifier>
-							   </configuration>
-							 </execution>
-						   </executions>
-						 </plugin>					
-                </plugins>
-            </build>
-        </profile>	
-
-		<profile>
-            <id>weblogic-activemq</id>
-				<properties>
-					<archive.classifier>weblogic-activemq</archive.classifier> 					
-				</properties>				
-            <build>
-                <plugins>
-				  <plugin>
-                      <groupId>eu.europa.ec.fisheries.uvms.containerconversion</groupId>
-                      <artifactId>uvms-wildfly-weblogic-convertor</artifactId>
-                      <version>${uvms-wildfly-weblogic-convertor}</version>
-                      <executions>
-					  <execution>
-						<phase>process-resources</phase>
-						<goals>
-						  <goal>convertUVMSCommons</goal>
-						</goals>
-					  </execution>
-					</executions>
-				  </plugin>	
-					
-				 <plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-						   <executions>
-							 <execution>
-							   <phase>package</phase>
-							   <goals>
-								 <goal>jar</goal>
-							   </goals>
-							   <configuration>
-								 <classifier>weblogic-activemq</classifier>
-							   </configuration>
-							 </execution>
-						   </executions>
-						 </plugin>					
-                </plugins>
-            </build>
-        </profile>	
-		
-    </profiles>
 
     <dependencies>
 
@@ -258,10 +153,10 @@
         </dependency>
 
         <dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.10</version>
-		</dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-collections</groupId>
@@ -309,6 +204,30 @@
         </repository>
     </repositories>
 
+    <profiles>
+        <profile>
+            <id>dg-mare</id>
+            <distributionManagement>
+                <repository>
+                    <id>digit-releases</id>
+                    <name>DG DIGIT Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>digit-snapshots</id>
+                    <name>DG DIGIT Snapshot Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+
+            <properties>
+                <scm.connection>
+                    scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+                </scm.connection>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -344,10 +263,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <providerImplementations>
-                        <svn>javasvn</svn>
-                    </providerImplementations>
-                    <tagBase>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons</tagBase>
                     <tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
@@ -383,4 +298,9 @@
             </plugin>
         </plugins>
     </build>
+
+    <modules>
+        <module>wildfly</module>
+        <module>weblogic</module>
+    </modules>
 </project>
