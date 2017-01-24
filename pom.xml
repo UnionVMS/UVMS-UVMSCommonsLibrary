@@ -10,7 +10,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <release.branch.name>uvms-3.0.1-C3PO</release.branch.name>
+        <release.branch.name>uvms-3.0.3-C3PO</release.branch.name>
         <sl4j.version>1.7.12</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
@@ -70,7 +70,7 @@
         <profile>
             <id>release-dev</id>
             <properties>
-                <release.branch.name>uvms-3.0.1-C3PO</release.branch.name>
+                <release.branch.name>uvms-3.0.3-C3PO</release.branch.name>
             </properties>
         </profile>
 
@@ -91,7 +91,7 @@
 
 			<properties>
 				<scm.connection>scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git</scm.connection>
-			<release.branch.name>uvms-3.0.1-C3PO</release.branch.name></properties>
+			<release.branch.name>uvms-3.0.3-C3PO</release.branch.name></properties>
 		</profile>
     </profiles>
 
