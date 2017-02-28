@@ -33,6 +33,7 @@ public abstract class AbstractProducer implements MessageProducer {
     protected final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
 
     private ConnectionFactory connectionFactory;
+    private Destination destination;
 
     private Connection connection = null;
     private Session session = null;
@@ -61,6 +62,9 @@ public abstract class AbstractProducer implements MessageProducer {
                 throw new RuntimeException(e);
             }
         }
+		
+		destination = JMSUtils.lookupQueue(ctx, getDestinationName());
+		
 
     }
 	
@@ -107,5 +111,8 @@ public abstract class AbstractProducer implements MessageProducer {
         LOG.debug("Connecting to queue: {}", getDestination());
     }
 
-    protected abstract Destination getDestination();
+	
+	protected Destination getDestination() {
+		return destination;
+	}	
 }

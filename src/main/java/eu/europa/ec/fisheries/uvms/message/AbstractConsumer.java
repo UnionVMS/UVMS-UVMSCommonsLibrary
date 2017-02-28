@@ -26,6 +26,7 @@ import javax.annotation.PreDestroy;
 public abstract class AbstractConsumer implements MessageConsumer {
 
     private ConnectionFactory connectionFactory;
+    private Destination destination;
 
     private Connection connection = null;
     private Session session = null;
@@ -57,6 +58,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
                 throw new RuntimeException(e);
             }
         }
+		
+		destination = JMSUtils.lookupQueue(ctx, getDestinationName());
 
     }
 	
@@ -119,4 +122,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
     protected long getMilliseconds() {
         return MILLISECONDS;
     }
+	
+	protected Destination getDestination() {
+		return destination;
+	}
 }
