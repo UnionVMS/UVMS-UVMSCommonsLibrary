@@ -30,7 +30,6 @@
         <maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
         <hibernate.version>4.3.5.Final</hibernate.version>
         <uvms.test.version>0.0.2</uvms.test.version>
-        <uvms-wildfly-weblogic-convertor>1.7.2</uvms-wildfly-weblogic-convertor>
         <scm.connection>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
 
     </properties>
@@ -298,8 +297,4 @@
         </plugins>
     </build>
 
-    <modules>
-        <module>wildfly</module>
-        <module>weblogic</module>
-    </modules>
 </project>
