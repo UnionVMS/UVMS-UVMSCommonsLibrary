@@ -18,11 +18,13 @@ import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.*;
+import javax.naming.InitialContext;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @Slf4j
 public abstract class AbstractConsumer implements MessageConsumer {
 
-    @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
 
     private Connection connection = null;
@@ -30,6 +32,35 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
     private static long MILLISECONDS = 600000;
 
+	
+	@PostConstruct
+    private void connectConnectionFactory() {
+        LOG.debug("Open connection to JMS broker");
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        try {
+            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
+        } catch (NamingException ne) {
+            //if we did not find the connection factory we might need to add java:/ at the start
+            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
+            try {
+                LOG.debug("trying " + wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
+            } catch (Exception e) {
+                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+	
+	
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @SuppressWarnings(value = "unchecked")
