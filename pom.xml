@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.fisheries.uvms</groupId>
     <artifactId>uvms-commons</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <version>2.0.16-SNAPSHOT</version>
     <name>uvms-commons</name>

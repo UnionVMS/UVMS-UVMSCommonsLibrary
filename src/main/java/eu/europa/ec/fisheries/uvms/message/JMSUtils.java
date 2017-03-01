@@ -17,9 +17,6 @@ import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-/**
- * Created by osdjup on 2016-12-02.
- */
 public class JMSUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
