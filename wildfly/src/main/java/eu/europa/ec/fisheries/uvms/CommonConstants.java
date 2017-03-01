@@ -14,8 +14,6 @@ package eu.europa.ec.fisheries.uvms;
 
 public class CommonConstants {
 
-    public static final int DEFAULT_SRID = 4326;
-
     public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
     public static final String ACCESS_CONTROL_ALLOW_METHODS_ALL = "*";
     

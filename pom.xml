@@ -5,7 +5,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.0.16-SNAPSHOT</version>
+    <version>2.0.19-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -300,6 +300,6 @@
 
     <modules>
         <module>wildfly</module>
-        <module>weblogic</module>
+        <!--<module>weblogic</module>-->
     </modules>
 </project>
