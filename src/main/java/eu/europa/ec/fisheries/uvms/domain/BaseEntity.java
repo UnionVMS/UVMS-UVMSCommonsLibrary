@@ -32,6 +32,10 @@ public class BaseEntity implements Serializable {
     protected BaseEntity(){
     }
 
+    public Long getId() {
+        return null;
+    }
+
     public List<Field> listMembers(){
         List<Field> fields = new ArrayList<>();
         try {
