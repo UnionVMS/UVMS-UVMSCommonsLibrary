@@ -300,6 +300,6 @@
 
     <modules>
         <module>wildfly</module>
-        <!--<module>weblogic</module>-->
+        <module>weblogic</module>
     </modules>
 </project>
