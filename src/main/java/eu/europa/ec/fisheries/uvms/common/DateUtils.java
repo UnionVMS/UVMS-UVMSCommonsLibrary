@@ -33,8 +33,8 @@ public class DateUtils {
     static final public DateTime START_OF_TIME = new DateTime( 0000, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-    final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+    public final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+    public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
@@ -54,7 +54,6 @@ public class DateUtils {
     public static XMLGregorianCalendar getCurrentDate() throws DatatypeConfigurationException {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-
         return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
     }
 
