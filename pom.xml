@@ -3,14 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.fisheries.uvms</groupId>
     <artifactId>uvms-commons</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <version>2.0.14-SNAPSHOT</version>
+    <version>2.0.19-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <release.branch.name>uvms-2.0.6-kili</release.branch.name>
+        <additionalparam>-Xdoclint:none</additionalparam>
         <sl4j.version>1.7.12</sl4j.version>
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
@@ -30,41 +31,29 @@
         <maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
         <hibernate.version>4.3.5.Final</hibernate.version>
         <uvms.test.version>0.0.2</uvms.test.version>
+        <uvms-wildfly-weblogic-convertor>1.7.2</uvms-wildfly-weblogic-convertor>
+        <scm.connection>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
+
     </properties>
 
-
-    <distributionManagement>
-        <repository>
-            <id>digit-releases</id>
-            <name>DG DIGIT Repository</name>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
-        </repository>
-        <snapshotRepository>
-            <id>digit-snapshots</id>
-            <name>DG DIGIT Snapshot Repository</name>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <scm>
-        <connection>
-            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
-        </connection>
-        <developerConnection>
-            scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
-        </developerConnection>
-        <url>https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+        <connection>${scm.connection}</connection>
         <tag>HEAD</tag>
     </scm>
 
-    <profiles>
-        <profile>
-            <id>release-dev</id>
-            <properties>
-                <release.branch.name>dev</release.branch.name>
-            </properties>
-        </profile>
-    </profiles>
+    <distributionManagement>
+        <repository>
+            <id>focus-releases</id>
+            <name>UnionVms Repository</name>
+            <url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>focus-snapshots</id>
+            <name>UnionVms Snapshot Repository</name>
+            <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 
     <dependencies>
 
@@ -164,10 +153,10 @@
         </dependency>
 
         <dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.10</version>
-		</dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-collections</groupId>
@@ -215,6 +204,30 @@
         </repository>
     </repositories>
 
+    <profiles>
+        <profile>
+            <id>dg-mare</id>
+            <distributionManagement>
+                <repository>
+                    <id>digit-releases</id>
+                    <name>DG DIGIT Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>digit-snapshots</id>
+                    <name>DG DIGIT Snapshot Repository</name>
+                    <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+
+            <properties>
+                <scm.connection>
+                    scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git
+                </scm.connection>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -226,6 +239,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
@@ -249,10 +263,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <providerImplementations>
-                        <svn>javasvn</svn>
-                    </providerImplementations>
-                    <tagBase>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/uvms-commons</tagBase>
                     <tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
@@ -261,6 +271,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -274,6 +285,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.0.4</version>
                 <executions>
                     <execution>
                         <!-- This id must match the -Prelease-profile id value or else sources will be "uploaded" twice, which causes Nexus to fail -->
@@ -286,4 +298,9 @@
             </plugin>
         </plugins>
     </build>
+
+    <modules>
+        <module>wildfly</module>
+        <module>weblogic</module>
+    </modules>
 </project>
