@@ -49,5 +49,11 @@ public interface MessageConstants {
     String QUEUE_MODULE_ACTIVITY = "jms/queue/UVMSActivityEvent";
     String QUEUE_ACTIVITY = "jms/queue/UVMSActivity";
 
+    String QUEUE_MDR = "jms/queue/UVMSMdr";
+    String QUEUE_MDR_EVENT = "jms/queue/UVMSMdrEvent";
+
+    String QUEUE_EXCHANGE = "jms/queue/UVMSExchange";
+    String QUEUE_EXCHANGE_EVENT = "jms/queue/UVMSExchangeEvent";
+
 
 }
