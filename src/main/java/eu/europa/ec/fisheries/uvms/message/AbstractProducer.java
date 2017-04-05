@@ -32,14 +32,14 @@ public abstract class AbstractProducer implements MessageProducer {
     private Connection connection = null;
     private Session session = null;
 
-	@PostConstruct
-    protected void connectConnectionFactory() {
+    @PostConstruct
+    protected void initializeConnectionFactory() {
         LOG.debug("Open connection to JMS broker");
         InitialContext ctx;
         try {
             ctx = new InitialContext();
         } catch (Exception e) {
-            LOG.error("Failed to get InitialContext",e);
+            LOG.error("Failed to get InitialContext", e);
             throw new RuntimeException(e);
         }
         try {
@@ -52,17 +52,17 @@ public abstract class AbstractProducer implements MessageProducer {
                 LOG.debug("trying " + wfName);
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
-                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
+                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
                 throw new RuntimeException(e);
             }
         }
-		
-		destination = JMSUtils.lookupQueue(ctx, getDestinationName());
-		
+
+        destination = JMSUtils.lookupQueue(ctx, getDestinationName());
+
 
     }
-	
-	
+
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
@@ -86,15 +86,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
-            try {
-                if (connection != null) {
-                    connection.stop();
-                    connection.close();
-                }
-            } catch (JMSException e) {
-                LOG.error("[ Error when closing JMS connection ] {}", e.getStackTrace());
-                throw new MessageException("[ Error when sending message. ]", e);
-            }
+            disconnectQueue();
         }
     }
 
@@ -137,8 +129,8 @@ public abstract class AbstractProducer implements MessageProducer {
         return session;
     }
 
-	
-	protected Destination getDestination() {
-		return destination;
-	}	
+
+    protected Destination getDestination() {
+        return destination;
+    }
 }
