@@ -10,16 +10,29 @@ details. You should have received a copy of the GNU General Public License along
  */
 
 
-package eu.europa.ec.fisheries.uvms.message;
+package eu.europa.ec.fisheries.uvms.common.mapper;
 
-import javax.jms.Destination;
+import java.util.List;
 
-public interface MessageConsumer {
+public class IterableNonItatableUtil {
 
-    <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException;
-    
-    
-    <T> T getMessage(final String correlationId, final Class type) throws MessageException;
+    @FirstElement
+    public <T> T first( List<T> in ) {
+        if ( in != null && !in.isEmpty() ) {
+            return in.get( 0 );
+        }
+        else {
+            return null;
+        }
+    }
 
-    Destination getDestination();
+    @LastElement
+    public <T> T last( List<T> in ) {
+        if ( in != null && !in.isEmpty() ) {
+            return in.get( in.size() - 1 );
+        }
+        else {
+            return null;
+        }
+    }
 }

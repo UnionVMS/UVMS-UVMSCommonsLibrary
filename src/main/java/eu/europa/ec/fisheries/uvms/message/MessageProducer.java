@@ -13,9 +13,12 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.message;
 
 import javax.jms.Destination;
+import javax.jms.TextMessage;
 
 public interface MessageProducer {
 
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException;
+    public void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
+    public String getDestinationName();	
 
     }
