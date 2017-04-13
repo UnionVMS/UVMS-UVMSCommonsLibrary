@@ -19,6 +19,7 @@ public interface MessageProducer {
 
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException;
     public void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
-    public String getDestinationName();	
+    public String getDestinationName();
 
-    }
+
+}
