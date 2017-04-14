@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.message;
 /**
  * Created by sanera on 13/04/2017.
  */
+
 public class ConnectionProperties {
 
     private String providerURL;
@@ -40,5 +41,14 @@ public class ConnectionProperties {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionProperties{" +
+                "providerURL='" + providerURL + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

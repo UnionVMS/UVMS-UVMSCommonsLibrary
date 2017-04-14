@@ -64,6 +64,10 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     @Override
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
         try {
+            connectionProperties=getConnectionProperties();
+            if(connectionProperties ==null)
+                throw new ServiceException("JMS Connection properties are not initialized");
+
             openRemoteConnection();
             LOG.info(" Got connection to the Queue.");
             TextMessage MsgToSend = prepareMessage(text, session);
@@ -153,23 +157,27 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         }
     }
 
-    private void openRemoteConnection() throws ServiceException, NamingException, JMSException {
+    private void openRemoteConnection() throws NamingException, JMSException {
 
         Context context = getContext();
         LOG.debug("Initial Context created");
         connectionFactory = (HornetQConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
         LOG.debug("Connection Factory received");
-        bridgeQueue = (Queue) context.lookup(JMS_QUEUE_BRIDGE);
+        bridgeQueue = (Queue) context.lookup(getDestinationName());
         LOG.debug("Bridge queue "+JMS_QUEUE_BRIDGE +" found.");
 
         try {
-            LOG.debug("Opening connection to JMS broker");
-            connection = connectionFactory.createConnection(connectionProperties.getProviderURL(), connectionProperties.getPassword());
+            LOG.debug("Opening connection to JMS broker:"+connectionProperties);
+            connection = connectionFactory.createConnection(connectionProperties.getUsername(), connectionProperties.getPassword());
+            LOG.debug("Connection created");
             connection.start();
+            LOG.debug("Connection started");
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            LOG.debug("session created");
         } catch (JMSException e) {
             LOG.error("Error when open connection to JMS broker. Going to << RETRY >> now.", e);
-            retryConnecting();
+            throw e;
+          //  retryConnecting();
         }
 
 
@@ -192,9 +200,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         }
     }
 
-    private Context getContext() throws ServiceException, NamingException {
-        if(connectionProperties ==null)
-            throw new ServiceException("JMS Connection properties are not initialized");
+    private Context getContext() throws NamingException {
 
         LOG.debug("Get initial Context.");
         Properties contextProps = new Properties();
@@ -214,13 +220,10 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         this.textMessageProperties = textMessageProperties;
     }
 
-    public ConnectionProperties getConnectionProperties() {
-        return connectionProperties;
-    }
+    public abstract ConnectionProperties getConnectionProperties() ;
 
-    public void setConnectionProperties(ConnectionProperties connectionProperties) {
-        this.connectionProperties = connectionProperties;
-    }
+
+
 
     /**
      * BUSINESS_UUID has a prefix, a date-time combination and a serial - thus it is semi unique
