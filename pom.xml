@@ -31,7 +31,9 @@
         <hibernate.version>4.3.5.Final</hibernate.version>
         <uvms.test.version>0.0.2</uvms.test.version>
         <scm.connection>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
-
+        <commons.lang.version>2.6</commons.lang.version>
+        <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
+        <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
     </properties>
 
     <scm>
@@ -193,6 +195,24 @@
             <version>${uvms.test.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-jms-client-bom</artifactId>
+            <version>${wildfly.jms.client.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.resource</groupId>
+            <artifactId>jboss-connector-api_1.6_spec</artifactId>
+            <version>${jboss.connector.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
