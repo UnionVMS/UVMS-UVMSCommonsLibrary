@@ -89,6 +89,12 @@ public class FeatureToGeoJsonJacksonMapper {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(List.class.equals(property.getType().getBinding())) {
+                    ArrayNode arrayNode = mapper.createArrayNode();
+                    for (Object o : (ArrayList) value) {
+                        arrayNode.add(o.toString());
+                    }
+                    obj.putArray(property.getName().toString()).addAll(arrayNode);
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
