@@ -92,24 +92,26 @@ public class FeatureToGeoJsonJacksonMapper {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
-                }else if(List.class.equals(property.getType().getBinding())) {
+                }else if(List.class.equals(property.getType().getBinding())) {// If property value is of type List translate into ArrayList of String
                     ArrayNode arrayNode = mapper.createArrayNode();
                     for (Object o : (ArrayList) value) {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
-                }else if(Map.class.equals(property.getType().getBinding())) {
+                }else if(Map.class.equals(property.getType().getBinding())) { // converts property of type Map into JSON object
                     ObjectNode mapNode =obj.putObject(property.getName().toString());
                     Map valueMap = (Map)value;
                     Set<String> keySet= valueMap.keySet();
                     for (String key : keySet) {
                         mapNode.put(key, (String) valueMap.get(key));
                     }
-                  //  obj.putObject().put(property.getName().toString(),mapNode);
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
                             0D : (double)value);
+                }else if (Boolean.class.equals(property.getType().getBinding())) {
+                    obj.put(property.getName().toString(), value == null ?
+                            null : (Boolean) value);
                 }
                 else {
                     obj.put(property.getName().toString(), value == null ?
