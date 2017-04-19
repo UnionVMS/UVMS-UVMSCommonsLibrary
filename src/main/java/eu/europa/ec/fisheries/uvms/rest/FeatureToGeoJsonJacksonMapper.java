@@ -25,11 +25,14 @@ import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FeatureToGeoJsonJacksonMapper {
 
@@ -95,6 +98,14 @@ public class FeatureToGeoJsonJacksonMapper {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(Map.class.equals(property.getType().getBinding())) {
+                    ObjectNode mapNode =obj.putObject(property.getName().toString());
+                    Map valueMap = (Map)value;
+                    Set<String> keySet= valueMap.keySet();
+                    for (String key : keySet) {
+                        mapNode.put(key, (String) valueMap.get(key));
+                    }
+                  //  obj.putObject().put(property.getName().toString(),mapNode);
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
