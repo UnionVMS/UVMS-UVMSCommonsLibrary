@@ -11,6 +11,8 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import eu.europa.ec.fisheries.uvms.serializer.DateUiFormatSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -32,10 +34,12 @@ public class DateRange implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = START_DATE)
+    @JsonSerialize(using = DateUiFormatSerializer.class)
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = END_DATE)
+    @JsonSerialize(using = DateUiFormatSerializer.class)
     private Date endDate;
 
     public DateRange() {
