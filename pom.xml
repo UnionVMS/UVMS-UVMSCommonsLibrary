@@ -73,26 +73,6 @@
                 <release.branch.name>uvms-3.0.1-C3PO</release.branch.name>
             </properties>
         </profile>
-
-		<profile>
-			<id>dg-mare</id>
-			<distributionManagement>
-				<repository>
-					<id>digit-releases</id>
-					<name>DG DIGIT Repository</name>
-					<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare/</url>
-				</repository>
-				<snapshotRepository>
-					<id>digit-snapshots</id>
-					<name>DG DIGIT Snapshot Repository</name>
-					<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/mare-snapshots/</url>
-				</snapshotRepository>
-			</distributionManagement>
-
-			<properties>
-				<scm.connection>scm:git:https://emserveje@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uvms-uvmscommonslibrary.git</scm.connection>
-			<release.branch.name>uvms-3.0.1-C3PO</release.branch.name></properties>
-		</profile>
     </profiles>
 
     <dependencies>
@@ -255,6 +235,14 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>${mapstruct.version}</version>
 		</dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hornetq/hornetq-jms-client -->
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-jms-client</artifactId>
+            <version>2.4.7.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>
