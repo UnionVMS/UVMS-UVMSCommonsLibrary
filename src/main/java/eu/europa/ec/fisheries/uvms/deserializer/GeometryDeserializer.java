@@ -17,12 +17,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
+import eu.europa.ec.fisheries.uvms.common.utils.GeometryUtils;
 import eu.europa.ec.fisheries.uvms.mapper.GeometryMapper;
 import eu.europa.ec.fisheries.uvms.model.GeometryWrapper;
 
 import java.io.IOException;
-
-import static eu.europa.ec.fisheries.uvms.CommonConstants.DEFAULT_SRID;
 
 public class GeometryDeserializer extends JsonDeserializer<Geometry> {
 
@@ -38,7 +37,7 @@ public class GeometryDeserializer extends JsonDeserializer<Geometry> {
             geom = wrapper.getValue();
 
             if (geom.getSRID() == 0) {
-                geom.setSRID(DEFAULT_SRID);
+                geom.setSRID(GeometryUtils.DEFAULT_EPSG_SRID);
             }
 
         } catch (ParseException e) {

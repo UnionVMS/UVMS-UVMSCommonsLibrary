@@ -1,14 +1,15 @@
 /*
-﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
-© European Union, 2015-2016.
+Developed by the European Commission - Directorate General for Maritime Affairs and Fisheries @ European Union, 2015-2016.
 
-This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
-redistribute it and/or modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
-the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
-copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of
+the License, or any later version. The IFDM Suite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+
  */
+
+
 package eu.europa.ec.fisheries.uvms.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,15 +22,17 @@ import eu.europa.ec.fisheries.uvms.model.StringWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FeatureToGeoJsonJacksonMapper {
 
@@ -89,10 +92,26 @@ public class FeatureToGeoJsonJacksonMapper {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(List.class.equals(property.getType().getBinding())) {// If property value is of type List translate into ArrayList of String
+                    ArrayNode arrayNode = mapper.createArrayNode();
+                    for (Object o : (ArrayList) value) {
+                        arrayNode.add(o.toString());
+                    }
+                    obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(Map.class.equals(property.getType().getBinding())) { // converts property of type Map into JSON object
+                    ObjectNode mapNode =obj.putObject(property.getName().toString());
+                    Map valueMap = (Map)value;
+                    Set<String> keySet= valueMap.keySet();
+                    for (String key : keySet) {
+                        mapNode.put(key, (String) valueMap.get(key));
+                    }
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
                             0D : (double)value);
+                }else if (Boolean.class.equals(property.getType().getBinding())) {
+                    obj.put(property.getName().toString(), value == null ?
+                            null : (Boolean) value);
                 }
                 else {
                     obj.put(property.getName().toString(), value == null ?

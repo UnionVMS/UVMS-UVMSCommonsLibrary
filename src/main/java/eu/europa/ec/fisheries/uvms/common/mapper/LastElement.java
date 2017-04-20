@@ -10,16 +10,17 @@ details. You should have received a copy of the GNU General Public License along
  */
 
 
-package eu.europa.ec.fisheries.uvms.message;
+package eu.europa.ec.fisheries.uvms.common.mapper;
 
-import javax.jms.Destination;
-import javax.jms.TextMessage;
+import org.mapstruct.Qualifier;
 
-public interface MessageProducer {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public String sendModuleMessage(String text, Destination replyTo) throws MessageException;
-    public void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
-    public String getDestinationName();
-
-
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface LastElement {
 }
