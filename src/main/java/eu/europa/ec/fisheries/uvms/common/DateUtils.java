@@ -9,6 +9,8 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package eu.europa.ec.fisheries.uvms.common;
 
 import org.joda.time.DateTime;
@@ -32,8 +34,8 @@ public class DateUtils {
     static final public DateTime START_OF_TIME = new DateTime( 0000, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-    final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+    public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+    public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
@@ -132,4 +134,5 @@ public class DateUtils {
             throw new IllegalArgumentException(e);
         }
     }
+
 }

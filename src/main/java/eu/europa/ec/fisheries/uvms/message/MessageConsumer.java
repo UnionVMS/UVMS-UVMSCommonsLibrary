@@ -9,6 +9,8 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package eu.europa.ec.fisheries.uvms.message;
 
 import javax.jms.Destination;
@@ -21,4 +23,6 @@ public interface MessageConsumer {
     <T> T getMessage(final String correlationId, final Class type) throws MessageException;
 
     Destination getDestination();
+
+    String getDestinationName();
 }

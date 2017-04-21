@@ -14,9 +14,7 @@
 package eu.europa.ec.fisheries.uvms.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**

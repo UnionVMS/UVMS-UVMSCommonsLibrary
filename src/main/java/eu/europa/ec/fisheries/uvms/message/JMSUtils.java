@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
  © European Union, 2015-2016.
 
@@ -10,11 +11,12 @@
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 package eu.europa.ec.fisheries.uvms.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -22,26 +24,40 @@ import javax.naming.NamingException;
 /**
  * Created by osdjup on 2016-12-02.
  */
+
 public class JMSUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
 
-    public static ConnectionFactory lookupConnectionFactory(InitialContext ctx, String connectionFactory) {
+
+    public static ConnectionFactory lookupConnectionFactory() {
+        ConnectionFactory connectionFactory = null;
+        LOG.debug("Open connection to JMS broker");
+        InitialContext ctx;
         try {
-            return (QueueConnectionFactory) ctx.lookup(connectionFactory);
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        try {
+            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (NamingException ne) {
             //if we did not find the connection factory we might need to add java:/ at the start
-            LOG.debug("Connection Factory lookup failed for " + connectionFactory);
-            String wfName = "java:/" + connectionFactory;
+            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
                 LOG.debug("trying " + wfName);
-                return (QueueConnectionFactory) ctx.lookup(wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
-                LOG.error("Connection Factory lookup failed for both " + connectionFactory  + " and " + wfName);
+                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
                 throw new RuntimeException(e);
             }
         }
+
+        return connectionFactory;
     }
+
 
     public static Queue lookupQueue(InitialContext ctx, String queue) {
         try {
@@ -49,7 +65,7 @@ public class JMSUtils {
         } catch (NamingException e) {
             //if we did not find the queue we might need to add java:/ at the start
             LOG.debug("Queue lookup failed for " + queue);
-            String wfQueueName = "java:/" + queue;
+            String wfQueueName = "java:/"+ queue;
             try {
                 LOG.debug("trying " + wfQueueName);
                 return (Queue)ctx.lookup(wfQueueName);
@@ -59,6 +75,7 @@ public class JMSUtils {
             }
         }
     }
+
 
     public static Topic lookupTopic(InitialContext ctx, String topic) {
         try {
@@ -76,4 +93,5 @@ public class JMSUtils {
             }
         }
     }
+	
 }

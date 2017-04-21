@@ -29,16 +29,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class BaseEntity implements Serializable {
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
-
     protected BaseEntity(){
-        this.id = null;
     }
 
     public Long getId() {
-        return id;
+        return null;
     }
 
     public List<Field> listMembers(){
