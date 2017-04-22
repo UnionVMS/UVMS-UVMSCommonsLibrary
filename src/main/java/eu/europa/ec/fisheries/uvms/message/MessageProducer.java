@@ -10,7 +10,6 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more d
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package eu.europa.ec.fisheries.uvms.message;
 
 import javax.jms.Destination;
@@ -18,9 +17,10 @@ import javax.jms.TextMessage;
 
 public interface MessageProducer {
 
-    public String sendModuleMessage(String text, Destination replyTo) throws MessageException;
-    public void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
-    public String getDestinationName();
+    String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
+    void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
+
+    String getDestinationName();
 
 }

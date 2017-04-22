@@ -10,22 +10,25 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more d
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package eu.europa.ec.fisheries.uvms.message;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-public abstract class AbstractProducer implements MessageProducer {
+import lombok.extern.slf4j.Slf4j;
 
-    protected final static Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
+@Slf4j
+public abstract class AbstractProducer implements MessageProducer {
 
     private ConnectionFactory connectionFactory;
     private Destination destination;
@@ -35,25 +38,25 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @PostConstruct
     protected void initializeConnectionFactory() {
-        LOG.debug("Open connection to JMS broker");
+        log.debug("Open connection to JMS broker");
         InitialContext ctx;
         try {
             ctx = new InitialContext();
         } catch (Exception e) {
-            LOG.error("Failed to get InitialContext", e);
+            log.error("Failed to get InitialContext", e);
             throw new RuntimeException(e);
         }
         try {
             connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (NamingException ne) {
             //if we did not find the connection factory we might need to add java:/ at the start
-            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
             String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
-                LOG.debug("trying " + wfName);
+                log.debug("trying " + wfName);
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
-                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
+                log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
                 throw new RuntimeException(e);
             }
         }
@@ -71,7 +74,9 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connectToQueue();
 
-            LOG.debug("Sending message:[{}], with replyTo: [{}]", text, replyTo);
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
@@ -80,11 +85,11 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            LOG.debug("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
+            log.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             disconnectQueue();
@@ -95,14 +100,14 @@ public abstract class AbstractProducer implements MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(TextMessage message, String text, String moduleName) {
         try {
-            LOG.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
+            log.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
                     message.getJMSReplyTo());
             connectToQueue();
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             session.createProducer(message.getJMSReplyTo()).send(response);
         } catch (JMSException e) {
-            LOG.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+            log.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
         } finally {
             disconnectQueue();
         }
@@ -112,7 +117,7 @@ public abstract class AbstractProducer implements MessageProducer {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        LOG.debug("Connecting to queue: {}", getDestination());
+        log.debug("Connecting to {}", getDestination());
     }
 
     protected void disconnectQueue() {
@@ -122,7 +127,7 @@ public abstract class AbstractProducer implements MessageProducer {
                 connection.close();
             }
         } catch (JMSException e) {
-            LOG.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
+            log.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
         }
     }
 
