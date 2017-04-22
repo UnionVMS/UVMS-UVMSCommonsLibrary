@@ -9,38 +9,30 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.interceptors;
 
-import com.google.common.base.Stopwatch;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ObjectUtils;
+package eu.europa.ec.fisheries.uvms.interceptors;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+import java.util.Arrays;
+
+import com.google.common.base.Stopwatch;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TracingInterceptor {
 
     @AroundInvoke
-    public Object logCall(InvocationContext context) throws Exception {
+    public Object logTraceAndPerformance(InvocationContext context) throws Exception {
 
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {
-
-            Object[] parameters = context.getParameters();
-            String params = "";
-            for (Object parameter : parameters) {
-               params += " " + String.valueOf(parameter);
-            }
-
-            log.debug(String.format("invocation of method %s with parameters %s", context.getMethod(), params));
-
+            log.info("START {} {}", context.getMethod().getName(), Arrays.toString(context.getParameters()));
             return context.proceed();
-
         }
         finally{
-            log.info(String.format("Elapsed time ==> " + stopwatch));
+            log.info("STOP Elapsed time ==> {}", stopwatch);
         }
     }
 }
