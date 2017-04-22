@@ -38,7 +38,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
     @PostConstruct
     private void connectConnectionFactory() {
-        log.debug("Open connection to JMS broker");
+        log.trace("Open connection to JMS broker");
         InitialContext ctx;
         try {
             ctx = new InitialContext();
@@ -50,10 +50,10 @@ public abstract class AbstractConsumer implements MessageConsumer {
             connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (NamingException ne) {
             //if we did not find the connection factory we might need to add java:/ at the start
-            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            log.trace("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
             String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
-                log.debug("trying " + wfName);
+                log.trace("trying " + wfName);
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
                 log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
@@ -83,7 +83,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
             if (recievedMessage == null) {
                 throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
             } else {
-                log.debug("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage) recievedMessage).getText());
+                log.trace("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage) recievedMessage).getText());
             }
 
             return recievedMessage;
@@ -114,7 +114,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
         connection = getConnectionFactory().createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        log.debug("Connected to {}", getDestination());
+        log.trace("Connected to {}", getDestination());
     }
 
     protected ConnectionFactory getConnectionFactory() {
