@@ -13,6 +13,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.rest;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -27,17 +35,12 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+/**
+ * @deprecated use {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#featureCollectionToGeoJson} or
+ * {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#simpleFeatureToGeoJson} instead.
+ */
+@Deprecated
 public class FeatureToGeoJsonJacksonMapper {
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     private static final String TYPE = "type";
     private static final String FEATURE_COLLECTION = "FeatureCollection";
@@ -45,6 +48,7 @@ public class FeatureToGeoJsonJacksonMapper {
     private static final String FEATURE = "Feature";
     private static final String GEOMETRY = "geometry";
     private static final String PROPERTIES = "properties";
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public ObjectNode convert(FeatureCollection featureCollection) throws IOException {
         return buildFeatureCollection(featureCollection);
