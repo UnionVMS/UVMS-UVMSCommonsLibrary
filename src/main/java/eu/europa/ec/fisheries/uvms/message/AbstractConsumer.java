@@ -38,7 +38,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
     @PostConstruct
     private void connectConnectionFactory() {
-        log.trace("Open connection to JMS broker");
+        log.debug("Open connection to JMS broker");
         InitialContext ctx;
         try {
             ctx = new InitialContext();
@@ -50,10 +50,10 @@ public abstract class AbstractConsumer implements MessageConsumer {
             connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (NamingException ne) {
             //if we did not find the connection factory we might need to add java:/ at the start
-            log.trace("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
             String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
-                log.trace("trying " + wfName);
+                log.debug("trying " + wfName);
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
                 log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
@@ -78,15 +78,16 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
             connectToQueue();
 
-            T recievedMessage = (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(timeoutInMillis);
+            T receivedMessage = (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(timeoutInMillis);
 
-            if (recievedMessage == null) {
-                throw new MessageException("Message either null or timeout occured. Timeout was set to: " + timeoutInMillis);
+            if (receivedMessage == null) {
+                throw new MessageException("Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
             } else {
-                log.trace("JMS message received: {} \n Content: {}", recievedMessage, ((TextMessage) recievedMessage).getText());
+                log.debug("JMS message received");
+                log.trace("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
             }
 
-            return recievedMessage;
+            return receivedMessage;
 
         } catch (Exception e) {
             log.error("[ Error when retrieving message. ] {}", e.getMessage());

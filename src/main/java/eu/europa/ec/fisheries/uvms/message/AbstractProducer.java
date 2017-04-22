@@ -38,7 +38,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @PostConstruct
     protected void initializeConnectionFactory() {
-        log.trace("Open connection to JMS broker");
+        log.debug("Open connection to JMS broker");
         InitialContext ctx;
         try {
             ctx = new InitialContext();
@@ -50,10 +50,10 @@ public abstract class AbstractProducer implements MessageProducer {
             connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (NamingException ne) {
             //if we did not find the connection factory we might need to add java:/ at the start
-            log.trace("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
             String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
-                log.trace("trying " + wfName);
+                log.debug("trying " + wfName);
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (Exception e) {
                 log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
@@ -74,7 +74,9 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connectToQueue();
 
-            log.trace("Sending message:[{}], with replyTo: [{}]", text, replyTo);
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
@@ -83,7 +85,7 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            log.trace("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
+            log.debug("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
@@ -98,7 +100,7 @@ public abstract class AbstractProducer implements MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(TextMessage message, String text, String moduleName) {
         try {
-            log.trace("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
+            log.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
                     message.getJMSReplyTo());
             connectToQueue();
             TextMessage response = session.createTextMessage(text);
@@ -115,7 +117,7 @@ public abstract class AbstractProducer implements MessageProducer {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        log.trace("Connecting to queue: {}", getDestination());
+        log.debug("Connecting to queue: {}", getDestination());
     }
 
     protected void disconnectQueue() {
