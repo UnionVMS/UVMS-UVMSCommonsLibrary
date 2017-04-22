@@ -85,7 +85,7 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            log.debug("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
@@ -117,7 +117,7 @@ public abstract class AbstractProducer implements MessageProducer {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        log.debug("Connecting to queue: {}", getDestination());
+        log.debug("Connecting to {}", getDestination());
     }
 
     protected void disconnectQueue() {

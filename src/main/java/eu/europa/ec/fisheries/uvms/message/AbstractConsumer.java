@@ -71,7 +71,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
     @SuppressWarnings(value = "unchecked")
     public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
         try {
-            log.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
+            log.trace("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new MessageException("No CorrelationID provided!");
             }
@@ -83,7 +83,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
             if (receivedMessage == null) {
                 throw new MessageException("Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
             } else {
-                log.debug("JMS message received");
+                log.debug("Message with {} has been successfully received.", correlationId);
                 log.trace("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
             }
 
