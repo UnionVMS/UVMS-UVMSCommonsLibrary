@@ -9,16 +9,20 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package eu.europa.ec.fisheries.uvms.domain;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import eu.europa.ec.fisheries.uvms.serializer.DateUiFormatSerializer;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.io.Serializable;
+import java.util.Date;
 
 @Embeddable
 @EqualsAndHashCode
@@ -31,10 +35,12 @@ public class DateRange implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = START_DATE)
+    @JsonSerialize(using = DateUiFormatSerializer.class)
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = END_DATE)
+    @JsonSerialize(using = DateUiFormatSerializer.class)
     private Date endDate;
 
     public DateRange() {

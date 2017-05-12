@@ -9,13 +9,14 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package eu.europa.ec.fisheries.uvms.rest.resource;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
+import eu.europa.ec.fisheries.uvms.rest.dto.PaginatedResponse;
 import eu.europa.ec.fisheries.uvms.rest.dto.ResponseDto;
 
 
@@ -32,6 +33,13 @@ public abstract class UnionVMSResource {
 		Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
 		return response;
 	}
+
+    public <T> Response createSuccessPaginatedResponse(List<T> data, int totalItemsCount) {
+        PaginatedResponse<T> dto = new PaginatedResponse<T>();
+        dto.setResultList(data).setTotalItemsCount(totalItemsCount).setCode(HttpServletResponse.SC_OK);
+        Response response = Response.status(HttpServletResponse.SC_OK).entity(dto).build();
+        return response;
+    }
 	
 	public Response createErrorResponse() {
 		ResponseDto dto = new ResponseDto(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

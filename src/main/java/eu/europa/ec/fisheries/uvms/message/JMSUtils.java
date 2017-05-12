@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
  © European Union, 2015-2016.
 
@@ -10,21 +11,53 @@
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 package eu.europa.ec.fisheries.uvms.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jms.Queue;
+import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
  * Created by osdjup on 2016-12-02.
  */
+
 public class JMSUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
+
+
+    public static ConnectionFactory lookupConnectionFactory() {
+        ConnectionFactory connectionFactory = null;
+        LOG.debug("Open connection to JMS broker");
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        try {
+            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
+        } catch (NamingException ne) {
+            //if we did not find the connection factory we might need to add java:/ at the start
+            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
+            try {
+                LOG.debug("trying " + wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
+            } catch (Exception e) {
+                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
+                throw new RuntimeException(e);
+            }
+        }
+
+        return connectionFactory;
+    }
+
 
     public static Queue lookupQueue(InitialContext ctx, String queue) {
         try {
@@ -42,4 +75,23 @@ public class JMSUtils {
             }
         }
     }
+
+
+    public static Topic lookupTopic(InitialContext ctx, String topic) {
+        try {
+            return (Topic) ctx.lookup(topic);
+        } catch (NamingException e) {
+            //if we did not find the queue we might need to add java:/ at the start
+            LOG.debug("Queue lookup failed for " + topic);
+            String wfTopicName = "java:/" + topic;
+            try {
+                LOG.debug("trying " + wfTopicName);
+                return (Topic)ctx.lookup(wfTopicName);
+            } catch (Exception e2) {
+                LOG.error("Topic lookup failed for both " + topic + " and " + wfTopicName);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+	
 }

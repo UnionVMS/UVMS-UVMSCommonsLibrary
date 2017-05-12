@@ -9,30 +9,63 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package eu.europa.ec.fisheries.uvms.message;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class AbstractProducer implements MessageProducer {
 
-    protected final static Logger LOG = LoggerFactory.getLogger(AbstractProducer.class);
-
-    @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
+    private Destination destination;
 
     private Connection connection = null;
     private Session session = null;
+
+    @PostConstruct
+    protected void initializeConnectionFactory() {
+        log.debug("Open connection to JMS broker");
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            log.error("Failed to get InitialContext", e);
+            throw new RuntimeException(e);
+        }
+        try {
+            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
+        } catch (NamingException ne) {
+            //if we did not find the connection factory we might need to add java:/ at the start
+            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
+            try {
+                log.debug("trying " + wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
+            } catch (Exception e) {
+                log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
+                throw new RuntimeException(e);
+            }
+        }
+
+        destination = JMSUtils.lookupQueue(ctx, getDestinationName());
+
+
+    }
+
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -41,7 +74,9 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connectToQueue();
 
-            //LOG.debug("Sending message:[{}], with replyTo: [{}]", text, replyTo);
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
@@ -50,31 +85,58 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            //LOG.debug("Message with ID: {} has been successfully sent.", message.getJMSMessageID());
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
         } catch (JMSException e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
+            log.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
-            try {
-                if (connection != null) {
-                    connection.stop();
-                    connection.close();
-                }
-            } catch (JMSException e) {
-                LOG.error("[ Error when closing JMS connection ] {}", e.getStackTrace());
-                throw new MessageException("[ Error when sending message. ]", e);
-            }
+            disconnectQueue();
         }
     }
 
-    private void connectToQueue() throws JMSException {
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendModuleResponseMessage(TextMessage message, String text, String moduleName) {
+        try {
+            log.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
+                    message.getJMSReplyTo());
+            connectToQueue();
+            TextMessage response = session.createTextMessage(text);
+            response.setJMSCorrelationID(message.getJMSMessageID());
+            session.createProducer(message.getJMSReplyTo()).send(response);
+        } catch (JMSException e) {
+            log.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+        } finally {
+            disconnectQueue();
+        }
+    }
+
+    protected void connectToQueue() throws JMSException {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
-        LOG.debug("Connecting to queue: {}", getDestination());
+        log.debug("Connecting to {}", getDestination());
     }
 
-    protected abstract Destination getDestination();
+    protected void disconnectQueue() {
+        try {
+            if (connection != null) {
+                connection.stop();
+                connection.close();
+            }
+        } catch (JMSException e) {
+            log.error("[ Error when stopping or closing JMS queue. ] {} {}", e.getMessage(), e.getStackTrace());
+        }
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+
+    protected Destination getDestination() {
+        return destination;
+    }
 }

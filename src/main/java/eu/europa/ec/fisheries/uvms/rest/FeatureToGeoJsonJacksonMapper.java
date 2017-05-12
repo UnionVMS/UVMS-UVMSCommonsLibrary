@@ -9,29 +9,38 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package eu.europa.ec.fisheries.uvms.rest;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vividsolutions.jts.geom.Geometry;
+import eu.europa.ec.fisheries.uvms.mapper.GeometryMapper;
+import eu.europa.ec.fisheries.uvms.model.StringWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
+/**
+ * @deprecated use {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#featureCollectionToGeoJson} or
+ * {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#simpleFeatureToGeoJson} instead.
+ */
+@Deprecated
 public class FeatureToGeoJsonJacksonMapper {
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     private static final String TYPE = "type";
     private static final String FEATURE_COLLECTION = "FeatureCollection";
@@ -39,6 +48,7 @@ public class FeatureToGeoJsonJacksonMapper {
     private static final String FEATURE = "Feature";
     private static final String GEOMETRY = "geometry";
     private static final String PROPERTIES = "properties";
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public ObjectNode convert(FeatureCollection featureCollection) throws IOException {
         return buildFeatureCollection(featureCollection);
@@ -87,10 +97,26 @@ public class FeatureToGeoJsonJacksonMapper {
                         arrayNode.add(o.toString());
                     }
                     obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(List.class.equals(property.getType().getBinding())) {// If property value is of type List translate into ArrayList of String
+                    ArrayNode arrayNode = mapper.createArrayNode();
+                    for (Object o : (ArrayList) value) {
+                        arrayNode.add(o.toString());
+                    }
+                    obj.putArray(property.getName().toString()).addAll(arrayNode);
+                }else if(Map.class.equals(property.getType().getBinding())) { // converts property of type Map into JSON object
+                    ObjectNode mapNode =obj.putObject(property.getName().toString());
+                    Map valueMap = (Map)value;
+                    Set<String> keySet= valueMap.keySet();
+                    for (String key : keySet) {
+                        mapNode.put(key, (String) valueMap.get(key));
+                    }
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
                             0D : (double)value);
+                }else if (Boolean.class.equals(property.getType().getBinding())) {
+                    obj.put(property.getName().toString(), value == null ?
+                            null : (Boolean) value);
                 }
                 else {
                     obj.put(property.getName().toString(), value == null ?
@@ -103,6 +129,11 @@ public class FeatureToGeoJsonJacksonMapper {
 
     @SuppressWarnings("unchecked")
     private JsonNode buildGeometry(Geometry geometry) throws IOException {
-        return mapper.readTree(new GeometryJSON().toString(geometry));
+        JsonNode jsonNode = null;
+        StringWrapper stringWrapper = GeometryMapper.INSTANCE.geometryToJson(geometry);
+        if (stringWrapper != null){
+            jsonNode = mapper.readTree(stringWrapper.getValue());
+        }
+        return jsonNode;
     }
 }
