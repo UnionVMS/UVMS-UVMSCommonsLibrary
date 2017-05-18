@@ -76,6 +76,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
         try {
             connectionProperties=getConnectionProperties();
+            textMessageProperties = getTextMessageProperties();
             if(connectionProperties ==null)
                 throw new ServiceException("JMS Connection properties are not initialized");
 
