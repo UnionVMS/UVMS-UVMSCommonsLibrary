@@ -52,6 +52,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     public static final String BUSINESS_UUID    = "BUSINESS_UUID";
     public static final String FLUX_ENV_TODT    = "TODT";
     public static final String FLUX_ENV_AR = "AR";
+    public static final String FLUX_ENV_FR = "FR";
     public static final String CONNECTOR_ID_VAL = "JMS MDM Business AP1";
 
 
@@ -67,7 +68,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     @PostConstruct
     private void initializeProperties(){
         LOG.debug("initialize Properties for Abstract Remote Producer");
-        textMessageProperties = new TextMessageProperties(FLUX_ENV_AD_VAL,FLUX_ENV_DF_VAL,FLUX_ENV_AR_VAL,createBusinessUUID(),createStringDate());
+        textMessageProperties = new TextMessageProperties(FLUX_ENV_AD_VAL,FLUX_ENV_DF_VAL,FLUX_ENV_AR_VAL,FLUX_ENV_FR,createBusinessUUID(),createStringDate());
     }
 
 
@@ -123,6 +124,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         if(textMessageProperties ==null)
             throw new ServiceException(" JMS TextMessage properties are not initialized");
 
+        LOG.debug("Properties set on JMS message:"+textMessageProperties);
         TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
         fluxMsg.setStringProperty(CONNECTOR_ID, CONNECTOR_ID_VAL);
@@ -131,6 +133,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         fluxMsg.setStringProperty(BUSINESS_UUID, textMessageProperties.getBusinessUUId());
         fluxMsg.setStringProperty(FLUX_ENV_TODT, textMessageProperties.getCreationDate());
         fluxMsg.setStringProperty(FLUX_ENV_AR, textMessageProperties.getArVal());
+        fluxMsg.setStringProperty(FLUX_ENV_FR, textMessageProperties.getFrVal());
         printMessageProperties(fluxMsg);
         return fluxMsg;
     }
@@ -238,11 +241,11 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
      *
      * @return randomUUID
      */
-    private String createBusinessUUID() {
+    protected String createBusinessUUID() {
         return UUID.randomUUID().toString();
     }
 
-    private String createStringDate() {
+    protected String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
         gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
         XMLGregorianCalendar xgcal = null;
