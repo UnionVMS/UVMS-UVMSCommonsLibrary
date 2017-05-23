@@ -25,8 +25,8 @@
         
         <!-- Maven default properties -->
         <project.scm.id>github</project.scm.id>
-        <scm.connection>scm:git:scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
-        <scm.url>scm:git:scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
+        <scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
+        <scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
     	    	
         <sl4j.version>1.7.12</sl4j.version>
         <logback.version>1.1.2</logback.version>
