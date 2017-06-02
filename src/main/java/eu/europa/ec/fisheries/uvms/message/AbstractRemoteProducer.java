@@ -54,6 +54,12 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     public static final String FLUX_ENV_AR = "AR";
     public static final String FLUX_ENV_FR = "FR";
     public static final String CONNECTOR_ID_VAL = "JMS MDM Business AP1";
+    public static final String FLUX_ENV_TO = "TO";
+    public static final String FLUX_ENV_CT = "CT";
+    public static final String FLUX_ENV_VB = "VB";
+    public static final String FLUX_ENV_TO_VAL = "60";
+    public static final String FLUX_ENV_CT_VAL = "admin@dgmare.com";
+    public static final String FLUX_ENV_VB_VAL = "ERROR";
 
 
 
@@ -124,7 +130,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         if(textMessageProperties ==null)
             throw new ServiceException(" JMS TextMessage properties are not initialized");
 
-        LOG.debug("Properties set on JMS message:"+textMessageProperties);
+        LOG.debug("Properties set on JMS message:" + textMessageProperties);
         TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
         fluxMsg.setStringProperty(CONNECTOR_ID, CONNECTOR_ID_VAL);
@@ -134,6 +140,9 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         fluxMsg.setStringProperty(FLUX_ENV_TODT, textMessageProperties.getCreationDate());
         fluxMsg.setStringProperty(FLUX_ENV_AR, textMessageProperties.getArVal());
         fluxMsg.setStringProperty(FLUX_ENV_FR, textMessageProperties.getFrVal());
+        fluxMsg.setStringProperty(FLUX_ENV_TO, textMessageProperties.getToVal());
+        fluxMsg.setStringProperty(FLUX_ENV_CT, textMessageProperties.getCtVal());
+        fluxMsg.setStringProperty(FLUX_ENV_VB, textMessageProperties.getVbVal());
         printMessageProperties(fluxMsg);
         return fluxMsg;
     }

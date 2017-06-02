@@ -21,6 +21,9 @@ public class TextMessageProperties {
     private String frVal;
     private String businessUUId;
     private String creationDate;
+    private String vbVal;
+    private String ctVal;
+    private String toVal;
 
     public TextMessageProperties(){
 
@@ -93,5 +96,29 @@ public class TextMessageProperties {
                 ", businessUUId='" + businessUUId + '\'' +
                 ", creationDate='" + creationDate + '\'' +
                 '}';
+    }
+
+    public String getVbVal() {
+        return vbVal;
+    }
+
+    public void setVbVal(String vbVal) {
+        this.vbVal = vbVal;
+    }
+
+    public String getCtVal() {
+        return ctVal;
+    }
+
+    public void setCtVal(String ctVal) {
+        this.ctVal = ctVal;
+    }
+
+    public String getToVal() {
+        return toVal;
+    }
+
+    public void setToVal(String toVal) {
+        this.toVal = toVal;
     }
 }
