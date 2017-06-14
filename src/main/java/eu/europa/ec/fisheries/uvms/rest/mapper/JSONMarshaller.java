@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.rest.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.uvms.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.exception.ModelMarshallException;
 
 import java.io.IOException;

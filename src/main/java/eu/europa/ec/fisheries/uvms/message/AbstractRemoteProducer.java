@@ -30,6 +30,8 @@ import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -242,7 +244,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     }
 
     private String createStringDate() {
-        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
+        GregorianCalendar gcal = (GregorianCalendar) Calendar.getInstance();
         gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
         XMLGregorianCalendar xgcal = null;
         try {
