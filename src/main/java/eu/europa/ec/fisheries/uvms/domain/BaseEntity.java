@@ -41,7 +41,7 @@ public class BaseEntity implements Serializable {
         try {
             Field[] declaredFields = this.getClass().getDeclaredFields();
             for (Field field : declaredFields) {
-                if(!field.getName().contains("this") &&
+                if(!field.getName().contains("this") && !field.isSynthetic() &&
                         field.getModifiers() != Modifier.STATIC + Modifier.PUBLIC + Modifier.FINAL
                         && field.getModifiers() != Modifier.STATIC + Modifier.PRIVATE + Modifier.FINAL) {
                     fields.add(field);
