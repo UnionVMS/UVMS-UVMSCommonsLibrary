@@ -17,9 +17,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -41,7 +38,7 @@ public class BaseEntity implements Serializable {
         try {
             Field[] declaredFields = this.getClass().getDeclaredFields();
             for (Field field : declaredFields) {
-                if(!field.getName().contains("this") &&
+                if(!field.getName().contains("this") && !field.isSynthetic() &&
                         field.getModifiers() != Modifier.STATIC + Modifier.PUBLIC + Modifier.FINAL
                         && field.getModifiers() != Modifier.STATIC + Modifier.PRIVATE + Modifier.FINAL) {
                     fields.add(field);

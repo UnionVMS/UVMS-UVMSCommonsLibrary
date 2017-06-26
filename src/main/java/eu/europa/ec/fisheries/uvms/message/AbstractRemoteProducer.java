@@ -12,12 +12,12 @@
 package eu.europa.ec.fisheries.uvms.message;
 
 import eu.europa.ec.fisheries.uvms.exception.ServiceException;
-import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -30,6 +30,8 @@ import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -69,7 +71,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     private Connection connection;
     private Session session = null;
 
-    private HornetQConnectionFactory connectionFactory = null;
+    private ConnectionFactory connectionFactory = null;
 
     @PostConstruct
     private void initializeProperties(){
@@ -185,7 +187,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
 
         Context context = getContext();
         LOG.debug("Initial Context created");
-        connectionFactory = (HornetQConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
+        connectionFactory = (ConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
         LOG.debug("Connection Factory received");
         bridgeQueue = (Queue) context.lookup(getDestinationName());
         LOG.debug("Bridge queue "+JMS_QUEUE_BRIDGE +" found.");
@@ -254,8 +256,8 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         return UUID.randomUUID().toString();
     }
 
-    protected String createStringDate() {
-        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
+    private String createStringDate() {
+        GregorianCalendar gcal = (GregorianCalendar) Calendar.getInstance();
         gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
         XMLGregorianCalendar xgcal = null;
         try {

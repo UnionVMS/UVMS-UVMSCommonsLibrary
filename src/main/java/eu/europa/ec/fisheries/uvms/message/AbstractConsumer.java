@@ -126,7 +126,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
         return MILLISECONDS;
     }
 
-    public Destination getDestination() {
+    @Override
+	public Destination getDestination() {
         return destination;
     }
 }
