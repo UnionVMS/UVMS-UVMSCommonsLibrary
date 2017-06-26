@@ -256,7 +256,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         return UUID.randomUUID().toString();
     }
 
-    private String createStringDate() {
+    protected String createStringDate() {
         GregorianCalendar gcal = (GregorianCalendar) Calendar.getInstance();
         gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
         XMLGregorianCalendar xgcal = null;
