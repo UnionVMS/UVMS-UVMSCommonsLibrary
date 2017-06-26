@@ -18,17 +18,22 @@ public class TextMessageProperties {
     private String adVal;
     private String dfVal;
     private String arVal;
+    private String frVal;
     private String businessUUId;
     private String creationDate;
+    private String vbVal;
+    private String ctVal;
+    private String toVal;
 
     public TextMessageProperties(){
 
     }
 
-    public TextMessageProperties(String adVal, String dfVal, String arVal, String businessUUId, String creationDate) {
+    public TextMessageProperties(String adVal, String dfVal, String arVal, String frVal,String businessUUId, String creationDate) {
         this.adVal = adVal;
         this.dfVal = dfVal;
         this.arVal = arVal;
+        this.frVal= frVal;
         this.businessUUId = businessUUId;
         this.creationDate = creationDate;
     }
@@ -71,5 +76,49 @@ public class TextMessageProperties {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getFrVal() {
+        return frVal;
+    }
+
+    public void setFrVal(String frVal) {
+        this.frVal = frVal;
+    }
+
+    @Override
+    public String toString() {
+        return "TextMessageProperties{" +
+                "adVal='" + adVal + '\'' +
+                ", dfVal='" + dfVal + '\'' +
+                ", arVal='" + arVal + '\'' +
+                ", frVal='" + frVal + '\'' +
+                ", businessUUId='" + businessUUId + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                '}';
+    }
+
+    public String getVbVal() {
+        return vbVal;
+    }
+
+    public void setVbVal(String vbVal) {
+        this.vbVal = vbVal;
+    }
+
+    public String getCtVal() {
+        return ctVal;
+    }
+
+    public void setCtVal(String ctVal) {
+        this.ctVal = ctVal;
+    }
+
+    public String getToVal() {
+        return toVal;
+    }
+
+    public void setToVal(String toVal) {
+        this.toVal = toVal;
     }
 }

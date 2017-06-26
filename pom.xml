@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>fish.focus.maven</groupId>
 	    <artifactId>focus-pom</artifactId>
@@ -43,6 +43,11 @@
         <uvms.test.version>0.0.4</uvms.test.version>
 		<commons.collections>3.2.2</commons.collections>
 		<mapstruct.version>1.0.0.Final</mapstruct.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
+        <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
+
+        <scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
     </properties>
 
     <repositories>
@@ -76,6 +81,23 @@
    </scm>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-jms-client-bom</artifactId>
+            <version>${wildfly.jms.client.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.resource</groupId>
+            <artifactId>jboss-connector-api_1.6_spec</artifactId>
+            <version>${jboss.connector.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
