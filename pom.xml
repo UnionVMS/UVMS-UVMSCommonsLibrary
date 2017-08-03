@@ -12,7 +12,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.0.22-SNAPSHOT</version>
+    <version>2.0.22</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -77,7 +77,7 @@
 
     <scm>
         <connection>${scm.connection}</connection>
-       <tag>HEAD</tag>
+       <tag>uvms-commons-2.0.22</tag>
    </scm>
 
     <dependencies>
