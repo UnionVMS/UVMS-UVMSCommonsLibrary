@@ -22,8 +22,6 @@ import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,32 +36,8 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @PostConstruct
     protected void initializeConnectionFactory() {
-        log.debug("Open connection to JMS broker");
-        InitialContext ctx;
-        try {
-            ctx = new InitialContext();
-        } catch (Exception e) {
-            log.error("Failed to get InitialContext", e);
-            throw new RuntimeException(e);
-        }
-        try {
-            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
-        } catch (NamingException ne) {
-            //if we did not find the connection factory we might need to add java:/ at the start
-            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
-            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
-            try {
-                log.debug("trying " + wfName);
-                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
-            } catch (Exception e) {
-                log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
-                throw new RuntimeException(e);
-            }
-        }
-
-        destination = JMSUtils.lookupQueue(ctx, getDestinationName());
-
-
+        connectionFactory = JMSUtils.lookupConnectionFactory();
+        destination = JMSUtils.lookupQueue(getDestinationName());
     }
 
 
