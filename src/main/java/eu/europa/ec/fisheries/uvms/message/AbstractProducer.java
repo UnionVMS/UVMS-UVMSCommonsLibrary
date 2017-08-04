@@ -23,9 +23,11 @@ import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.MapUtils;
 
 @Slf4j
@@ -39,64 +41,10 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @PostConstruct
     protected void initializeConnectionFactory() {
-        log.debug("Open connection to JMS broker");
-        InitialContext ctx;
-        try {
-            ctx = new InitialContext();
-        } catch (Exception e) {
-            log.error("Failed to get InitialContext", e);
-            throw new RuntimeException(e);
-        }
-        try {
-            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
-        } catch (NamingException ne) {
-            //if we did not find the connection factory we might need to add java:/ at the start
-            log.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
-            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
-            try {
-                log.debug("trying " + wfName);
-                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
-            } catch (Exception e) {
-                log.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
-                throw new RuntimeException(e);
-            }
-        }
-
-        destination = JMSUtils.lookupQueue(ctx, getDestinationName());
-
+        connectionFactory = JMSUtils.lookupConnectionFactory();
+        destination = JMSUtils.lookupQueue(getDestinationName());
     }
 
-
-    public String sendModuleMessage(String text, Destination replyTo, Map<String, String> messageProperties) throws MessageException {
-        try {
-            connectToQueue();
-
-            log.debug("Sending message with replyTo: [{}]", replyTo);
-            log.trace("Message content : [{}]", text);
-
-            if (connection == null || session == null) {
-                throw new MessageException("[ Connection or session is null, cannot send message ] ");
-            }
-
-            TextMessage message = session.createTextMessage();
-            if(MapUtils.isNotEmpty(messageProperties)){
-                for(Map.Entry<String, String> entry : messageProperties.entrySet()){
-                    message.setStringProperty(entry.getKey(), entry.getValue());
-                }
-            }
-            message.setJMSReplyTo(replyTo);
-            message.setText(text);
-            session.createProducer(getDestination()).send(message);
-            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
-            return message.getJMSMessageID();
-
-        } catch (JMSException e) {
-            log.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MessageException("[ Error when sending message. ]", e);
-        } finally {
-            disconnectQueue();
-        }
-    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -138,6 +86,37 @@ public abstract class AbstractProducer implements MessageProducer {
             session.createProducer(message.getJMSReplyTo()).send(response);
         } catch (JMSException e) {
             log.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+        } finally {
+            disconnectQueue();
+        }
+    }
+
+    public String sendModuleMessage(String text, Destination replyTo, Map<String, String> messageProperties) throws MessageException {
+        try {
+            connectToQueue();
+
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
+            if (connection == null || session == null) {
+                throw new MessageException("[ Connection or session is null, cannot send message ] ");
+            }
+
+            TextMessage message = session.createTextMessage();
+            if(MapUtils.isNotEmpty(messageProperties)){
+                for(Map.Entry<String, String> entry : messageProperties.entrySet()){
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            message.setJMSReplyTo(replyTo);
+            message.setText(text);
+            session.createProducer(getDestination()).send(message);
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+            return message.getJMSMessageID();
+
+        } catch (JMSException e) {
+            log.error("[ Error when sending message. ] {}", e.getMessage());
+            throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             disconnectQueue();
         }

@@ -12,7 +12,7 @@
     <artifactId>uvms-commons</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.0.22-SNAPSHOT</version>
+    <version>2.0.26-SNAPSHOT</version>
     <name>uvms-commons</name>
     <url>http://maven.apache.org</url>
 
@@ -44,9 +44,6 @@
 		<commons.collections>3.2.2</commons.collections>
 		<mapstruct.version>1.0.0.Final</mapstruct.version>
         <commons.lang.version>2.6</commons.lang.version>
-        <wildfly.jms.client.version>8.2.0.Final</wildfly.jms.client.version>
-        <jboss.connector.api.version>RELEASE</jboss.connector.api.version>
-
         <scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
     </properties>
 
@@ -81,17 +78,6 @@
    </scm>
 
     <dependencies>
-        <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-jms-client-bom</artifactId>
-            <version>${wildfly.jms.client.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.resource</groupId>
-            <artifactId>jboss-connector-api_1.6_spec</artifactId>
-            <version>${jboss.connector.api.version}</version>
-        </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
