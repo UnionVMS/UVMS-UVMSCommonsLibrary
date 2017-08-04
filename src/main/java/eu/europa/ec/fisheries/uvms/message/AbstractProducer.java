@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.message;
 
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -24,8 +25,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 
 @Slf4j
 public abstract class AbstractProducer implements MessageProducer {
@@ -63,14 +64,43 @@ public abstract class AbstractProducer implements MessageProducer {
 
         destination = JMSUtils.lookupQueue(ctx, getDestinationName());
 
-
     }
 
+
+    public String sendModuleMessage(String text, Destination replyTo, Map<String, String> messageProperties) throws MessageException {
+        try {
+            connectToQueue();
+
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
+            if (connection == null || session == null) {
+                throw new MessageException("[ Connection or session is null, cannot send message ] ");
+            }
+
+            TextMessage message = session.createTextMessage();
+            if(MapUtils.isNotEmpty(messageProperties)){
+                for(Map.Entry<String, String> entry : messageProperties.entrySet()){
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            message.setJMSReplyTo(replyTo);
+            message.setText(text);
+            session.createProducer(getDestination()).send(message);
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+            return message.getJMSMessageID();
+
+        } catch (JMSException e) {
+            log.error("[ Error when sending message. ] {}", e.getMessage());
+            throw new MessageException("[ Error when sending message. ]", e);
+        } finally {
+            disconnectQueue();
+        }
+    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
-
         try {
             connectToQueue();
 
@@ -138,5 +168,9 @@ public abstract class AbstractProducer implements MessageProducer {
 
     protected Destination getDestination() {
         return destination;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }
