@@ -32,7 +32,7 @@
         <logback.version>1.1.2</logback.version>
         <logback.core.version>1.1.2</logback.core.version>
         <javaee.version>7.0</javaee.version>
-        <jackson.version>2.4.1</jackson.version>
+        <jackson.version>2.6.7.1</jackson.version>
         <geotools.version>14.4</geotools.version>
         <jts.version>1.13</jts.version>
         <junit.version>4.12</junit.version>
@@ -111,6 +111,12 @@
             	</exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        	<version>2.2.7</version>
+        	<scope>provided</scope>
+        </dependency>        
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
