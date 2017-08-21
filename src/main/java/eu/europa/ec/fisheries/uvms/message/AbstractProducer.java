@@ -20,14 +20,9 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.MapUtils;
 
 @Slf4j
@@ -103,8 +98,8 @@ public abstract class AbstractProducer implements MessageProducer {
             }
 
             TextMessage message = session.createTextMessage();
-            if(MapUtils.isNotEmpty(messageProperties)){
-                for(Map.Entry<String, String> entry : messageProperties.entrySet()){
+            if (MapUtils.isNotEmpty(messageProperties)) {
+                for (Map.Entry<String, String> entry : messageProperties.entrySet()) {
                     message.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
