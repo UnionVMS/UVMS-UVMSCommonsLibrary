@@ -56,5 +56,6 @@ public interface MessageConstants {
     String QUEUE_EXCHANGE = "jms/queue/UVMSExchange";
     String QUEUE_EXCHANGE_EVENT = "jms/queue/UVMSExchangeEvent";
 
-
+    String QUEUE_SALES = "jms/queue/UVMSSales";
+    String QUEUE_SALES_EVENT = "jms/queue/UVMSSalesEvent";
 }
