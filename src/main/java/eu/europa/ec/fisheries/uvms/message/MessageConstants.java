@@ -41,6 +41,7 @@ public interface MessageConstants {
     String QUEUE_SPATIAL = "jms/queue/UVMSSpatial";
 
     String QUEUE_MODULE_RULES = "jms/queue/UVMSRulesEvent";
+    String QUEUE_RULES = "jms/queue/UVMSRules";
 
     String UPLOAD_QUEUE_NAME = "UVMSUploadEvent";
     String UPLOAD_EVENT_QUEUE = "jms/queue/UVMSUploadEvent";
