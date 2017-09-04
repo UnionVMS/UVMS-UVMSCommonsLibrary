@@ -298,4 +298,13 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>belgium-local</id>
+            <properties>
+                <focus-pom.java.version>1.8</focus-pom.java.version>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
