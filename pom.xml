@@ -44,6 +44,7 @@
 		<commons.collections>3.2.2</commons.collections>
 		<mapstruct.version>1.0.0.Final</mapstruct.version>
         <commons.lang.version>2.6</commons.lang.version>
+
         <scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
     </properties>
 
@@ -283,5 +284,20 @@
 		</dependency>
 
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>belgium-local</id>
+            <properties>
+                <focus-pom.java.version>1.8</focus-pom.java.version>
+            </properties>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>lv-snapshots</id>
+                    <url>https://apjenp01.dg3.be/nexus/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
 </project>
