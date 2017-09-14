@@ -21,9 +21,11 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.util.Map;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 
 @Slf4j
 public abstract class AbstractProducer implements MessageProducer {
@@ -44,7 +46,6 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
-
         try {
             connectToQueue();
 
@@ -87,6 +88,37 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    public String sendModuleMessage(String text, Destination replyTo, Map<String, String> messageProperties) throws MessageException {
+        try {
+            connectToQueue();
+
+            log.debug("Sending message with replyTo: [{}]", replyTo);
+            log.trace("Message content : [{}]", text);
+
+            if (connection == null || session == null) {
+                throw new MessageException("[ Connection or session is null, cannot send message ] ");
+            }
+
+            TextMessage message = session.createTextMessage();
+            if (MapUtils.isNotEmpty(messageProperties)) {
+                for (Map.Entry<String, String> entry : messageProperties.entrySet()) {
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            message.setJMSReplyTo(replyTo);
+            message.setText(text);
+            session.createProducer(getDestination()).send(message);
+            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+            return message.getJMSMessageID();
+
+        } catch (JMSException e) {
+            log.error("[ Error when sending message. ] {}", e.getMessage());
+            throw new MessageException("[ Error when sending message. ]", e);
+        } finally {
+            disconnectQueue();
+        }
+    }
+
     protected void connectToQueue() throws JMSException {
         connection = connectionFactory.createConnection();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -117,5 +149,9 @@ public abstract class AbstractProducer implements MessageProducer {
 
     protected Destination getDestination() {
         return destination;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }

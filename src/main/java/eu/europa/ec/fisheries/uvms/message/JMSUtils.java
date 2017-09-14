@@ -1,5 +1,4 @@
 /*
-<<<<<<< HEAD
  Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
  © European Union, 2015-2016.
 
@@ -68,8 +67,27 @@ public class JMSUtils {
 	}
 
 	public static Queue lookupQueue(String queue) {
+		InitialContext ctx;
 		try {
-			final InitialContext ctx = getInitialContext();
+			ctx = getInitialContext();
+			return lookupQueue(ctx, queue);
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static Topic lookupTopic(String topic) {
+		InitialContext ctx;
+		try {
+			ctx = getInitialContext();
+			return lookupTopic(ctx, topic);
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static Queue lookupQueue(InitialContext ctx, String queue) {
+		try {
 			return (Queue) ctx.lookup(queue);
 		} catch (NamingException e) {
 			// if we did not find the queue we might need to add java:/ at the start
@@ -77,7 +95,7 @@ public class JMSUtils {
 			String wfQueueName = "java:/" + queue;
 			try {
 				LOG.debug("trying " + wfQueueName);
-				return (Queue) CACHED_INITIAL_CONTEXT.lookup(wfQueueName);
+				return (Queue) ctx.lookup(wfQueueName);
 			} catch (Exception e2) {
 				LOG.error("Queue lookup failed for both " + queue + " and " + wfQueueName);
 				throw new RuntimeException(e);
@@ -85,9 +103,8 @@ public class JMSUtils {
 		}
 	}
 
-	public static Topic lookupTopic(String topic) {
+	public static Topic lookupTopic(InitialContext ctx, String topic) {
 		try {
-			final InitialContext ctx = getInitialContext();
 			return (Topic) ctx.lookup(topic);
 		} catch (NamingException e) {
 			// if we did not find the queue we might need to add java:/ at the start
@@ -95,7 +112,6 @@ public class JMSUtils {
 			String wfTopicName = "java:/" + topic;
 			try {
 				LOG.debug("trying " + wfTopicName);
-				final InitialContext ctx = getInitialContext();
 				return (Topic) ctx.lookup(wfTopicName);
 			} catch (Exception e2) {
 				LOG.error("Topic lookup failed for both " + topic + " and " + wfTopicName);
