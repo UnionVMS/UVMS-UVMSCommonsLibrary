@@ -19,10 +19,10 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -105,7 +105,12 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    @SneakyThrows
     public Session getSession() {
+        connection = connectionFactory.createConnection();
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        connection.start();
+        log.debug("Connecting to {}", getDestination());
         return session;
     }
 
