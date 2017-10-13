@@ -15,16 +15,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import eu.europa.ec.fisheries.uvms.common.DateUtils;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
+import java.util.logging.Logger;
 
 public class CustomDateSerializer extends JsonSerializer<Date> {
-
+    private static final Logger log = Logger.getLogger("CustomDateSerializer");
     @Override
     public void serialize (Date value, JsonGenerator gen, SerializerProvider arg2)
       throws IOException {
-        gen.writeString(DateUtils.UI_FORMATTER.print(new DateTime(value)));
+       TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+       String formattedDate= new SimpleDateFormat(DateUtils.DATE_TIME_UI_FORMAT).format(value);
+       gen.writeString(formattedDate);
     }
 }
