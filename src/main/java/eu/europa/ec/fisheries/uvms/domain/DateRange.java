@@ -41,14 +41,14 @@ public class DateRange implements Serializable {
     @Column(name = START_DATE)
     @JsonSerialize(using = DateUiFormatSerializer.class)
     @Field(name = "startDate")
-    @DateBridge(resolution= Resolution.MILLISECOND)
+    @DateBridge(resolution= Resolution.SECOND)
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = END_DATE)
     @Field(name = "endDate")
     @JsonSerialize(using = DateUiFormatSerializer.class)
-    @DateBridge(resolution= Resolution.MILLISECOND)
+    @DateBridge(resolution= Resolution.SECOND)
     private Date endDate;
 
     public DateRange() {
