@@ -59,4 +59,5 @@ public interface MessageConstants {
 
     String QUEUE_SALES = "jms/queue/UVMSSales";
     String QUEUE_SALES_EVENT = "jms/queue/UVMSSalesEvent";
+    String QUEUE_ECB_PROXY = "java:/jms/queue/UVMSSalesEcbProxy";
 }
