@@ -14,19 +14,23 @@ package eu.europa.ec.fisheries.uvms.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import eu.europa.ec.fisheries.uvms.serializer.DateUiFormatSerializer;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
+import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Resolution;
 
 @Embeddable
 @EqualsAndHashCode
 @ToString
+@Indexed
 public class DateRange implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -36,11 +40,15 @@ public class DateRange implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = START_DATE)
     @JsonSerialize(using = DateUiFormatSerializer.class)
+    @Field(name = "startDate")
+    @DateBridge(resolution= Resolution.SECOND)
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = END_DATE)
+    @Field(name = "endDate")
     @JsonSerialize(using = DateUiFormatSerializer.class)
+    @DateBridge(resolution= Resolution.SECOND)
     private Date endDate;
 
     public DateRange() {
@@ -80,4 +88,6 @@ public class DateRange implements Serializable {
         }
         this.endDate = endDate;
     }
+
+
 }

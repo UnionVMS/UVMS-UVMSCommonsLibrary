@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.message;
 
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -22,6 +21,9 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.util.Map;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 
@@ -135,7 +137,12 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    @SneakyThrows
     public Session getSession() {
+        connection = connectionFactory.createConnection();
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        connection.start();
+        log.debug("Connecting to {}", getDestination());
         return session;
     }
 
