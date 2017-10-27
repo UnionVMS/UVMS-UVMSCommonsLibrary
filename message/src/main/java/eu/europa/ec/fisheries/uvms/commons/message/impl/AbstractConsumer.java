@@ -88,7 +88,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
     }
 
     @Override
-	public Destination getDestination() {
+	public final Destination getDestination() {
         return destination;
     }
 }
