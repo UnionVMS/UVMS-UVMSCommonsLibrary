@@ -30,65 +30,70 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 public abstract class AbstractConsumer implements MessageConsumer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
-	
-    private static long MILLISECONDS = 600000;
-    private ConnectionFactory connectionFactory;
-    private Destination destination;
 
-    @PostConstruct
-    private void connectConnectionFactory() {
-        connectionFactory = JMSUtils.lookupConnectionFactory();
-        destination = JMSUtils.lookupQueue(getDestinationName());
-    }
+	private static long MILLISECONDS = 600000;
+	private ConnectionFactory connectionFactory;
+	private Destination destination;
 
+	@PostConstruct
+	private void connectConnectionFactory() {
+		connectionFactory = JMSUtils.lookupConnectionFactory();
+		destination = JMSUtils.lookupQueue(getDestinationName());
+	}
 
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@SuppressWarnings(value = "unchecked")
+	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis)
+			throws MessageException {
 
-    	Connection connection = null;
+		Connection connection = null;
 		try {
 			connection = connectionFactory.createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
-			
-            LOGGER.trace("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
-            if (correlationId == null || correlationId.isEmpty()) {
-                throw new MessageException("No CorrelationID provided!");
-            }
 
-            final T receivedMessage = (T) session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'").receive(timeoutInMillis);
+			LOGGER.trace("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
+					correlationId, type, timeoutInMillis);
+			if (correlationId == null || correlationId.isEmpty()) {
+				throw new MessageException("No CorrelationID provided!");
+			}
 
-            if (receivedMessage == null) {
-                throw new MessageException("Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
-            } else {
-                LOGGER.debug("Message with {} has been successfully received.", correlationId);
-                LOGGER.trace("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
-            }
+			final T receivedMessage = (T) session
+					.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
+					.receive(timeoutInMillis);
 
-            return receivedMessage;
+			if (receivedMessage == null) {
+				throw new MessageException(
+						"Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
+			} else {
+				LOGGER.debug("Message with {} has been successfully received.", correlationId);
+				LOGGER.trace("JMS message received: {} \n Content: {}", receivedMessage,
+						((TextMessage) receivedMessage).getText());
+			}
 
-        } catch (final Exception e) {
-            LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
-            throw new MessageException("Error when retrieving message: " + e.getMessage());
-        } finally {
-        	JMSUtils.disconnectQueue(connection);
-        }
-    }
+			return receivedMessage;
 
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-        return getMessage(correlationId, type, getMilliseconds());
-    }
+		} catch (final Exception e) {
+			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
+			throw new MessageException("Error when retrieving message: " + e.getMessage());
+		} finally {
+			JMSUtils.disconnectQueue(connection);
+		}
+	}
 
-    protected long getMilliseconds() {
-        return MILLISECONDS;
-    }
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@SuppressWarnings(value = "unchecked")
+	public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+		return getMessage(correlationId, type, getMilliseconds());
+	}
 
-    @Override
+	protected long getMilliseconds() {
+		return MILLISECONDS;
+	}
+
+	@Override
 	public final Destination getDestination() {
-        return destination;
-    }
+		return destination;
+	}
 }

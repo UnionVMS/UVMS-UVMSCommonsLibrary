@@ -17,10 +17,10 @@ import javax.jms.TextMessage;
 
 public interface MessageProducer {
 
-    String sendModuleMessage(String text, Destination replyTo) throws MessageException;
+	String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
-    void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
+	void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
 
-    String getDestinationName();
+	String getDestinationName();
 
 }

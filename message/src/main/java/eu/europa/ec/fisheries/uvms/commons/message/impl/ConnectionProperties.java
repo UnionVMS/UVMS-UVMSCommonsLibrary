@@ -17,49 +17,47 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 public class ConnectionProperties {
 
-    private String providerURL;
-    private String username;
-    private String password;
+	private String providerURL;
+	private String username;
+	private String password;
 
-    public ConnectionProperties(){
+	public ConnectionProperties() {
 
-    }
-    public ConnectionProperties(final String providerURL, final String username, final String password) {
-        this.providerURL = providerURL;
-        this.username = username;
-        this.password = password;
-    }
+	}
 
-    public String getProviderURL() {
-        return providerURL;
-    }
+	public ConnectionProperties(final String providerURL, final String username, final String password) {
+		this.providerURL = providerURL;
+		this.username = username;
+		this.password = password;
+	}
 
-    public void setProviderURL(final String providerURL) {
-        this.providerURL = providerURL;
-    }
+	public String getProviderURL() {
+		return providerURL;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setProviderURL(final String providerURL) {
+		this.providerURL = providerURL;
+	}
 
-    public void setUsername(final String username) {
-        this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setUsername(final String username) {
+		this.username = username;
+	}
 
-    public void setPassword(final String password) {
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    @Override
-    public String toString() {
-        return "ConnectionProperties{" +
-                "providerURL='" + providerURL + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+	public void setPassword(final String password) {
+		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "ConnectionProperties{" + "providerURL='" + providerURL + '\'' + ", username='" + username + '\''
+				+ ", password='" + password + '\'' + '}';
+	}
 }

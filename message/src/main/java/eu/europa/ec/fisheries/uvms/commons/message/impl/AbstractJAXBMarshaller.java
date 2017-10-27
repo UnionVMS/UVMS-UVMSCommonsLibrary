@@ -26,7 +26,8 @@ public abstract class AbstractJAXBMarshaller {
 	/**
 	 * Marshalls a JAXB Object to a XML String representation.
 	 *
-	 * @param <T> @param data @return @throws
+	 * @param <T>
+	 * 			@param data @return @throws
 	 */
 	protected <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
 		final JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
@@ -41,7 +42,8 @@ public abstract class AbstractJAXBMarshaller {
 	 * Unmarshalls A textMessage to the desired Object. The object must be the root
 	 * object of the unmarshalled message!
 	 *
-	 * @param <R> @param textMessage @param clazz @return @throws
+	 * @param <R>
+	 * 			@param textMessage @param clazz @return @throws
 	 */
 	protected <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz)
 			throws JAXBException, JMSException {

@@ -14,14 +14,14 @@ package eu.europa.ec.fisheries.uvms.commons.message.api;
 
 public class MessageException extends Exception {
 
-    public MessageException() {
-    }
+	public MessageException() {
+	}
 
-    public MessageException(final String message) {
-        super(message);
-    }
+	public MessageException(final String message) {
+		super(message);
+	}
 
-    public MessageException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	public MessageException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

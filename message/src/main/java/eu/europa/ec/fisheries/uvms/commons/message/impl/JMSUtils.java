@@ -125,7 +125,8 @@ public class JMSUtils {
 		}
 	}
 
-	public static MessageProducer getProducer(final Session session,final Destination destination) throws JMSException {
+	public static MessageProducer getProducer(final Session session, final Destination destination)
+			throws JMSException {
 		final javax.jms.MessageProducer producer = session.createProducer(destination);
 		producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 		producer.setTimeToLive(60000L);
