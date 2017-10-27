@@ -11,16 +11,16 @@
  */
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
-import eu.europa.ec.fisheries.uvms.exception.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.Properties;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -32,13 +32,13 @@ import javax.naming.NamingException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.rpc.ServiceException;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
 /**
  * Created by sanera on 13/04/2017.
  */
@@ -70,8 +70,6 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     private TextMessageProperties textMessageProperties;
     private ConnectionProperties connectionProperties;
     private Queue bridgeQueue;
-    private Connection connection;
-    private Session session = null;
 
     private ConnectionFactory connectionFactory = null;
 
@@ -84,24 +82,26 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
 
 
     @Override
-    public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
+    public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+    	Connection connection = null;
         try {
             connectionProperties=getConnectionProperties();
             textMessageProperties = getTextMessageProperties();
             if(connectionProperties ==null)
                 throw new ServiceException("JMS Connection properties are not initialized");
 
-            openRemoteConnection();
+            connection = openRemoteConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
             LOG.info(" Got connection to the Queue.");
-            TextMessage MsgToSend = prepareMessage(text, session);
+            final TextMessage MsgToSend = prepareMessage(text, session);
             LOG.debug("Text Message prepared with text :"+text);
-            getProducer(bridgeQueue).send(MsgToSend);
+            JMSUtils.getProducer(session,bridgeQueue).send(MsgToSend);
             LOG.debug(">>> Message sent correctly to FLUX node. ID : [[ " + MsgToSend.getJMSMessageID() + " ]]");
             return MsgToSend.getJMSMessageID();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             LOG.error("Error while trying to send message to FLUX node.", ex);
         }finally {
-            closeConnection();
+        	JMSUtils.disconnectQueue(connection);
         }
         return null;
     }
@@ -117,12 +117,12 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
      * @throws JMSException
      * @throws DatatypeConfigurationException
      */
-    protected TextMessage prepareMessage(String textMessage, Session session) throws JMSException, ServiceException {
+    protected TextMessage prepareMessage(final String textMessage, final Session session) throws JMSException, ServiceException {
         if(textMessageProperties ==null)
             throw new ServiceException(" JMS TextMessage properties are not initialized");
 
         LOG.debug("Properties set on JMS message:" + textMessageProperties);
-        TextMessage fluxMsg = session.createTextMessage();
+        final TextMessage fluxMsg = session.createTextMessage();
         fluxMsg.setText(textMessage);
         fluxMsg.setStringProperty(CONNECTOR_ID, CONNECTOR_ID_VAL);
         fluxMsg.setStringProperty(FLUX_ENV_AD, textMessageProperties.getAdVal());
@@ -138,10 +138,10 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         return fluxMsg;
     }
 
-    private void printMessageProperties(TextMessage fluxMsg) throws JMSException {
+    private void printMessageProperties(final TextMessage fluxMsg) throws JMSException {
         LOG.info("Prepared message with the following properties  : \n\n");
         int i = 0;
-        Enumeration propertyNames = fluxMsg.getPropertyNames();
+        final Enumeration propertyNames = fluxMsg.getPropertyNames();
         String propName;
         while (propertyNames.hasMoreElements()) {
             i++;
@@ -150,71 +150,50 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         }
     }
 
+    private Connection openRemoteConnection() throws NamingException, JMSException {
 
-    /**
-     * Closes a JMS connection;
-     * Disconnects from the actual connection if it is still active;
-     */
-    protected void closeConnection() {
-        try {
-            if (session != null) {
-                LOG.debug("\n\nClosing session.");
-                session.close();
-            }
-            if (connection != null) {
-                LOG.debug("Succesfully closed the connection and/or session.");
-                connection.stop();
-                connection.close();
-            }
-            LOG.info("Succesfully disconnected from FLUX BRIDGE Remote queue.");
-        } catch (JMSException e) {
-            LOG.error("[ Error when stopping or closing JMS queue ] {}", e);
-        }
-    }
-
-    private void openRemoteConnection() throws NamingException, JMSException {
-
-        Context context = getContext();
+        final Context context = getContext();
         LOG.debug("Initial Context created");
         connectionFactory = (ConnectionFactory) context.lookup(REMOTE_CONNECTION_FACTORY);
         LOG.debug("Connection Factory received");
         bridgeQueue = (Queue) context.lookup(getDestinationName());
         LOG.debug("Bridge queue "+JMS_QUEUE_BRIDGE +" found.");
 
+        Connection connection = null;
         try {
             LOG.debug("Opening connection to JMS broker:"+connectionProperties);
             connection = connectionFactory.createConnection(connectionProperties.getUsername(), connectionProperties.getPassword());
             connection.start();
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            LOG.debug("session created");
-        } catch (JMSException e) {
+        } catch (final JMSException e) {
             LOG.error("Error when open connection to JMS broker. Going to << RETRY >> now.", e);
-            retryConnecting();
+            connection = retryConnecting();
         }
-
+        
+        return connection;
     }
 
     /**
      * Retry connecting to FLUX TL.
+     * @return 
      *
      * @throws JMSException
      */
-    private void retryConnecting() throws JMSException {
+    private Connection retryConnecting() throws JMSException {
         LOG.debug("ReTrying to open connection.");
+        Connection connection = null;
         try {
             connection = connectionFactory.createConnection(connectionProperties.getProviderURL(), connectionProperties.getPassword());
-            connection.start();
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        } catch (JMSException ex) {
+        } catch (final JMSException ex) {
             LOG.error("Error when retrying to open connection to Flux TL. Going to << FAIL >> now.", ex);
             throw ex;
         }
+        return connection;
     }
 
     private Context getContext() throws NamingException {
 
         LOG.debug("Get initial Context.");
-        Properties contextProps = new Properties();
+        final Properties contextProps = new Properties();
         contextProps.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
         contextProps.put(Context.PROVIDER_URL, connectionProperties.getProviderURL());
         contextProps.put(Context.SECURITY_PRINCIPAL, connectionProperties.getUsername());
@@ -227,7 +206,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
         return textMessageProperties;
     }
 
-    public void setTextMessageProperties(TextMessageProperties textMessageProperties) {
+    public void setTextMessageProperties(final TextMessageProperties textMessageProperties) {
         this.textMessageProperties = textMessageProperties;
     }
 
@@ -246,7 +225,7 @@ public abstract class AbstractRemoteProducer implements MessageProducer {
     }
 
     protected String createStringDate() {
-        GregorianCalendar gcal = (GregorianCalendar) Calendar.getInstance();
+        final GregorianCalendar gcal = (GregorianCalendar) Calendar.getInstance();
         gcal.setTime(new Date(System.currentTimeMillis() + 1000000));
         XMLGregorianCalendar xgcal = null;
         try {

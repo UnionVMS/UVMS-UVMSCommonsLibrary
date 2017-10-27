@@ -29,7 +29,7 @@ public class TextMessageProperties {
 
     }
 
-    public TextMessageProperties(String adVal, String dfVal, String arVal, String frVal,String businessUUId, String creationDate) {
+    public TextMessageProperties(final String adVal, final String dfVal, final String arVal, final String frVal,final String businessUUId, final String creationDate) {
         this.adVal = adVal;
         this.dfVal = dfVal;
         this.arVal = arVal;
@@ -42,7 +42,7 @@ public class TextMessageProperties {
         return adVal;
     }
 
-    public void setAdVal(String adVal) {
+    public void setAdVal(final String adVal) {
         this.adVal = adVal;
     }
 
@@ -50,7 +50,7 @@ public class TextMessageProperties {
         return dfVal;
     }
 
-    public void setDfVal(String dfVal) {
+    public void setDfVal(final String dfVal) {
         this.dfVal = dfVal;
     }
 
@@ -58,7 +58,7 @@ public class TextMessageProperties {
         return arVal;
     }
 
-    public void setArVal(String arVal) {
+    public void setArVal(final String arVal) {
         this.arVal = arVal;
     }
 
@@ -66,7 +66,7 @@ public class TextMessageProperties {
         return businessUUId;
     }
 
-    public void setBusinessUUId(String businessUUId) {
+    public void setBusinessUUId(final String businessUUId) {
         this.businessUUId = businessUUId;
     }
 
@@ -74,7 +74,7 @@ public class TextMessageProperties {
         return creationDate;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(final String creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -82,7 +82,7 @@ public class TextMessageProperties {
         return frVal;
     }
 
-    public void setFrVal(String frVal) {
+    public void setFrVal(final String frVal) {
         this.frVal = frVal;
     }
 
@@ -102,7 +102,7 @@ public class TextMessageProperties {
         return vbVal;
     }
 
-    public void setVbVal(String vbVal) {
+    public void setVbVal(final String vbVal) {
         this.vbVal = vbVal;
     }
 
@@ -110,7 +110,7 @@ public class TextMessageProperties {
         return ctVal;
     }
 
-    public void setCtVal(String ctVal) {
+    public void setCtVal(final String ctVal) {
         this.ctVal = ctVal;
     }
 
@@ -118,7 +118,7 @@ public class TextMessageProperties {
         return toVal;
     }
 
-    public void setToVal(String toVal) {
+    public void setToVal(final String toVal) {
         this.toVal = toVal;
     }
 }

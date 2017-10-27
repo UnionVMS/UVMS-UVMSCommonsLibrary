@@ -17,11 +17,11 @@ public class MessageException extends Exception {
     public MessageException() {
     }
 
-    public MessageException(String message) {
+    public MessageException(final String message) {
         super(message);
     }
 
-    public MessageException(String message, Throwable cause) {
+    public MessageException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

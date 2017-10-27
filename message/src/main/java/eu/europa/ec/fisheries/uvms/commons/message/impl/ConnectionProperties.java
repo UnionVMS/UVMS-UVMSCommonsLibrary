@@ -24,7 +24,7 @@ public class ConnectionProperties {
     public ConnectionProperties(){
 
     }
-    public ConnectionProperties(String providerURL, String username, String password) {
+    public ConnectionProperties(final String providerURL, final String username, final String password) {
         this.providerURL = providerURL;
         this.username = username;
         this.password = password;
@@ -34,7 +34,7 @@ public class ConnectionProperties {
         return providerURL;
     }
 
-    public void setProviderURL(String providerURL) {
+    public void setProviderURL(final String providerURL) {
         this.providerURL = providerURL;
     }
 
@@ -42,7 +42,7 @@ public class ConnectionProperties {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -50,7 +50,7 @@ public class ConnectionProperties {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 

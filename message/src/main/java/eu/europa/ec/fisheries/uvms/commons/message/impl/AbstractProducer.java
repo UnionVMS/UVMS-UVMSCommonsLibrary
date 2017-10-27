@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -21,19 +23,20 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
 
 public abstract class AbstractProducer implements MessageProducer {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
+	
     private ConnectionFactory connectionFactory;
     private Destination destination;
-
-    private Connection connection = null;
-    private Session session = null;
 
     @PostConstruct
     protected void initializeConnectionFactory() {
@@ -44,78 +47,92 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text, Destination replyTo) throws MessageException {
-        try {
-            connectToQueue();
+    public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+  
+    	Connection connection = null;
 
-            log.debug("Sending message with replyTo: [{}]", replyTo);
-            log.trace("Message content : [{}]", text);
+		try {
+			connection = connectionFactory.createConnection();
+			final Session session = JMSUtils.connectToQueue(connection);
+
+            LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
+            LOGGER.trace("Message content : [{}]", text);
 
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
 
-            TextMessage message = session.createTextMessage();
+            final TextMessage message = session.createTextMessage();
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
-        } catch (JMSException e) {
-            log.error("[ Error when sending message. ] {}", e.getMessage());
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
-            disconnectQueue();
+        	JMSUtils.disconnectQueue(connection);
         }
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendModuleResponseMessage(TextMessage message, String text, String moduleName) {
-        try {
-            log.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
+    public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
+    	Connection connection = null;
+		try {
+			connection = connectionFactory.createConnection();
+			final Session session = JMSUtils.connectToQueue(connection);
+    	
+            LOGGER.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(),
                     message.getJMSReplyTo());
-            connectToQueue();
-            TextMessage response = session.createTextMessage(text);
+            
+            final TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             session.createProducer(message.getJMSReplyTo()).send(response);
-        } catch (JMSException e) {
-            log.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
         } finally {
-            disconnectQueue();
+        	JMSUtils.disconnectQueue(connection);
         }
     }
 
-    public String sendModuleMessage(String text, Destination replyTo, Map<String, String> messageProperties) throws MessageException {
-        try {
-            connectToQueue();
+    public String sendModuleMessage(final String text, final Destination replyTo, final Map<String, String> messageProperties) throws MessageException {
+    	Connection connection = null;
+		try {
+			connection = connectionFactory.createConnection();
+			final Session session = JMSUtils.connectToQueue(connection);
 
-            log.debug("Sending message with replyTo: [{}]", replyTo);
-            log.trace("Message content : [{}]", text);
+            LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
+            LOGGER.trace("Message content : [{}]", text);
 
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
             }
 
-            TextMessage message = session.createTextMessage();
+            final TextMessage message = session.createTextMessage();
             if (MapUtils.isNotEmpty(messageProperties)) {
-                for (Map.Entry<String, String> entry : messageProperties.entrySet()) {
+                for (final Map.Entry<String, String> entry : messageProperties.entrySet()) {
                     message.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             session.createProducer(getDestination()).send(message);
-            log.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
-        } catch (JMSException e) {
-            log.error("[ Error when sending message. ] {}", e.getMessage());
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
-            disconnectQueue();
+        	JMSUtils.disconnectQueue(connection);
         }
+    }
+    
+    protected final Destination getDestination() {
+        return destination;
     }
 
 }

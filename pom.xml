@@ -9,7 +9,7 @@
 		<relativePath />
 	</parent>
 
-	<groupId>eu.europa.ec.fisheries.uvms</groupId>
+	<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 	<artifactId>uvms-commons-parent</artifactId>
 	<packaging>pom</packaging>
 
