@@ -9,17 +9,29 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.exception;
+package eu.europa.ec.fisheries.uvms.commons.domain;
 
-public class ServiceException extends ModelMarshallException {
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-    private static final long serialVersionUID = 7582161942682172612L;
+@Converter
+public class CharBooleanConverter implements AttributeConverter<Boolean, String> {
 
-    public ServiceException(String message) {
-        super(message);
+    private static final String Y = "Y";
+    private static final String N = "N";
+
+    @Override
+    public String convertToDatabaseColumn(Boolean attribute) {
+        if (Boolean.TRUE.equals(attribute)) {
+            return Y;
+        } else {
+            return N;
+        }
     }
 
-    public ServiceException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public Boolean convertToEntityAttribute(String dbData) {
+        return Y.equals(dbData);
     }
+
 }

@@ -8,17 +8,24 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
 */
-package eu.europa.ec.fisheries.uvms.exception;
 
-/**
- * Created by kovian on 09/12/2016.
- */
-public class JmsMessageException extends Exception {
+package eu.europa.ec.fisheries.uvms.commons.domain;
 
-    public JmsMessageException(String message) {
-        super(message);
-    }
-    public JmsMessageException(String message, Throwable cause) {
-        super(message, cause);
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+public class DateUiFormatSerializer extends JsonSerializer<Date> {
+
+    public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+    @Override
+    public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        jsonGenerator.writeString(new SimpleDateFormat(DATE_TIME_UI_FORMAT).format(date));
     }
 }

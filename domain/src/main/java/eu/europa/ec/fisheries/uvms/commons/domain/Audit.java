@@ -9,16 +9,41 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.exception;
 
-public class ModelMapperException extends ModelException {
-    private static final long serialVersionUID = 1L;
+package eu.europa.ec.fisheries.uvms.commons.domain;
 
-    public ModelMapperException(String message) {
-        super(message);
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Embeddable
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+public class Audit {
+
+    private static final String CREATED_ON = "created_on";
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = CREATED_ON, nullable = false)
+    private Date createdOn;
+
+    public Audit(Date createdOn) {
+        this.createdOn = createdOn;
     }
 
-    public ModelMapperException(String message, Throwable cause) {
-        super(message, cause);
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
     }
 }

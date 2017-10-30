@@ -10,22 +10,25 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more d
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.europa.ec.fisheries.uvms.domain;
+package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import eu.europa.ec.fisheries.uvms.serializer.DateUiFormatSerializer;
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Resolution;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Embeddable
 @EqualsAndHashCode
