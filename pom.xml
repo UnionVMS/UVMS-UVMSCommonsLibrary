@@ -30,7 +30,9 @@
 	</properties>
 
 	<modules>
-		<module>message</module>	
+		<module>message</module>
+		<module>service</module>
+			
 	</modules>
 
 	<repositories>
