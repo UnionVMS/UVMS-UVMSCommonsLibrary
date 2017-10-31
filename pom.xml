@@ -32,8 +32,12 @@
 	<modules>
 		<module>message</module>
 		<module>domain</module>
+		<module>date</module>
 		<module>rest</module>
-		<module>service</module>			
+		<module>service</module>
+		<module>dao</module>
+		<module>notification</module>
+		<module>geometry</module>									
 	</modules>
 
 	<repositories>

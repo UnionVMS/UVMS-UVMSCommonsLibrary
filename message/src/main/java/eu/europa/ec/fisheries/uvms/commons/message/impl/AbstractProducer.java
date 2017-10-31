@@ -36,12 +36,17 @@ public abstract class AbstractProducer implements MessageProducer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
 	private ConnectionFactory connectionFactory;
+
 	private Destination destination;
 
 	@PostConstruct
 	protected void initializeConnectionFactory() {
 		connectionFactory = JMSUtils.lookupConnectionFactory();
 		destination = JMSUtils.lookupQueue(getDestinationName());
+	}
+
+	protected final ConnectionFactory getConnectionFactory() {
+		return connectionFactory;
 	}
 
 	@Override
