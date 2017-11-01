@@ -22,9 +22,15 @@
 		<javaee.version>7.0</javaee.version>
 		<junit.version>4.12</junit.version>
 		<joda.time.version>2.9.9</joda.time.version>
+		<jackson.version>2.6.7.1</jackson.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
