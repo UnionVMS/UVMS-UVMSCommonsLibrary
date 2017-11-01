@@ -21,9 +21,20 @@
 		<javaee.version>7.0</javaee.version>
 		<junit.version>4.12</junit.version>
 		<jackson.version>2.6.7.1</jackson.version>
+		<lombok.version>1.16.18</lombok.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>20.0</version>
+		</dependency>			
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-multipart-provider</artifactId>
