@@ -59,8 +59,8 @@ public abstract class AbstractProducer implements MessageProducer {
 			connection = connectionFactory.createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
-			LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
-			LOGGER.trace("Message content : [{}]", text);
+			LOGGER.info("Sending message with replyTo: [{}]", replyTo);
+			LOGGER.debug("Message content : [{}]", text);
 
 			if (connection == null || session == null) {
 				throw new MessageException("[ Connection or session is null, cannot send message ] ");
@@ -70,7 +70,7 @@ public abstract class AbstractProducer implements MessageProducer {
 			message.setJMSReplyTo(replyTo);
 			message.setText(text);
 			session.createProducer(getDestination()).send(message);
-			LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+			LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
 			return message.getJMSMessageID();
 
 		} catch (final JMSException e) {
@@ -89,7 +89,7 @@ public abstract class AbstractProducer implements MessageProducer {
 			connection = connectionFactory.createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
-			LOGGER.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
+			LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
 					message.getJMSMessageID(), message.getJMSReplyTo());
 
 			final TextMessage response = session.createTextMessage(text);
@@ -108,13 +108,14 @@ public abstract class AbstractProducer implements MessageProducer {
 		try {
 			connection = connectionFactory.createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
-
-			LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
-			LOGGER.trace("Message content : [{}]", text);
-
+			
 			if (connection == null || session == null) {
 				throw new MessageException("[ Connection or session is null, cannot send message ] ");
 			}
+
+			LOGGER.info("Sending message with replyTo: [{}]", replyTo);
+			LOGGER.debug("Message content : [{}]", text);
+
 
 			final TextMessage message = session.createTextMessage();
 			if (MapUtils.isNotEmpty(messageProperties)) {
@@ -125,7 +126,7 @@ public abstract class AbstractProducer implements MessageProducer {
 			message.setJMSReplyTo(replyTo);
 			message.setText(text);
 			session.createProducer(getDestination()).send(message);
-			LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
+			LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
 			return message.getJMSMessageID();
 
 		} catch (final JMSException e) {
@@ -137,6 +138,9 @@ public abstract class AbstractProducer implements MessageProducer {
 	}
 
 	protected final Destination getDestination() {
+		if (destination == null) {
+			destination = JMSUtils.lookupQueue(getDestinationName());
+		}
 		return destination;
 	}
 

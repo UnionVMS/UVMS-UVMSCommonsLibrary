@@ -36,7 +36,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	private Destination destination;
 
 	@PostConstruct
-	private void connectConnectionFactory() {
+	protected void initializeConnectionFactory() {
 		connectionFactory = JMSUtils.lookupConnectionFactory();
 		destination = JMSUtils.lookupQueue(getDestinationName());
 	}
@@ -52,7 +52,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			connection = connectionFactory.createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
-			LOGGER.trace("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
+			LOGGER.info("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
 					correlationId, type, timeoutInMillis);
 			if (correlationId == null || correlationId.isEmpty()) {
 				throw new MessageException("No CorrelationID provided!");
@@ -66,8 +66,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
 				throw new MessageException(
 						"Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
 			} else {
-				LOGGER.debug("Message with {} has been successfully received.", correlationId);
-				LOGGER.trace("JMS message received: {} \n Content: {}", receivedMessage,
+				LOGGER.info("Message with {} has been successfully received.", correlationId);
+				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage,
 						((TextMessage) receivedMessage).getText());
 			}
 
@@ -94,6 +94,9 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
 	@Override
 	public final Destination getDestination() {
+		if (destination == null) {
+			destination = JMSUtils.lookupQueue(getDestinationName());
+		}		
 		return destination;
 	}
 }

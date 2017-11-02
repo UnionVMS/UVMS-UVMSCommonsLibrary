@@ -134,7 +134,7 @@ public class JMSUtils {
 	}
 
 	public static Session connectToQueue(final Connection connection) throws JMSException {
-		final Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		final Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 		connection.start();
 		return session;
 	}
