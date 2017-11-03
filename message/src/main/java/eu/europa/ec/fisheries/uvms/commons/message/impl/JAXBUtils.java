@@ -11,17 +11,20 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.io.StringWriter;
 
-public abstract class AbstractJAXBMarshaller {
+public class JAXBUtils {
+
+	private JAXBUtils(){
+
+	}
 
 	/**
 	 * Marshalls a JAXB Object to a XML String representation.
@@ -29,7 +32,7 @@ public abstract class AbstractJAXBMarshaller {
 	 * @param <T>
 	 * 			@param data @return @throws
 	 */
-	protected <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+	public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
 		final JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
 		final Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
