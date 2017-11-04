@@ -48,7 +48,7 @@ public class JAXBUtils {
 	 * @param <R>
 	 * 			@param textMessage @param clazz @return @throws
 	 */
-	protected <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz)
+	public static <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz)
 			throws JAXBException, JMSException {
 		final JAXBContext jc = JAXBContext.newInstance(clazz);
 		final Unmarshaller unmarshaller = jc.createUnmarshaller();
