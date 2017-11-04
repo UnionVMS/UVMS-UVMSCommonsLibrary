@@ -74,6 +74,7 @@
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>${jts.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
