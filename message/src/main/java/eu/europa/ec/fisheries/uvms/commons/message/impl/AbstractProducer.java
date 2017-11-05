@@ -102,41 +102,6 @@ public abstract class AbstractProducer implements MessageProducer {
 		}
 	}
 
-	public String sendModuleMessage(final String text, final Destination replyTo,
-			final Map<String, String> messageProperties) throws MessageException {
-		Connection connection = null;
-		try {
-			connection = connectionFactory.createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
-			
-			if (connection == null || session == null) {
-				throw new MessageException("[ Connection or session is null, cannot send message ] ");
-			}
-
-			LOGGER.info("Sending message with replyTo: [{}]", replyTo);
-			LOGGER.debug("Message content : [{}]", text);
-
-
-			final TextMessage message = session.createTextMessage();
-			if (MapUtils.isNotEmpty(messageProperties)) {
-				for (final Map.Entry<String, String> entry : messageProperties.entrySet()) {
-					message.setStringProperty(entry.getKey(), entry.getValue());
-				}
-			}
-			message.setJMSReplyTo(replyTo);
-			message.setText(text);
-			session.createProducer(getDestination()).send(message);
-			LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
-			return message.getJMSMessageID();
-
-		} catch (final JMSException e) {
-			LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
-			throw new MessageException("[ Error when sending message. ]", e);
-		} finally {
-			JMSUtils.disconnectQueue(connection);
-		}
-	}
-
 	protected final Destination getDestination() {
 		if (destination == null) {
 			destination = JMSUtils.lookupQueue(getDestinationName());

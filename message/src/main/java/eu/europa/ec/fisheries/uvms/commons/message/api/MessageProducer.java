@@ -29,6 +29,4 @@ public interface MessageProducer {
 
     void sendFault(TextMessage textMessage, Fault fault);
 
-    String getModuleName();
-
 }
