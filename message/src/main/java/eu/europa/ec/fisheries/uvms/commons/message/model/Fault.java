@@ -10,6 +10,9 @@
 
 package eu.europa.ec.fisheries.uvms.commons.message.model;
 
+/*
+
+ */
 public class Fault {
 
     private int code;
