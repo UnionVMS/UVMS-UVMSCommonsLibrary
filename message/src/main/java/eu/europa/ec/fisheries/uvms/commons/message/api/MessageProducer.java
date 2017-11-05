@@ -12,13 +12,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.api;
 
-import javax.ejb.Local;
 import javax.jms.Destination;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.uvms.commons.message.model.Fault;
 
-@Local
 public interface MessageProducer {
 
 	String sendModuleMessage(String text, Destination replyTo) throws MessageException;
