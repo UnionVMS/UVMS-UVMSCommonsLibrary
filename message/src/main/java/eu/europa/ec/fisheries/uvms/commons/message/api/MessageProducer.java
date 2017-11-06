@@ -15,8 +15,6 @@ package eu.europa.ec.fisheries.uvms.commons.message.api;
 import javax.jms.Destination;
 import javax.jms.TextMessage;
 
-import eu.europa.ec.fisheries.uvms.commons.message.model.Fault;
-
 public interface MessageProducer {
 
 	String sendModuleMessage(String text, Destination replyTo) throws MessageException;

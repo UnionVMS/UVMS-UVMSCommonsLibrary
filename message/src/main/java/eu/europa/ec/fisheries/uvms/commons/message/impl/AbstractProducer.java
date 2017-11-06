@@ -12,8 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -24,10 +22,10 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
 
@@ -51,7 +49,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+	public final String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
 
 		Connection connection = null;
 
@@ -83,7 +81,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
+	public final void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
 		Connection connection = null;
 		try {
 			connection = connectionFactory.createConnection();
@@ -109,4 +107,9 @@ public abstract class AbstractProducer implements MessageProducer {
 		return destination;
 	}
 
+	@Override
+	public void sendFault(TextMessage textMessage, Fault fault) {
+		LOGGER.info("sendFault {}",fault);
+		//TODO add implementation
+	}
 }
