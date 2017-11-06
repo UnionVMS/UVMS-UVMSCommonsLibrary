@@ -21,6 +21,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,8 +130,26 @@ public abstract class AbstractProducer implements MessageProducer {
 	}
 
 	@Override
-	public void sendFault(TextMessage textMessage, Fault fault) {
-		LOGGER.info("sendFault {}",fault);
-		//TODO add implementation
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void sendFault(final TextMessage message, Fault fault) {
+		Connection connection = null;
+		try {
+			String text = JAXBUtils.marshallJaxBObjectToString(fault);
+			connection = connectionFactory.createConnection();
+			final Session session = JMSUtils.connectToQueue(connection);
+
+			LOGGER.debug(
+					"Sending message back to recipient from  with correlationId {} on queue: {}",
+					message.getJMSMessageID(), message.getJMSReplyTo());
+
+			final TextMessage response = session.createTextMessage();
+			response.setText(text);
+			session.createProducer(message.getJMSReplyTo()).send(response);
+		} catch (JMSException | JAXBException e) {
+			LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(),
+					e.getStackTrace());
+		} finally {
+			JMSUtils.disconnectQueue(connection);
+		}
 	}
 }
