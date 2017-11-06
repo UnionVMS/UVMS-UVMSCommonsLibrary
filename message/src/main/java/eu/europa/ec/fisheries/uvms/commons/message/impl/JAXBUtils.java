@@ -11,49 +11,91 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JAXBUtils {
 
-	private JAXBUtils(){
+    private static Logger LOG = LoggerFactory.getLogger(JAXBUtils.class);
 
-	}
+    private static Map<String, JAXBContext> contexts = new HashMap<>();
 
-	/**
-	 * Marshalls a JAXB Object to a XML String representation.
-	 *
-	 * @param <T>
-	 * 			@param data @return @throws
-	 */
-	public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
-		final JAXBContext jaxbContext = JAXBContext.newInstance(data.getClass());
-		final Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		final StringWriter sw = new StringWriter();
-		marshaller.marshal(data, sw);
-		return sw.toString();
-	}
+    private JAXBUtils() {
 
-	/**
-	 * Unmarshalls A textMessage to the desired Object. The object must be the root
-	 * object of the unmarshalled message!
-	 *
-	 * @param <R>
-	 * 			@param textMessage @param clazz @return @throws
-	 */
-	public static <R> R unmarshallTextMessage(final TextMessage textMessage, final Class clazz)
-			throws JAXBException, JMSException {
-		final JAXBContext jc = JAXBContext.newInstance(clazz);
-		final Unmarshaller unmarshaller = jc.createUnmarshaller();
-		final StringReader sr = new StringReader(textMessage.getText());
-		return (R) unmarshaller.unmarshal(sr);
-	}
+    }
 
+    /**
+     * Marshalls a JAXB Object to a XML String representation.
+     *
+     * @param <T>
+     * @param data @return @throws
+     */
+    public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+        JAXBContext jaxbContext = contexts.get(data.getClass().getName());
+        if (jaxbContext == null) {
+            long before = System.currentTimeMillis();
+            jaxbContext = JAXBContext.newInstance(data.getClass());
+            contexts.put(data.getClass().getName(), jaxbContext);
+            LOG.debug("Stored contexts: {}", contexts.size());
+            LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
+        }
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        StringWriter sw = new StringWriter();
+        marshaller.marshal(data, sw);
+        long before = System.currentTimeMillis();
+        String marshalled = sw.toString();
+        LOG.debug("StringWriter time: {}", (System.currentTimeMillis() - before));
+        return marshalled;
+    }
+
+    /**
+     * Unmarshalls a textMessage to the desired Object. The object must be the root
+     * object of the unmarshalled message!
+     *
+     * @param <R>
+     * @param textMessage @param clazz @return @throws
+     */
+    public static <R> R unMarshallMessage(String textMessage, Class clazz) throws JAXBException {
+        return unMarshallMessage(textMessage, clazz, null);
+    }
+
+    /**
+     * Unmarshalls a textMessage to the desired Object. The object must be the root
+     * object of the unmarshalled message and validate against an xsd schema!
+     *
+     * @param <R>
+     * @param textMessage @param clazz @return @throws
+     */
+    public static <R> R unMarshallMessage(String textMessage, Class clazz, Schema schema) throws JAXBException {
+        JAXBContext jc = contexts.get(clazz.getName());
+        if (jc == null) {
+            long before = System.currentTimeMillis();
+            jc = JAXBContext.newInstance(clazz);
+            contexts.put(clazz.getName(), jc);
+            LOG.debug("Stored contexts: {}", contexts.size());
+            LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
+        }
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        if (schema != null){
+            unmarshaller.setSchema(schema);
+        }
+        StringReader sr = new StringReader(textMessage);
+        StreamSource source = new StreamSource(sr);
+        long before = System.currentTimeMillis();
+        R object = (R) unmarshaller.unmarshal(source);
+        LOG.debug("Unmarshalling time: {}", (System.currentTimeMillis() - before));
+        return object;
+    }
 }
