@@ -100,6 +100,27 @@ public abstract class AbstractProducer implements MessageProducer {
 		}
 	}
 
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public final void sendModuleResponseMessage(final TextMessage message, final String text) {
+		Connection connection = null;
+		try {
+			connection = connectionFactory.createConnection();
+			final Session session = JMSUtils.connectToQueue(connection);
+
+			LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}",
+					message.getJMSMessageID(), message.getJMSReplyTo());
+
+			final TextMessage response = session.createTextMessage(text);
+			response.setJMSCorrelationID(message.getJMSMessageID());
+			session.createProducer(message.getJMSReplyTo()).send(response);
+		} catch (final JMSException e) {
+			LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+		} finally {
+			JMSUtils.disconnectQueue(connection);
+		}
+	}
+
 	protected final Destination getDestination() {
 		if (destination == null) {
 			destination = JMSUtils.lookupQueue(getDestinationName());
