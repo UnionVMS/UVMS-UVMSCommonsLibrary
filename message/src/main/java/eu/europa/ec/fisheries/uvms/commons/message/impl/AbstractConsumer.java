@@ -36,7 +36,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	private Destination destination;
 
 	@PostConstruct
-	protected void initializeConnectionFactory() {
+	public void initializeConnectionFactory() {
 		connectionFactory = JMSUtils.lookupConnectionFactory();
 		destination = JMSUtils.lookupQueue(getDestinationName());
 	}
