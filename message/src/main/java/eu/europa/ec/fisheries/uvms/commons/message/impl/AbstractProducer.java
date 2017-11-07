@@ -45,6 +45,9 @@ public abstract class AbstractProducer implements MessageProducer {
 	}
 
 	protected final ConnectionFactory getConnectionFactory() {
+		if (connectionFactory == null) {
+			connectionFactory = JMSUtils.lookupConnectionFactory();
+		}
 		return connectionFactory;
 	}
 
@@ -55,7 +58,7 @@ public abstract class AbstractProducer implements MessageProducer {
 		Connection connection = null;
 
 		try {
-			connection = connectionFactory.createConnection();
+			connection = getConnectionFactory().createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
 			LOGGER.info("Sending message with replyTo: [{}]", replyTo);
@@ -85,7 +88,7 @@ public abstract class AbstractProducer implements MessageProducer {
 	public final void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
 		Connection connection = null;
 		try {
-			connection = connectionFactory.createConnection();
+			connection = getConnectionFactory().createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
 			LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
@@ -106,7 +109,7 @@ public abstract class AbstractProducer implements MessageProducer {
 	public final void sendModuleResponseMessage(final TextMessage message, final String text) {
 		Connection connection = null;
 		try {
-			connection = connectionFactory.createConnection();
+			connection = getConnectionFactory().createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
 			LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}",
@@ -135,7 +138,7 @@ public abstract class AbstractProducer implements MessageProducer {
 		Connection connection = null;
 		try {
 			String text = JAXBUtils.marshallJaxBObjectToString(fault);
-			connection = connectionFactory.createConnection();
+			connection = getConnectionFactory().createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
 			LOGGER.debug(

@@ -41,6 +41,13 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		destination = JMSUtils.lookupQueue(getDestinationName());
 	}
 
+	protected final ConnectionFactory getConnectionFactory() {
+		if (connectionFactory == null) {
+			connectionFactory = JMSUtils.lookupConnectionFactory();
+		}
+		return connectionFactory;
+	}
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@SuppressWarnings(value = "unchecked")
@@ -49,7 +56,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
 		Connection connection = null;
 		try {
-			connection = connectionFactory.createConnection();
+			connection = getConnectionFactory().createConnection();
 			final Session session = JMSUtils.connectToQueue(connection);
 
 			LOGGER.info("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
