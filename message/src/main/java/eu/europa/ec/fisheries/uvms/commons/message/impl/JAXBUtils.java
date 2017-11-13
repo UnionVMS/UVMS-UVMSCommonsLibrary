@@ -22,12 +22,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class JAXBUtils {
-
-    private static Logger LOG = LoggerFactory.getLogger(JAXBUtils.class);
 
     private static Map<String, JAXBContext> contexts = new HashMap<>();
 
@@ -44,20 +39,14 @@ public class JAXBUtils {
     public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
         JAXBContext jaxbContext = contexts.get(data.getClass().getName());
         if (jaxbContext == null) {
-            long before = System.currentTimeMillis();
             jaxbContext = JAXBContext.newInstance(data.getClass());
             contexts.put(data.getClass().getName(), jaxbContext);
-            LOG.debug("Stored contexts: {}", contexts.size());
-            LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
         }
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         StringWriter sw = new StringWriter();
         marshaller.marshal(data, sw);
-        long before = System.currentTimeMillis();
-        String marshalled = sw.toString();
-        LOG.debug("StringWriter time: {}", (System.currentTimeMillis() - before));
-        return marshalled;
+        return sw.toString();
     }
 
     /**
@@ -84,8 +73,6 @@ public class JAXBUtils {
             long before = System.currentTimeMillis();
             jc = JAXBContext.newInstance(clazz);
             contexts.put(clazz.getName(), jc);
-            LOG.debug("Stored contexts: {}", contexts.size());
-            LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
         }
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         if (schema != null){
@@ -93,9 +80,6 @@ public class JAXBUtils {
         }
         StringReader sr = new StringReader(textMessage);
         StreamSource source = new StreamSource(sr);
-        long before = System.currentTimeMillis();
-        R object = (R) unmarshaller.unmarshal(source);
-        LOG.debug("Unmarshalling time: {}", (System.currentTimeMillis() - before));
-        return object;
+        return  (R) unmarshaller.unmarshal(source);
     }
 }
