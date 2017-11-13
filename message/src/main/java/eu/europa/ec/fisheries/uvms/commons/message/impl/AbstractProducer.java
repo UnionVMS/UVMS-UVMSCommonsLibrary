@@ -53,7 +53,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public final String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+	public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
 
 		Connection connection = null;
 
@@ -85,7 +85,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public final void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
+	public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
 		Connection connection = null;
 		try {
 			connection = getConnectionFactory().createConnection();
@@ -106,7 +106,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public final void sendModuleResponseMessage(final TextMessage message, final String text) {
+	public void sendModuleResponseMessage(final TextMessage message, final String text) {
 		Connection connection = null;
 		try {
 			connection = getConnectionFactory().createConnection();
