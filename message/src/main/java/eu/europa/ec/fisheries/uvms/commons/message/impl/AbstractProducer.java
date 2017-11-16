@@ -22,137 +22,154 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
+import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractProducer implements MessageProducer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
-	private ConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
-	private Destination destination;
+    private Destination destination;
 
-	@PostConstruct
-	public void initializeConnectionFactory() {
-		connectionFactory = JMSUtils.lookupConnectionFactory();
-		destination = JMSUtils.lookupQueue(getDestinationName());
-	}
+    @PostConstruct
+    public void initializeConnectionFactory() {
+        connectionFactory = JMSUtils.lookupConnectionFactory();
+        destination = JMSUtils.lookupQueue(getDestinationName());
+    }
 
-	protected final ConnectionFactory getConnectionFactory() {
-		if (connectionFactory == null) {
-			connectionFactory = JMSUtils.lookupConnectionFactory();
-		}
-		return connectionFactory;
-	}
+    protected final ConnectionFactory getConnectionFactory() {
+        if (connectionFactory == null) {
+            connectionFactory = JMSUtils.lookupConnectionFactory();
+        }
+        return connectionFactory;
+    }
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
 
-		Connection connection = null;
+        Connection connection = null;
 
-		try {
-			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
+        try {
+            connection = getConnectionFactory().createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
-			LOGGER.info("Sending message with replyTo: [{}]", replyTo);
-			LOGGER.debug("Message content : [{}]", text);
+            LOGGER.info("Sending message with replyTo: [{}]", replyTo);
+            LOGGER.debug("Message content : [{}]", text);
 
-			if (connection == null || session == null) {
-				throw new MessageException("[ Connection or session is null, cannot send message ] ");
-			}
+            if (connection == null || session == null) {
+                throw new MessageException("[ Connection or session is null, cannot send message ] ");
+            }
 
-			final TextMessage message = session.createTextMessage();
-			message.setJMSReplyTo(replyTo);
-			message.setText(text);
-			session.createProducer(getDestination()).send(message);
-			LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
-			return message.getJMSMessageID();
+            TextMessage message = session.createTextMessage();
 
-		} catch (final JMSException e) {
-			LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
-			throw new MessageException("[ Error when sending message. ]", e);
-		} finally {
-			JMSUtils.disconnectQueue(connection);
-		}
-	}
+            if (MapUtils.isNotEmpty(props)) {
+                for (Object o : props.entrySet()) {
+                    Map.Entry<String, String> entry = (Map.Entry) o;
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+            }
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
-		Connection connection = null;
-		try {
-			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
+            message.setJMSReplyTo(replyTo);
+            message.setText(text);
+            session.createProducer(getDestination()).send(message);
+            LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
+            return message.getJMSMessageID();
 
-			LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
-					message.getJMSMessageID(), message.getJMSReplyTo());
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
+            throw new MessageException("[ Error when sending message. ]", e);
+        } finally {
+            JMSUtils.disconnectQueue(connection);
+        }
+    }
 
-			final TextMessage response = session.createTextMessage(text);
-			response.setJMSCorrelationID(message.getJMSMessageID());
-			session.createProducer(message.getJMSReplyTo()).send(response);
-		} catch (final JMSException e) {
-			LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
-		} finally {
-			JMSUtils.disconnectQueue(connection);
-		}
-	}
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, null);
+    }
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void sendModuleResponseMessage(final TextMessage message, final String text) {
-		Connection connection = null;
-		try {
-			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
+        Connection connection = null;
+        try {
+            connection = getConnectionFactory().createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
-			LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}",
-					message.getJMSMessageID(), message.getJMSReplyTo());
+            LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
+                    message.getJMSMessageID(), message.getJMSReplyTo());
 
-			final TextMessage response = session.createTextMessage(text);
-			response.setJMSCorrelationID(message.getJMSMessageID());
-			session.createProducer(message.getJMSReplyTo()).send(response);
-		} catch (final JMSException e) {
-			LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
-		} finally {
-			JMSUtils.disconnectQueue(connection);
-		}
-	}
+            final TextMessage response = session.createTextMessage(text);
+            response.setJMSCorrelationID(message.getJMSMessageID());
+            session.createProducer(message.getJMSReplyTo()).send(response);
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+        } finally {
+            JMSUtils.disconnectQueue(connection);
+        }
+    }
 
-	protected final Destination getDestination() {
-		if (destination == null) {
-			destination = JMSUtils.lookupQueue(getDestinationName());
-		}
-		return destination;
-	}
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendModuleResponseMessage(final TextMessage message, final String text) {
+        Connection connection = null;
+        try {
+            connection = getConnectionFactory().createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void sendFault(final TextMessage message, Fault fault) {
-		Connection connection = null;
-		try {
-			String text = JAXBUtils.marshallJaxBObjectToString(fault);
-			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
+            LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}",
+                    message.getJMSMessageID(), message.getJMSReplyTo());
 
-			LOGGER.debug(
-					"Sending message back to recipient from  with correlationId {} on queue: {}",
-					message.getJMSMessageID(), message.getJMSReplyTo());
+            final TextMessage response = session.createTextMessage(text);
+            response.setJMSCorrelationID(message.getJMSMessageID());
+            session.createProducer(message.getJMSReplyTo()).send(response);
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+        } finally {
+            JMSUtils.disconnectQueue(connection);
+        }
+    }
 
-			final TextMessage response = session.createTextMessage();
-			response.setText(text);
-			session.createProducer(message.getJMSReplyTo()).send(response);
-		} catch (JMSException | JAXBException e) {
-			LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(),
-					e.getStackTrace());
-		} finally {
-			JMSUtils.disconnectQueue(connection);
-		}
-	}
+    protected final Destination getDestination() {
+        if (destination == null) {
+            destination = JMSUtils.lookupQueue(getDestinationName());
+        }
+        return destination;
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendFault(final TextMessage message, Fault fault) {
+        Connection connection = null;
+        try {
+            String text = JAXBUtils.marshallJaxBObjectToString(fault);
+            connection = getConnectionFactory().createConnection();
+            final Session session = JMSUtils.connectToQueue(connection);
+
+            LOGGER.debug(
+                    "Sending message back to recipient from  with correlationId {} on queue: {}",
+                    message.getJMSMessageID(), message.getJMSReplyTo());
+
+            final TextMessage response = session.createTextMessage();
+            response.setText(text);
+            session.createProducer(message.getJMSReplyTo()).send(response);
+        } catch (JMSException | JAXBException e) {
+            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(),
+                    e.getStackTrace());
+        } finally {
+            JMSUtils.disconnectQueue(connection);
+        }
+    }
 }
