@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SimpleAbstractProducer implements Producer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAbstractProducer.class);
 
     public void sendMessage(String messageID, Destination destination, String messageToSend) {
 
