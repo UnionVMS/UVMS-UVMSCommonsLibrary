@@ -9,7 +9,6 @@ details. You should have received a copy of the GNU General Public License along
 
  */
 
-
 package eu.europa.ec.fisheries.uvms.commons.geometry.model;
 
 import lombok.AllArgsConstructor;
@@ -19,12 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-/**
- * This class is required by Mapstruct, which requires target attribute.
- * See {@link GeometryWrapper} for more details.
- *
- * Eventual improvement is to generalize the Wrappers or even to remove them.
- */
 public class StringWrapper {
 
     private String value;
