@@ -15,14 +15,12 @@ package eu.europa.ec.fisheries.uvms.commons.service.dao;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -71,10 +69,10 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     }
 
     @Override
-    public List<T> findEntityByNativeQuery(final Class<T> type, final String nativeQuery, final Map<String, String> parameters) throws ServiceException {
+    public List<T> findEntityByNativeQuery(final Class<T> type, final String nativeQuery, final Map<String, Object> parameters) throws ServiceException {
         log.debug("Finding all entity list for : " + type.getSimpleName());
         Query query = getEntityManager().createNativeQuery(nativeQuery, type);
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         return query.getResultList();
@@ -87,22 +85,22 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     }
 
     @Override
-    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, String> parameters) throws ServiceException {
+    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, Object> parameters) throws ServiceException {
         log.debug("Finding all entity list for : " + type.getSimpleName());
-        Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
+        Set<Map.Entry<Integer, Object>> rawParameters = parameters.entrySet();
         TypedQuery<T> query = getEntityManager().createQuery(hqlQuery, type);
-        for (Map.Entry<Integer, String> entry : rawParameters) {
+        for (Map.Entry<Integer, Object> entry : rawParameters) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, String> parameters, final int maxResultLimit) throws ServiceException {
+    public List<T> findEntityByHqlQuery(final Class<T> type, final String hqlQuery, final Map<Integer, Object> parameters, final int maxResultLimit) throws ServiceException {
         log.debug("Finding all entity list for : " + type.getSimpleName());
-        Set<Map.Entry<Integer, String>> rawParameters = parameters.entrySet();
+        Set<Map.Entry<Integer, Object>> rawParameters = parameters.entrySet();
         TypedQuery<T> query = getEntityManager().createQuery(hqlQuery, type);
-        for (Map.Entry<Integer, String> entry : rawParameters) {
+        for (Map.Entry<Integer, Object> entry : rawParameters) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         if (maxResultLimit > 0) {
@@ -119,20 +117,20 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, String> parameters) throws ServiceException {
+    public List<T> findEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, Object> parameters) throws ServiceException {
         log.debug("Finding all entity list for : " + type.getSimpleName());
         TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         return query.getResultList();
     }
 
     @Override
-    public List<T> findEntityByNamedQuery(final Class<T> type, String queryName, final Map<String, String> parameters, final int maxResultLimit) throws ServiceException {
+    public List<T> findEntityByNamedQuery(final Class<T> type, String queryName, final Map<String, Object> parameters, final int maxResultLimit) throws ServiceException {
         log.debug("Requesting {} with parameters {} and limit {}", queryName, parameters, maxResultLimit);
         TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, type);
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         if (maxResultLimit > 0) {
@@ -155,10 +153,10 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     }
 
     @Override
-    public void deleteEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, String> parameters) throws ServiceException {
+    public void deleteEntityByNamedQuery(final Class<T> type, final String queryName, final Map<String, Object> parameters) throws ServiceException {
         log.debug("Deleting entity : " + type.getSimpleName());
         Query query = getEntityManager().createNamedQuery(queryName);
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
         query.executeUpdate();
