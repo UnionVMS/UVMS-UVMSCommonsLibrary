@@ -31,23 +31,23 @@ public interface DAO<T> {
 
     List<T> findEntityByNativeQuery(Class<T> type, String hqlQuery) throws ServiceException;
 
-    List<T> findEntityByNativeQuery(Class<T> type, String hqlQuery, Map<String, String> parameters) throws ServiceException;
+    List<T> findEntityByNativeQuery(Class<T> type, String hqlQuery, Map<String, Object> parameters) throws ServiceException;
 
     List<T> findEntityByHqlQuery(Class<T> type, String hqlQuery) throws ServiceException;
 
-    List<T> findEntityByHqlQuery(Class<T> type, String hqlQuery, Map<Integer, String> parameters) throws ServiceException;
+    List<T> findEntityByHqlQuery(Class<T> type, String hqlQuery, Map<Integer, Object> parameters) throws ServiceException;
 
-    List<T> findEntityByHqlQuery(Class<T> type, String hqlQuery, Map<Integer, String> parameters, int maxResultLimit) throws ServiceException;
+    List<T> findEntityByHqlQuery(Class<T> type, String hqlQuery, Map<Integer, Object> parameters, int maxResultLimit) throws ServiceException;
 
     List<T> findEntityByNamedQuery(Class<T> type, String queryName) throws ServiceException;
 
-    List<T> findEntityByNamedQuery(Class<T> type, String queryName, Map<String, String> parameters) throws ServiceException;
+    List<T> findEntityByNamedQuery(Class<T> type, String queryName, Map<String, Object> parameters) throws ServiceException;
 
-    List<T> findEntityByNamedQuery(Class<T> type, String queryName, Map<String, String> parameters, int maxResultLimit) throws ServiceException;
+    List<T> findEntityByNamedQuery(Class<T> type, String queryName, Map<String, Object> parameters, int maxResultLimit) throws ServiceException;
 
     List<T> findAllEntity(Class<T> type) throws ServiceException;
 
     void deleteEntity(Class<T> entity, Object id) throws ServiceException;
 
-    void deleteEntityByNamedQuery(Class<T> type, String queryName, Map<String, String> parameters) throws ServiceException;
+    void deleteEntityByNamedQuery(Class<T> type, String queryName, Map<String, Object> parameters) throws ServiceException;
 }
