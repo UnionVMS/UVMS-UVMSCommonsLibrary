@@ -50,13 +50,6 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
     }
 
     @Override
-    public Integer updateEntityByNamedQuery(final String queryName) throws ServiceException {
-        log.debug("Updating entity");
-        Query namedQuery = getEntityManager().createNamedQuery(queryName);
-        return namedQuery.executeUpdate();
-    }
-
-    @Override
     public T findEntityById(final Class<T> type, final Object id) throws ServiceException {
         log.debug("Finding entity : " + type.getSimpleName() + " with ID : " + id.toString());
         return getEntityManager().find(type, id);
