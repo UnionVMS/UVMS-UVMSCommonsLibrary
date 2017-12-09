@@ -19,11 +19,6 @@ import java.util.List;
 import eu.europa.ec.fisheries.uvms.commons.rest.dto.PaginatedResponse;
 import eu.europa.ec.fisheries.uvms.commons.rest.dto.ResponseDto;
 
-/**
- * @implicitParam roleName|string||true||||||
- * @implicitParam scopeName|string||true|EC|||||
- * @implicitParam authorization|string||true||||||jwt token
- */
 public abstract class UnionVMSResource {
 
 	public Response createSuccessResponse() {
