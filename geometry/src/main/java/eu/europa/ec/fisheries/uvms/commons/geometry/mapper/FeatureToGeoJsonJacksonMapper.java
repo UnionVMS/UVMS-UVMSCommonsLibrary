@@ -36,11 +36,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.StringWrapper;
 
-/**
- * @deprecated use {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#featureCollectionToGeoJson} or
- * {@link eu.europa.ec.fisheries.uvms.mapper.GeometryMapper#simpleFeatureToGeoJson} instead.
- */
-@Deprecated
 public class FeatureToGeoJsonJacksonMapper {
 
     private static final String TYPE = "type";
@@ -92,18 +87,14 @@ public class FeatureToGeoJsonJacksonMapper {
             final Object value = property.getValue();
 
             if (!property.getName().getLocalPart().equals(GEOMETRY)){
-                if (ArrayList.class.equals(property.getType().getBinding())){
+                if (ArrayList.class.equals(property.getType().getBinding()) || List.class.equals(property.getType().getBinding())){
                     ArrayNode arrayNode = mapper.createArrayNode();
-                    for (Object o : (ArrayList)value){
-                        arrayNode.add(o.toString());
+                    if (value != null){
+                        for (Object o : (ArrayList)value){
+                            arrayNode.add(o.toString());
+                        }
+                        obj.putArray(property.getName().toString()).addAll(arrayNode);
                     }
-                    obj.putArray(property.getName().toString()).addAll(arrayNode);
-                }else if(List.class.equals(property.getType().getBinding())) {// If property value is of type List translate into ArrayList of String
-                    ArrayNode arrayNode = mapper.createArrayNode();
-                    for (Object o : (ArrayList) value) {
-                        arrayNode.add(o.toString());
-                    }
-                    obj.putArray(property.getName().toString()).addAll(arrayNode);
                 }else if(Map.class.equals(property.getType().getBinding())) { // converts property of type Map into JSON object
                     ObjectNode mapNode =obj.putObject(property.getName().toString());
                     Map valueMap = (Map)value;
