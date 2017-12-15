@@ -68,6 +68,9 @@ public class JAXBUtils {
      * @param textMessage @param clazz @return @throws
      */
     public static <R> R unMarshallMessage(String textMessage, Class clazz, Schema schema) throws JAXBException {
+        if (textMessage != null){
+            textMessage = textMessage.trim();
+        }
         JAXBContext jc = contexts.get(clazz.getName());
         if (jc == null) {
             long before = System.currentTimeMillis();
