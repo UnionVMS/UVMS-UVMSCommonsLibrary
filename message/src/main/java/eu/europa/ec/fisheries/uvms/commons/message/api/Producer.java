@@ -21,16 +21,20 @@
 package eu.europa.ec.fisheries.uvms.commons.message.api;
 
 import javax.ejb.Local;
-import javax.jms.Destination;
+import javax.jms.Queue;
 
 @Local
 public interface Producer {
 
     /**
      *
-     * @param messageID The original message that contains the replyTo
-     * @param destination the response
-     * @param destination the destination queue
+     * @param messageID The messageID
+     * @param destination the destination
+     * @param messageToSend the message
+     *
      */
-    void sendMessage(String messageID, Destination destination, String messageToSend);
+    void sendMessage(String messageID, Queue destination, Queue replyTo, String messageToSend);
+
+    void sendMessage(Queue destination, Queue replyTo, String messageToSend);
+
 }
