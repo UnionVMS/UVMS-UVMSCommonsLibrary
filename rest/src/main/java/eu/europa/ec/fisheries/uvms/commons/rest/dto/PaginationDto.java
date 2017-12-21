@@ -8,28 +8,26 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
  */
+
 package eu.europa.ec.fisheries.uvms.commons.rest.dto;
 
-/**
- * Created by sanera on 01/12/2016.
- */
+import javax.validation.constraints.NotNull;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaginationDto {
-    private int offset, pageSize;
 
+    @NotNull
+    private Integer offset;
 
-    public int getOffset() {
-        return offset;
-    }
+    @NotNull
+    private Integer pageSize;
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
 }
