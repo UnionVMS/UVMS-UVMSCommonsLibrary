@@ -12,8 +12,8 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
@@ -25,17 +25,26 @@ public abstract class SimpleAbstractProducer implements Producer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAbstractProducer.class);
 
-    public void sendMessage(String messageID, Destination destination, String messageToSend) {
+    @Override
+    public void sendMessage(Queue destination, Queue replyTo, String messageToSend) {
+        sendMessage(null, destination, replyTo, messageToSend);
+    }
+
+    @Override
+    public void sendMessage(String messageID, Queue destination, Queue replyTo, String messageToSend) {
 
         try (Connection connection = getConnectionFactory().createConnection();
              Session session = JMSUtils.connectToQueue(connection);
+
              MessageProducer producer = session.createProducer(destination)) {
-
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", messageID, destination);
-
-            final TextMessage response = session.createTextMessage();
-            response.setText(messageToSend);
-            producer.send(response);
+                LOGGER.debug("Sending message with correlationId {} on queue: {}", messageID, destination);
+                final TextMessage response = session.createTextMessage();
+                if (messageID != null){
+                    response.setJMSCorrelationID(messageID);
+                    response.setJMSReplyTo(replyTo);
+                }
+                response.setText(messageToSend);
+                producer.send(response);
 
         } catch (Exception e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
