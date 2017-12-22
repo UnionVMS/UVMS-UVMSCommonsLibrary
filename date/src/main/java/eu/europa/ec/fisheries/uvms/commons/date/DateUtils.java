@@ -13,14 +13,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -33,6 +32,7 @@ public class DateUtils {
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
     static final public DateTime START_OF_TIME = new DateTime( 0000, 1, 1, 0, 0, 0, DateTimeZone.UTC );
+    static final public DateTime END_OF_TIME = new DateTime( 9999, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
