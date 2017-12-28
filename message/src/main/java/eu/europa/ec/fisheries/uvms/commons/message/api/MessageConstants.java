@@ -18,6 +18,8 @@ public interface MessageConstants {
 	String CONNECTION_TYPE = "javax.jms.MessageListener";
 	String DESTINATION_TYPE_QUEUE = "javax.jms.Queue";
 
+	String QUEUE_SUBSCRIPTION_EVENT = "jms/queue/UVMSSubscriptionEvent";
+
 	String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
 	String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
 	String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
