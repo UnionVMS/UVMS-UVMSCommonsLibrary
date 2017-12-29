@@ -21,6 +21,7 @@
         <javaee.version>7.0</javaee.version>
         <junit.version>4.12</junit.version>
         <commons.collections>3.2.2</commons.collections>
+		<apache.commons.version>3.7</apache.commons.version>
     </properties>
 
 	<dependencies>	
@@ -71,6 +72,11 @@
 			<artifactId>javaee-api</artifactId>
 			<version>${javaee.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache.commons.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -33,7 +33,7 @@ public interface Producer {
      * @param messageToSend the message
      *
      */
-    void sendMessage(String messageID, Queue destination, Queue replyTo, String messageToSend);
+    void sendMessage(String messageID, String msgCoorelationId, Queue destination, Queue replyTo, String messageToSend);
 
     void sendMessage(Queue destination, Queue replyTo, String messageToSend);
 
