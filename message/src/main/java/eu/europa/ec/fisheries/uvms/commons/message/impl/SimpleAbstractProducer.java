@@ -10,14 +10,14 @@
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.Producer;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
-import eu.europa.ec.fisheries.uvms.commons.message.api.Producer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,24 +27,26 @@ public abstract class SimpleAbstractProducer implements Producer {
 
     @Override
     public void sendMessage(Queue destination, Queue replyTo, String messageToSend) {
-        sendMessage(null, destination, replyTo, messageToSend);
+        sendMessage(null, null, destination, replyTo, messageToSend);
     }
 
     @Override
-    public void sendMessage(String messageID, Queue destination, Queue replyTo, String messageToSend) {
+    public void sendMessage(String messageID, String msgCoorelationId, Queue destination, Queue replyTo, String messageToSend) {
 
         try (Connection connection = getConnectionFactory().createConnection();
              Session session = JMSUtils.connectToQueue(connection);
-
              MessageProducer producer = session.createProducer(destination)) {
-                LOGGER.debug("Sending message with correlationId {} on queue: {}", messageID, destination);
-                final TextMessage response = session.createTextMessage();
-                if (messageID != null){
-                    response.setJMSCorrelationID(messageID);
-                    response.setJMSReplyTo(replyTo);
-                }
-                response.setText(messageToSend);
-                producer.send(response);
+            LOGGER.debug("Sending message with correlationId {} on queue: {}", messageID, destination);
+            final TextMessage message = session.createTextMessage();
+            if (StringUtils.isNotEmpty(messageID)) {
+                message.setJMSMessageID(messageID);
+            }
+            if (StringUtils.isNotEmpty(msgCoorelationId)) {
+                message.setJMSCorrelationID(msgCoorelationId);
+            }
+            message.setJMSReplyTo(replyTo);
+            message.setText(messageToSend);
+            producer.send(message);
 
         } catch (Exception e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
