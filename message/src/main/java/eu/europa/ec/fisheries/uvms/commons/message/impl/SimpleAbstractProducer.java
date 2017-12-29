@@ -10,13 +10,14 @@
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.Producer;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.commons.message.api.Producer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,18 @@ public abstract class SimpleAbstractProducer implements Producer {
     }
 
     @Override
-    public void sendMessage(String messageID, String msgCoorelationId, Queue destination, Queue replyTo, String messageToSend) {
+    public void sendMessage(String jmsMessageID, String jmsCorrelationID, Queue destination, Queue replyTo, String messageToSend) {
 
         try (Connection connection = getConnectionFactory().createConnection();
              Session session = JMSUtils.connectToQueue(connection);
              MessageProducer producer = session.createProducer(destination)) {
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", messageID, destination);
+            LOGGER.debug("Sending message with correlationId {} on queue: {}", jmsCorrelationID, destination);
             final TextMessage message = session.createTextMessage();
-            if (StringUtils.isNotEmpty(messageID)) {
-                message.setJMSMessageID(messageID);
+            if (StringUtils.isNotEmpty(jmsMessageID)) {
+                message.setJMSMessageID(jmsMessageID);
             }
-            if (StringUtils.isNotEmpty(msgCoorelationId)) {
-                message.setJMSCorrelationID(msgCoorelationId);
+            if (StringUtils.isNotEmpty(jmsCorrelationID)) {
+                message.setJMSCorrelationID(jmsCorrelationID);
             }
             message.setJMSReplyTo(replyTo);
             message.setText(messageToSend);
