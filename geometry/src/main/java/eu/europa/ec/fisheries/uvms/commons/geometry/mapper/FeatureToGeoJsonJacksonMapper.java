@@ -87,6 +87,8 @@ public class FeatureToGeoJsonJacksonMapper {
             final Object value = property.getValue();
 
             if (!property.getName().getLocalPart().equals(GEOMETRY)){
+
+
                 if (ArrayList.class.equals(property.getType().getBinding()) || List.class.equals(property.getType().getBinding())){
                     ArrayNode arrayNode = mapper.createArrayNode();
                     if (value != null){
@@ -105,8 +107,12 @@ public class FeatureToGeoJsonJacksonMapper {
                 }
                 else if (Double.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
-                            0D : (double)value);
-                }else if (Boolean.class.equals(property.getType().getBinding())) {
+                            0D : (double) value);
+                }else if(Long.class.equals(property.getType().getBinding())){
+                    obj.put(property.getName().toString(), value == null ?
+                            0D : (long) value);
+                }
+                else if (Boolean.class.equals(property.getType().getBinding())) {
                     obj.put(property.getName().toString(), value == null ?
                             null : (Boolean) value);
                 }
