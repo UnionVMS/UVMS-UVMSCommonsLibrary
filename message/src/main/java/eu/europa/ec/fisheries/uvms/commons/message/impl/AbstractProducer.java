@@ -99,7 +99,7 @@ public abstract class AbstractProducer implements MessageProducer {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageNonePersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
+    public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
     }
 

@@ -30,7 +30,7 @@ public interface MessageProducer {
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendModuleMessageNonePersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
+    String sendModuleMessageNonPersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
