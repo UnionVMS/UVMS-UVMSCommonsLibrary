@@ -18,6 +18,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
@@ -41,50 +42,35 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		destination = JMSUtils.lookupQueue(getDestinationName());
 	}
 
-	protected final ConnectionFactory getConnectionFactory() {
-		if (connectionFactory == null) {
-			connectionFactory = JMSUtils.lookupConnectionFactory();
-		}
-		return connectionFactory;
-	}
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@SuppressWarnings(value = "unchecked")
-	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis)
-			throws MessageException {
-
+	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
 		Connection connection = null;
+		Session session = null;
+		javax.jms.MessageConsumer consumer = null;
 		try {
 			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
-
-			LOGGER.info("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
-					correlationId, type, timeoutInMillis);
+			session = JMSUtils.connectToQueue(connection);
+			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
 			if (correlationId == null || correlationId.isEmpty()) {
 				throw new MessageException("No CorrelationID provided!");
 			}
-
-			final T receivedMessage = (T) session
-					.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
-					.receive(timeoutInMillis);
-
+			consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
+			final T receivedMessage = (T) consumer.receive(timeoutInMillis);
 			if (receivedMessage == null) {
-				throw new MessageException(
-						"Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
+				throw new MessageException("Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
 			} else {
-				LOGGER.info("Message with {} has been successfully received.", correlationId);
-				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage,
-						((TextMessage) receivedMessage).getText());
+				LOGGER.debug("Message with {} has been successfully received.", correlationId);
+				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
 			}
-
 			return receivedMessage;
-
 		} catch (final Exception e) {
 			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
 			throw new MessageException("Error when retrieving message: " + e.getMessage());
 		} finally {
-			JMSUtils.disconnectQueue(connection);
+			JMSUtils.disconnectQueue(connection, session, consumer);
 		}
 	}
 
@@ -105,5 +91,16 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			destination = JMSUtils.lookupQueue(getDestinationName());
 		}		
 		return destination;
+	}
+
+	protected final Connection getConnection() throws JMSException {
+		return getConnectionFactory().createConnection();
+	}
+
+	protected final ConnectionFactory getConnectionFactory() {
+		if (connectionFactory == null) {
+			connectionFactory = JMSUtils.lookupConnectionFactory();
+		}
+		return connectionFactory;
 	}
 }
