@@ -26,9 +26,7 @@ public class JAXBUtils {
 
     private static Map<String, JAXBContext> contexts = new HashMap<>();
 
-    private JAXBUtils() {
-
-    }
+    private JAXBUtils() {}
 
     /**
      * Marshalls a JAXB Object to a XML String representation.
@@ -73,7 +71,6 @@ public class JAXBUtils {
         }
         JAXBContext jc = contexts.get(clazz.getName());
         if (jc == null) {
-            long before = System.currentTimeMillis();
             jc = JAXBContext.newInstance(clazz);
             contexts.put(clazz.getName(), jc);
         }
@@ -85,4 +82,5 @@ public class JAXBUtils {
         StreamSource source = new StreamSource(sr);
         return  (R) unmarshaller.unmarshal(source);
     }
+
 }

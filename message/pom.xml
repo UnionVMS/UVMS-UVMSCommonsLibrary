@@ -10,7 +10,6 @@
 
 	<artifactId>uvms-commons-message</artifactId>
 	<packaging>jar</packaging>
-
 	<version>3.0.9-SNAPSHOT</version>
 	<name>uvms-commons-message</name>
 

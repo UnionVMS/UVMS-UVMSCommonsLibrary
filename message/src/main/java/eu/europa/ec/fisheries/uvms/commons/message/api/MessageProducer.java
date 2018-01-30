@@ -15,6 +15,7 @@ package eu.europa.ec.fisheries.uvms.commons.message.api;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.util.Map;
 
@@ -27,6 +28,9 @@ public interface MessageProducer {
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendModuleMessage(String text, String replyTo) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -36,4 +40,9 @@ public interface MessageProducer {
 
     void sendFault(TextMessage textMessage, Fault fault);
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendMessageToSpecificQueue(Destination destination, Destination replyTo, String messageToSend);
 }
