@@ -12,26 +12,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.xml.bind.JAXBException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.*;
+import java.util.Map;
 
 public abstract class AbstractProducer implements MessageProducer {
 
@@ -56,13 +49,11 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
 
-        Connection connection = null;
-
-        try {
-            connection = getConnectionFactory().createConnection();
-            final Session session = JMSUtils.connectToQueue(connection);
+        try (Connection connection = getConnectionFactory().createConnection();
+             Session session = JMSUtils.connectToQueue(connection);
+             javax.jms.MessageProducer producer = session.createProducer(getDestination())) {
 
             LOGGER.info("Sending message with replyTo: [{}]", replyTo);
             LOGGER.debug("Message content : [{}]", text);
@@ -82,64 +73,58 @@ public abstract class AbstractProducer implements MessageProducer {
 
             message.setJMSReplyTo(replyTo);
             message.setText(text);
-            session.createProducer(getDestination()).send(message);
+
+            producer.setDeliveryMode(jmsDeliveryMode);
+            producer.setTimeToLive(timeToLiveInMillis);
+            producer.send(message);
             LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
 
-        } catch (final JMSException e) {
+        } catch (final Exception e) {
             LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
-        } finally {
-            JMSUtils.disconnectQueue(connection);
         }
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
-        return sendModuleMessageWithProps(text, replyTo, null);
+        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.PERSISTENT, 0L);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
-        Connection connection = null;
-        try {
-            connection = getConnectionFactory().createConnection();
-            final Session session = JMSUtils.connectToQueue(connection);
+        try (Connection connection = getConnectionFactory().createConnection();
+             Session session = JMSUtils.connectToQueue(connection);
+             javax.jms.MessageProducer producer = session.createProducer(message.getJMSReplyTo())) {
 
-            LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}",
+            LOGGER.info("Sending message back to recipient from " + moduleName + " with correlationId {} on queue: {}",
                     message.getJMSMessageID(), message.getJMSReplyTo());
 
             final TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
-            session.createProducer(message.getJMSReplyTo()).send(response);
-        } catch (final JMSException e) {
+            producer.send(response);
+        } catch (final Exception e) {
             LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
-        } finally {
-            JMSUtils.disconnectQueue(connection);
         }
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(final TextMessage message, final String text) {
-        Connection connection = null;
-        try {
-            connection = getConnectionFactory().createConnection();
-            final Session session = JMSUtils.connectToQueue(connection);
-
-            LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}",
-                    message.getJMSMessageID(), message.getJMSReplyTo());
-
-            final TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            session.createProducer(message.getJMSReplyTo()).send(response);
-        } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
-        } finally {
-            JMSUtils.disconnectQueue(connection);
-        }
+        sendModuleResponseMessage(message, text, StringUtils.EMPTY);
     }
 
     protected final Destination getDestination() {
@@ -152,11 +137,11 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendFault(final TextMessage message, Fault fault) {
-        Connection connection = null;
-        try {
+        try (Connection connection = getConnectionFactory().createConnection();
+             Session session = JMSUtils.connectToQueue(connection);
+             javax.jms.MessageProducer producer = session.createProducer(message.getJMSReplyTo())) {
+
             String text = JAXBUtils.marshallJaxBObjectToString(fault);
-            connection = getConnectionFactory().createConnection();
-            final Session session = JMSUtils.connectToQueue(connection);
 
             LOGGER.debug(
                     "Sending message back to recipient from  with correlationId {} on queue: {}",
@@ -164,12 +149,10 @@ public abstract class AbstractProducer implements MessageProducer {
 
             final TextMessage response = session.createTextMessage();
             response.setText(text);
-            session.createProducer(message.getJMSReplyTo()).send(response);
-        } catch (JMSException | JAXBException e) {
+            producer.send(response);
+        } catch (Exception e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(),
                     e.getStackTrace());
-        } finally {
-            JMSUtils.disconnectQueue(connection);
         }
     }
 }

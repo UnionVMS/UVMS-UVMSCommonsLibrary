@@ -54,10 +54,9 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis)
 			throws MessageException {
 
-		Connection connection = null;
-		try {
-			connection = getConnectionFactory().createConnection();
-			final Session session = JMSUtils.connectToQueue(connection);
+		try (Connection connection = getConnectionFactory().createConnection();
+			 Session session = JMSUtils.connectToQueue(connection);
+             javax.jms.MessageConsumer consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")) {
 
 			LOGGER.info("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}",
 					correlationId, type, timeoutInMillis);
@@ -65,9 +64,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 				throw new MessageException("No CorrelationID provided!");
 			}
 
-			final T receivedMessage = (T) session
-					.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
-					.receive(timeoutInMillis);
+			final T receivedMessage = (T) consumer.receive(timeoutInMillis);
 
 			if (receivedMessage == null) {
 				throw new MessageException(
@@ -83,8 +80,6 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		} catch (final Exception e) {
 			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
 			throw new MessageException("Error when retrieving message: " + e.getMessage());
-		} finally {
-			JMSUtils.disconnectQueue(connection);
 		}
 	}
 

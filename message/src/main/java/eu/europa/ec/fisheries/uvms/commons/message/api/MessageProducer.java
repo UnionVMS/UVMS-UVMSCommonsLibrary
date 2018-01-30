@@ -24,7 +24,13 @@ public interface MessageProducer {
     String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendModuleMessageNonPersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
