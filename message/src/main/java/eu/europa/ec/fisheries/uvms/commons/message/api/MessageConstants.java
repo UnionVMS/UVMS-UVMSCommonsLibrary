@@ -17,6 +17,13 @@ public interface MessageConstants {
     String CONNECTION_FACTORY = "ConnectionFactory";
     String CONNECTION_TYPE = "javax.jms.MessageListener";
     String DESTINATION_TYPE_QUEUE = "javax.jms.Queue";
+    String DESTINATION_TYPE_TOPIC = "javax.jms.Topic";
+
+    String SUBSCRIPTION_DURABILITY_STR = "subscriptionDurability";
+    String DURABLE_CONNECTION = "Durable";
+    String SUBSCRIPTION_NAME_STR = "subscriptionName";
+    String CLIENT_ID_STR = "clientId";
+    String MESSAGE_SELECTOR_STR = "messageSelector";
 
     String MESSAGING_TYPE_STR = "messagingType";
     String DESTINATION_TYPE_STR = "destinationType";
@@ -30,12 +37,15 @@ public interface MessageConstants {
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
-    String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel";
+    String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel"
+            ;
     String QUEUE_ASSET = "jms/queue/UVMSAsset"; // response queue
     String QUEUE_ASSET_EVENT = "jms/queue/UVMSAssetEvent"; // request queue, create event
+
     String QUEUE_MODULE_MOVEMENT = "jms/queue/UVMSMovementEvent";
     String QUEUE_AUDIT_EVENT = "jms/queue/UVMSAuditEvent";
     String QUEUE_AUDIT = "jms/queue/UVMSAudit";
+
     String QUEUE_USM = "jms/queue/UVMSUserEvent";
     String QUEUE_USM4UVMS = "jms/queue/USM4UVMS";
     String QUEUE_CONFIG = "jms/queue/UVMSConfigEvent";
@@ -69,4 +79,12 @@ public interface MessageConstants {
     String QUEUE_SALES = "jms/queue/UVMSSales";
     String QUEUE_SALES_EVENT = "jms/queue/UVMSSalesEvent";
     String QUEUE_ECB_PROXY = "jms/queue/UVMSSalesEcbProxy";
+
+    String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME = "UVMSMdrPluginEvent";
+    String FLUX_MDR_REMOTE_MESSAGE_OUT_QUEUE_NAME = "UVMSMdrPlugin";
+
+    String EVENTBUS_TOPIC = "jms/topic/EventBus";
+    String EVENTBUS_TOPIC_NAME = "EventBus";
+
+    String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
 }
