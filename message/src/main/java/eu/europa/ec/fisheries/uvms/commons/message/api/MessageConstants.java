@@ -37,8 +37,8 @@ public interface MessageConstants {
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
-    String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel"
-            ;
+    String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel";
+
     String QUEUE_ASSET = "jms/queue/UVMSAsset"; // response queue
     String QUEUE_ASSET_EVENT = "jms/queue/UVMSAssetEvent"; // request queue, create event
 
@@ -60,6 +60,7 @@ public interface MessageConstants {
 
     String QUEUE_MODULE_RULES = "jms/queue/UVMSRulesEvent";
     String QUEUE_RULES = "jms/queue/UVMSRules";
+    String RULES_MESSAGE_IN_QUEUE_NAME = "UVMSRulesEvent";
 
     String UPLOAD_QUEUE_NAME = "UVMSUploadEvent";
     String UPLOAD_EVENT_QUEUE = "jms/queue/UVMSUploadEvent";
@@ -87,4 +88,5 @@ public interface MessageConstants {
     String EVENTBUS_TOPIC_NAME = "EventBus";
 
     String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
+    String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
 }
