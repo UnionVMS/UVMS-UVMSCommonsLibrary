@@ -38,7 +38,7 @@ public abstract class AbstractTopicProducer {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendEventBusMessage(String text, String serviceName) throws MessageException {
+    public String sendEventBusMessage(String text, String serviceName) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -50,6 +50,59 @@ public abstract class AbstractTopicProducer {
             message.setStringProperty(SERVICE_NAME, serviceName);
             producer = session.createProducer(destination);
             producer.send(message);
+            return message.getJMSMessageID();
+        } catch (JMSException e) {
+            throw new MessageException("Error while trying to send EventBus Message..");
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendEventBusMessage(String text, String serviceName, String replyToQueueName) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        Destination replyto = StringUtils.isNotEmpty(replyToQueueName) ? JMSUtils.lookupQueue(replyToQueueName) : null;
+        try {
+            connection = getConnection();
+            session = JMSUtils.connectToQueue(connection);
+            LOGGER.info("Sending message to EventBus...");
+            TextMessage message = session.createTextMessage(text);
+            message.setStringProperty(SERVICE_NAME, serviceName);
+            message.setJMSReplyTo(replyto);
+            producer = session.createProducer(destination);
+            producer.send(message);
+            return message.getJMSMessageID();
+        } catch (JMSException e) {
+            throw new MessageException("Error while trying to send EventBus Message..");
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, String replyToQueueName, String messageId, String messageCorrelationId) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        Destination replyto = StringUtils.isNotEmpty(replyToQueueName) ? JMSUtils.lookupQueue(replyToQueueName) : null;
+        try {
+            connection = getConnection();
+            session = JMSUtils.connectToQueue(connection);
+            LOGGER.info("Sending message to EventBus...");
+            TextMessage message = session.createTextMessage(text);
+            message.setStringProperty(SERVICE_NAME, serviceName);
+            message.setJMSReplyTo(replyto);
+            if(StringUtils.isNotEmpty(messageId)){
+                message.setJMSMessageID(messageId);
+            }
+            if(StringUtils.isNotEmpty(messageCorrelationId)){
+                message.setJMSCorrelationID(messageCorrelationId);
+            }
+            producer = session.createProducer(destination);
+            producer.send(message);
+            return message.getJMSMessageID();
         } catch (JMSException e) {
             throw new MessageException("Error while trying to send EventBus Message..");
         } finally {

@@ -29,7 +29,7 @@ public interface MessageConstants {
     String DESTINATION_TYPE_STR = "destinationType";
     String DESTINATION_STR = "destination";
     String DESTINATION_JNDI_NAME = "destinationJndiName";
-    String DESTINATION_FACTORY_JNDI_NAME = "connectionFactoryJndiName";
+    String CONNECTION_FACTORY_JNDI_NAME = "connectionFactoryJndiName";
 
     String QUEUE_SUBSCRIPTION_EVENT = "jms/queue/UVMSSubscriptionEvent";
     String QUEUE_NAME_SUBSCRIPTION_EVENT = "UVMSSubscriptionEvent";
@@ -38,6 +38,8 @@ public interface MessageConstants {
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
     String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel";
+
+    String QUEUE_MOVEMENT = "jms/queue/UVMSMovement";
 
     String QUEUE_ASSET = "jms/queue/UVMSAsset"; // response queue
     String QUEUE_ASSET_EVENT = "jms/queue/UVMSAssetEvent"; // request queue, create event
@@ -76,6 +78,7 @@ public interface MessageConstants {
 
     String QUEUE_EXCHANGE = "jms/queue/UVMSExchange";
     String QUEUE_EXCHANGE_EVENT = "jms/queue/UVMSExchangeEvent";
+    String QUEUE_EXCHANGE_EVENT_NAME = "UVMSExchangeEvent";
 
     String QUEUE_SALES = "jms/queue/UVMSSales";
     String QUEUE_SALES_EVENT = "jms/queue/UVMSSalesEvent";
@@ -84,8 +87,8 @@ public interface MessageConstants {
     String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME = "UVMSMdrPluginEvent";
     String FLUX_MDR_REMOTE_MESSAGE_OUT_QUEUE_NAME = "UVMSMdrPlugin";
 
-    String EVENTBUS_TOPIC = "jms/topic/EventBus";
-    String EVENTBUS_TOPIC_NAME = "EventBus";
+    String EVENT_BUS_TOPIC = "jms/topic/EventBus";
+    String EVENT_BUS_TOPIC_NAME = "EventBus";
 
     String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
     String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
