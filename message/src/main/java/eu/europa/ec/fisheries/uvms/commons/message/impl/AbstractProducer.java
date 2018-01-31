@@ -154,9 +154,9 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
+    public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws MessageException {
         if(destination == null){
-            throw new JMSException("Destination cannot be null!");
+            throw new MessageException("Destination cannot be null!");
         }
         Connection connection = null;
         Session session = null;
@@ -180,7 +180,8 @@ public abstract class AbstractProducer implements MessageProducer {
             producer.send(message);
             corrId = message.getJMSMessageID();
         } catch (JMSException e) {
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOGGER.error("Error when returning request!", e);
+            throw new MessageException("Error when returning request!", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }

@@ -12,6 +12,7 @@
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
@@ -25,11 +26,8 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 
 /**
  * Created by osdjup on 2016-12-02.

@@ -12,12 +12,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.api;
 
+import java.util.Map;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Destination;
-import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import java.util.Map;
 
 public interface MessageProducer {
 
@@ -39,7 +38,7 @@ public interface MessageProducer {
     void sendFault(TextMessage textMessage, Fault fault);
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException;
+    String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException;
