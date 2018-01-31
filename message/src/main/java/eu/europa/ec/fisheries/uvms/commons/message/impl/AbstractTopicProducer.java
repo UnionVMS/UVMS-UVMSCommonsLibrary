@@ -59,18 +59,17 @@ public abstract class AbstractTopicProducer {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessage(String text, String serviceName, String replyToQueueName) throws MessageException {
+    public String sendEventBusMessage(String text, String serviceName, Destination replyToDestination) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
-        Destination replyto = StringUtils.isNotEmpty(replyToQueueName) ? JMSUtils.lookupQueue(replyToQueueName) : null;
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
             LOGGER.info("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
-            message.setJMSReplyTo(replyto);
+            message.setJMSReplyTo(replyToDestination);
             producer = session.createProducer(destination);
             producer.send(message);
             return message.getJMSMessageID();
@@ -82,18 +81,17 @@ public abstract class AbstractTopicProducer {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, String replyToQueueName, String messageId, String messageCorrelationId) throws MessageException {
+    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
-        Destination replyto = StringUtils.isNotEmpty(replyToQueueName) ? JMSUtils.lookupQueue(replyToQueueName) : null;
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
             LOGGER.info("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
-            message.setJMSReplyTo(replyto);
+            message.setJMSReplyTo(replyToDestination);
             if(StringUtils.isNotEmpty(messageId)){
                 message.setJMSMessageID(messageId);
             }

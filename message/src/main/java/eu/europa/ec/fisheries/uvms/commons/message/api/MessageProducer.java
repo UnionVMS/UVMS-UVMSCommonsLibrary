@@ -22,16 +22,10 @@ import java.util.Map;
 public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendMessageToSpecificQueue(String text, String destination, String replyToQueueName) throws MessageException;
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendModuleMessage(String text, String replyTo) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
@@ -41,6 +35,7 @@ public interface MessageProducer {
 
 	String getDestinationName();
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendFault(TextMessage textMessage, Fault fault);
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

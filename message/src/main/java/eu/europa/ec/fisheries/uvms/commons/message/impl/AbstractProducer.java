@@ -23,7 +23,6 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBException;
@@ -50,21 +49,6 @@ public abstract class AbstractProducer implements MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null);
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(final String text, final String replyToQueueName) throws MessageException {
-        final Queue replyQueue = JMSUtils.lookupQueue(replyToQueueName);
-        return sendModuleMessageWithProps(text, replyQueue, null);
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageToSpecificQueue(final String text, final String destination, final String replyToQueueName) throws MessageException {
-        final Queue destinationQueue = JMSUtils.lookupQueue(destination);
-        final Queue replyQueue = JMSUtils.lookupQueue(replyToQueueName);
-        return sendMessageToSpecificQueue(text, destinationQueue, replyQueue);
     }
 
     @Override
