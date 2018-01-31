@@ -17,12 +17,19 @@ public interface MessageConstants {
     String CONNECTION_FACTORY = "ConnectionFactory";
     String CONNECTION_TYPE = "javax.jms.MessageListener";
     String DESTINATION_TYPE_QUEUE = "javax.jms.Queue";
+    String DESTINATION_TYPE_TOPIC = "javax.jms.Topic";
+
+    String SUBSCRIPTION_DURABILITY_STR = "subscriptionDurability";
+    String DURABLE_CONNECTION = "Durable";
+    String SUBSCRIPTION_NAME_STR = "subscriptionName";
+    String CLIENT_ID_STR = "clientId";
+    String MESSAGE_SELECTOR_STR = "messageSelector";
 
     String MESSAGING_TYPE_STR = "messagingType";
     String DESTINATION_TYPE_STR = "destinationType";
     String DESTINATION_STR = "destination";
     String DESTINATION_JNDI_NAME = "destinationJndiName";
-    String DESTINATION_FACTORY_JNDI_NAME = "connectionFactoryJndiName";
+    String CONNECTION_FACTORY_JNDI_NAME = "connectionFactoryJndiName";
 
     String QUEUE_SUBSCRIPTION_EVENT = "jms/queue/UVMSSubscriptionEvent";
     String QUEUE_NAME_SUBSCRIPTION_EVENT = "UVMSSubscriptionEvent";
@@ -31,11 +38,16 @@ public interface MessageConstants {
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
     String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel";
+
+    String QUEUE_MOVEMENT = "jms/queue/UVMSMovement";
+
     String QUEUE_ASSET = "jms/queue/UVMSAsset"; // response queue
     String QUEUE_ASSET_EVENT = "jms/queue/UVMSAssetEvent"; // request queue, create event
+
     String QUEUE_MODULE_MOVEMENT = "jms/queue/UVMSMovementEvent";
     String QUEUE_AUDIT_EVENT = "jms/queue/UVMSAuditEvent";
     String QUEUE_AUDIT = "jms/queue/UVMSAudit";
+
     String QUEUE_USM = "jms/queue/UVMSUserEvent";
     String QUEUE_USM4UVMS = "jms/queue/USM4UVMS";
     String QUEUE_CONFIG = "jms/queue/UVMSConfigEvent";
@@ -50,6 +62,7 @@ public interface MessageConstants {
 
     String QUEUE_MODULE_RULES = "jms/queue/UVMSRulesEvent";
     String QUEUE_RULES = "jms/queue/UVMSRules";
+    String RULES_MESSAGE_IN_QUEUE_NAME = "UVMSRulesEvent";
 
     String UPLOAD_QUEUE_NAME = "UVMSUploadEvent";
     String UPLOAD_EVENT_QUEUE = "jms/queue/UVMSUploadEvent";
@@ -65,8 +78,18 @@ public interface MessageConstants {
 
     String QUEUE_EXCHANGE = "jms/queue/UVMSExchange";
     String QUEUE_EXCHANGE_EVENT = "jms/queue/UVMSExchangeEvent";
+    String QUEUE_EXCHANGE_EVENT_NAME = "UVMSExchangeEvent";
 
     String QUEUE_SALES = "jms/queue/UVMSSales";
     String QUEUE_SALES_EVENT = "jms/queue/UVMSSalesEvent";
     String QUEUE_ECB_PROXY = "jms/queue/UVMSSalesEcbProxy";
+
+    String FLUX_MDR_REMOTE_MESSAGE_IN_QUEUE_NAME = "UVMSMdrPluginEvent";
+    String FLUX_MDR_REMOTE_MESSAGE_OUT_QUEUE_NAME = "UVMSMdrPlugin";
+
+    String EVENT_BUS_TOPIC = "jms/topic/EventBus";
+    String EVENT_BUS_TOPIC_NAME = "EventBus";
+
+    String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
+    String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
 }

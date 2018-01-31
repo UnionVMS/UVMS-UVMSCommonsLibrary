@@ -22,6 +22,9 @@ import java.util.Map;
 public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendMessageToSpecificQueue(String text, String destination, String replyToQueueName) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -44,5 +47,5 @@ public interface MessageProducer {
     String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendMessageToSpecificQueue(Destination destination, Destination replyTo, String messageToSend);
+    String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException;
 }

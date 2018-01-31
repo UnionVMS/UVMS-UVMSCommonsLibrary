@@ -61,6 +61,14 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageToSpecificQueue(final String text, final String destination, final String replyToQueueName) throws MessageException {
+        final Queue destinationQueue = JMSUtils.lookupQueue(destination);
+        final Queue replyQueue = JMSUtils.lookupQueue(replyToQueueName);
+        return sendMessageToSpecificQueue(text, destinationQueue, replyQueue);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
         Connection connection = null;
         Session session = null;
@@ -197,11 +205,10 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageToSpecificQueue(Destination destination, Destination replyTo, String messageToSend) {
+    public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
-        String corrId = null;
         try {
             connection = getConnectionFactory().createConnection();
             session = JMSUtils.connectToQueue(connection);
@@ -210,13 +217,12 @@ public abstract class AbstractProducer implements MessageProducer {
             final TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
             producer.send(message);
-            corrId = message.getJMSMessageID();
+            return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+            throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
-        return corrId;
     }
 
     protected final ConnectionFactory getConnectionFactory() {
