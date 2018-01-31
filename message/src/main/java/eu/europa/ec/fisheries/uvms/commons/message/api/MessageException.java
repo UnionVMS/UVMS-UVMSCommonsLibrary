@@ -12,6 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.api;
 
+import javax.ejb.ApplicationException;
+
+@ApplicationException(rollback = true)
 public class MessageException extends Exception {
 
 	public MessageException() {

@@ -23,7 +23,6 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBException;
@@ -50,21 +49,6 @@ public abstract class AbstractProducer implements MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null);
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(final String text, final String replyToQueueName) throws MessageException {
-        final Queue replyQueue = JMSUtils.lookupQueue(replyToQueueName);
-        return sendModuleMessageWithProps(text, replyQueue, null);
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageToSpecificQueue(final String text, final String destination, final String replyToQueueName) throws MessageException {
-        final Queue destinationQueue = JMSUtils.lookupQueue(destination);
-        final Queue replyQueue = JMSUtils.lookupQueue(replyToQueueName);
-        return sendMessageToSpecificQueue(text, destinationQueue, replyQueue);
     }
 
     @Override
@@ -170,9 +154,9 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
+    public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws MessageException {
         if(destination == null){
-            throw new JMSException("Destination cannot be null!");
+            throw new MessageException("Destination cannot be null!");
         }
         Connection connection = null;
         Session session = null;
@@ -196,7 +180,8 @@ public abstract class AbstractProducer implements MessageProducer {
             producer.send(message);
             corrId = message.getJMSMessageID();
         } catch (JMSException e) {
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOGGER.error("Error when returning request!", e);
+            throw new MessageException("Error when returning request!", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }

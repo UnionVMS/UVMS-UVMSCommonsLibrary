@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -21,12 +23,8 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 
 public abstract class AbstractConsumer implements MessageConsumer {
 
