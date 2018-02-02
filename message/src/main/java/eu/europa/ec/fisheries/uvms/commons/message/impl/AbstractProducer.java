@@ -95,7 +95,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.debug("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
+            LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             producer = session.createProducer(message.getJMSReplyTo());
