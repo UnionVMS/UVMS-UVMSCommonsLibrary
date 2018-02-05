@@ -46,7 +46,7 @@ public abstract class AbstractTopicProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message to EventBus...");
+            LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             producer = session.createProducer(destination);
@@ -76,7 +76,7 @@ public abstract class AbstractTopicProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message to EventBus...");
+            LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             message.setJMSReplyTo(replyToDestination);
@@ -98,7 +98,7 @@ public abstract class AbstractTopicProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message to EventBus...");
+            LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             message.setJMSReplyTo(replyToDestination);

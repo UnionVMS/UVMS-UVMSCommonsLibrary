@@ -61,7 +61,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message with replyTo: [{}]", replyTo);
+            LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
             LOGGER.debug("Message content : [{}]", text);
             if (connection == null || session == null) {
                 throw new MessageException("[ Connection or session is null, cannot send message ] ");
@@ -79,7 +79,7 @@ public abstract class AbstractProducer implements MessageProducer {
             producer.setTimeToLive(timeToLiveInMillis);
             producer = session.createProducer(getDestination());
             producer.send(message);
-            LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
+            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         } catch (final JMSException e) {
             LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
@@ -109,7 +109,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message back to recipient from" + moduleName + " with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
+            LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             producer = session.createProducer(message.getJMSReplyTo());
@@ -131,7 +131,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
-            LOGGER.info("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
+            LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
             producer = session.createProducer(message.getJMSReplyTo());
