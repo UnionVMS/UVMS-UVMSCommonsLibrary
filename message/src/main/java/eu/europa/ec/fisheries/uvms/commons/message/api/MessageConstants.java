@@ -34,6 +34,9 @@ public interface MessageConstants {
     String QUEUE_SUBSCRIPTION_EVENT = "jms/queue/UVMSSubscriptionEvent";
     String QUEUE_NAME_SUBSCRIPTION_EVENT = "UVMSSubscriptionEvent";
 
+    String QUEUE_SUBSCRIPTION = "jms/queue/UVMSSubscription";
+    String QUEUE_NAME_SUBSCRIPTION = "UVMSSubscription";
+
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
