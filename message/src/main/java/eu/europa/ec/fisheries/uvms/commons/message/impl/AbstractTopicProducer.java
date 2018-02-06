@@ -20,6 +20,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.DeliveryMode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public abstract class AbstractTopicProducer {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessage(String text, String serviceName) throws MessageException {
+    public String sendEventBusMessage(String text, String serviceName, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -49,13 +50,22 @@ public abstract class AbstractTopicProducer {
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             producer = session.createProducer(destination);
+            producer.setDeliveryMode(jmsDeliveryMode);
+            producer.setTimeToLive(timeToLiveInMillis);
             producer.send(message);
+            LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            throw new MessageException("Error while trying to send EventBus Message..");
+            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
+            throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendEventBusMessage(String text, String serviceName) throws MessageException {
+        return sendEventBusMessage(text, serviceName,DeliveryMode.PERSISTENT, 0L);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

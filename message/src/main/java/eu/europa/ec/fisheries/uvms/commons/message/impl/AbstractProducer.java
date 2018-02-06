@@ -25,6 +25,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.DeliveryMode;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,12 +49,12 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
-        return sendModuleMessageWithProps(text, replyTo, null);
+        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.PERSISTENT, 0L);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -74,6 +75,8 @@ public abstract class AbstractProducer implements MessageProducer {
             }
             message.setJMSReplyTo(replyTo);
             message.setText(text);
+            producer.setDeliveryMode(jmsDeliveryMode);
+            producer.setTimeToLive(timeToLiveInMillis);
             producer = session.createProducer(getDestination());
             producer.send(message);
             LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
@@ -84,6 +87,17 @@ public abstract class AbstractProducer implements MessageProducer {
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
     }
 
     @Override
