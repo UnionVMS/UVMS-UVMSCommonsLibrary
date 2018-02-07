@@ -62,10 +62,6 @@ public abstract class AbstractProducer implements MessageProducer {
             connection = getConnection();
             session = JMSUtils.connectToQueue(connection);
             LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
-            LOGGER.debug("Message content : [{}]", text);
-            if (connection == null || session == null) {
-                throw new MessageException("[ Connection or session is null, cannot send message ] ");
-            }
             TextMessage message = session.createTextMessage();
             if (MapUtils.isNotEmpty(props)) {
                 for (Object o : props.entrySet()) {
@@ -75,9 +71,9 @@ public abstract class AbstractProducer implements MessageProducer {
             }
             message.setJMSReplyTo(replyTo);
             message.setText(text);
+            producer = session.createProducer(getDestination());
             producer.setDeliveryMode(jmsDeliveryMode);
             producer.setTimeToLive(timeToLiveInMillis);
-            producer = session.createProducer(getDestination());
             producer.send(message);
             LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
@@ -114,7 +110,6 @@ public abstract class AbstractProducer implements MessageProducer {
             response.setJMSCorrelationID(message.getJMSMessageID());
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
-            session.close();
         } catch (final JMSException e) {
             LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
         } finally {
