@@ -96,6 +96,14 @@ public abstract class AbstractProducer implements MessageProducer {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
     }
 
+
+    /**
+     * Deprecated use sendResponseMessageToSender(...) instead.
+     *
+     * @param message
+     * @param text
+     */
+    @Deprecated
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
@@ -117,6 +125,57 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        try {
+            connection = getConnection();
+            session = JMSUtils.connectToQueue(connection);
+            LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
+            TextMessage response = session.createTextMessage(text);
+            response.setJMSCorrelationID(message.getJMSMessageID());
+            producer = session.createProducer(message.getJMSReplyTo());
+            producer.send(response);
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+            throw new MessageException("[ Error when sending response message. ]", e);
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text, final String moduleName) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        try {
+            connection = getConnection();
+            session = JMSUtils.connectToQueue(connection);
+            LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
+            TextMessage response = session.createTextMessage(text);
+            response.setJMSCorrelationID(message.getJMSMessageID());
+            producer = session.createProducer(message.getJMSReplyTo());
+            producer.send(response);
+        } catch (final JMSException e) {
+            LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+            throw new MessageException("[ Error when sending response message. ]", e);
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    /**
+     * Deprecated use sendResponseMessageToSender(...) instead.
+     *
+     * @param message
+     * @param text
+     */
+    @Deprecated
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendModuleResponseMessage(final TextMessage message, final String text) {
