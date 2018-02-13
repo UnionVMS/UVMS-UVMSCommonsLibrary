@@ -52,6 +52,12 @@ public interface MessageConstants {
     String QUEUE_AUDIT = "jms/queue/UVMSAudit";
 
     String QUEUE_USM = "jms/queue/UVMSUserEvent";
+
+    String QUEUE_USER_IN = "jms/queue/UVMSUserEvent";
+    String QUEUE_USER_IN_NAME = "UVMSUserEvent";
+    
+    String QUEUE_USER_RESPONSE = "jms/queue/UVMSUser";
+
     String QUEUE_USM4UVMS = "jms/queue/USM4UVMS";
     String QUEUE_CONFIG = "jms/queue/UVMSConfigEvent";
 

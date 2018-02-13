@@ -36,6 +36,12 @@ public interface MessageProducer {
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    void sendResponseMessageToSender(TextMessage message, String text) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    void sendResponseMessageToSender(TextMessage message, String text, String moduleName) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text);
 
 	String getDestinationName();
