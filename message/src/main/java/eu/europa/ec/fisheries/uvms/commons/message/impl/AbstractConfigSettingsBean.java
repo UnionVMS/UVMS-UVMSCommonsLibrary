@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <p>
  * This abstract class will serve as a base to be extended from any module that needs to get settings from
- * Config module (global or related to the module).
+ * Config module (it retrieves settings that are : global and related to the module).
  * <p>
  * The following are a minimal set of methods that need to be overriten :
  * <p>
@@ -56,10 +56,6 @@ import org.slf4j.LoggerFactory;
  * abstract AbstractProducer getProducer();  The producer which will send the request messages to >>Config<< module.
  * abstract String getModuleName(); The module name which will be used as a parameter to get the settings.
  *
- *  @PostConstruct
- *  public void init() {
- *    initializeCache();
- * }
  *
  * Check RulesConfigurationCache class in rules module as an example on how to use this abstract class.
  */
