@@ -24,6 +24,10 @@ public class MessageException extends Exception {
 		super(message);
 	}
 
+	public MessageException(final Throwable cause) {
+		super(cause);
+	}
+
 	public MessageException(final String message, final Throwable cause) {
 		super(message, cause);
 	}

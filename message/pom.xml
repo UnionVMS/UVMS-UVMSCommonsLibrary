@@ -21,6 +21,7 @@
         <junit.version>4.12</junit.version>
         <commons.collections>3.2.2</commons.collections>
 		<apache.commons.version>3.7</apache.commons.version>
+		<uvms.config.model.version>4.0.0</uvms.config.model.version>
     </properties>
 
 	<dependencies>	
@@ -77,6 +78,21 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${apache.commons.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.fisheries.uvms</groupId>
+			<artifactId>uvms-config</artifactId>
+			<version>${uvms.config.model.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 </project>
