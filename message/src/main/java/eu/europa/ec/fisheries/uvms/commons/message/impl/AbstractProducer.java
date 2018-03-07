@@ -278,21 +278,21 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
-    protected final ConnectionFactory getConnectionFactory() {
+    protected ConnectionFactory getConnectionFactory() {
         if (connectionFactory == null) {
             connectionFactory = JMSUtils.lookupConnectionFactory();
         }
         return connectionFactory;
     }
 
-    public final Destination getDestination() {
+    public Destination getDestination() {
         if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
             destination = JMSUtils.lookupQueue(getDestinationName());
         }
         return destination;
     }
 
-    protected final Connection getConnection() throws JMSException {
+    protected Connection getConnection() throws JMSException {
         return getConnectionFactory().createConnection();
     }
 }

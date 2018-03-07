@@ -119,21 +119,21 @@ public abstract class AbstractTopicProducer {
     }
 
 
-    protected final ConnectionFactory getConnectionFactory() {
+    protected ConnectionFactory getConnectionFactory() {
         if (connectionFactory == null) {
             connectionFactory = JMSUtils.lookupConnectionFactory();
         }
         return connectionFactory;
     }
 
-    public final Destination getDestination() {
+    public Destination getDestination() {
         if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
             destination = JMSUtils.lookupTopic(getDestinationName());
         }
         return destination;
     }
 
-    protected final Connection getConnection() throws JMSException {
+    protected Connection getConnection() throws JMSException {
         return getConnectionFactory().createConnection();
     }
 
