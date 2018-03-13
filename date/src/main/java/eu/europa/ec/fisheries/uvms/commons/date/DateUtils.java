@@ -99,15 +99,15 @@ public class DateUtils {
         }
     }
 
-    public static XMLGregorianCalendar dateToXmlGregorian(Date timestamp) {
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(timestamp);
-        XMLGregorianCalendar xmlCalendar = null;
+    public static XMLGregorianCalendar dateToXmlGregorian(Date date) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        XMLGregorianCalendar gregCalendar = null;
         try {
-            xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-        } catch (DatatypeConfigurationException ex) {
+            gregCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(date));
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
         }
-        return xmlCalendar;
+        return gregCalendar;
     }
 
     public static String stringToUTC(String dateTime){
