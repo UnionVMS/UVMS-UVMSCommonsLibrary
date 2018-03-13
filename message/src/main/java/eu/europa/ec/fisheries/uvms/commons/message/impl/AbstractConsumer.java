@@ -84,18 +84,18 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	}
 
 	@Override
-	public final Destination getDestination() {
+	public Destination getDestination() {
 		if (destination == null) {
 			destination = JMSUtils.lookupQueue(getDestinationName());
 		}		
 		return destination;
 	}
 
-	protected final Connection getConnection() throws JMSException {
+	protected Connection getConnection() throws JMSException {
 		return getConnectionFactory().createConnection();
 	}
 
-	protected final ConnectionFactory getConnectionFactory() {
+	protected ConnectionFactory getConnectionFactory() {
 		if (connectionFactory == null) {
 			connectionFactory = JMSUtils.lookupConnectionFactory();
 		}

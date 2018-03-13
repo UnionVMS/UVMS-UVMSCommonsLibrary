@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.0.12-SNAPSHOT</version>
+		<version>3.0.14-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-message</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0.12-SNAPSHOT</version>
+	<version>3.0.14-SNAPSHOT</version>
 	<name>uvms-commons-message</name>
 
     <properties>
@@ -21,7 +21,6 @@
         <junit.version>4.12</junit.version>
         <commons.collections>3.2.2</commons.collections>
 		<apache.commons.version>3.7</apache.commons.version>
-		<uvms.config.model.version>4.0.0</uvms.config.model.version>
     </properties>
 
 	<dependencies>	
@@ -83,12 +82,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${apache.commons.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>eu.europa.ec.fisheries.uvms</groupId>
-			<artifactId>uvms-config</artifactId>
-			<version>${uvms.config.model.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
