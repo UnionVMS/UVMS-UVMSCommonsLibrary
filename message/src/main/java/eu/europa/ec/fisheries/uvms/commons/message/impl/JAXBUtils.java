@@ -9,6 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import javax.xml.bind.JAXBContext;
@@ -22,6 +23,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class JAXBUtils {
 
     private static Map<String, JAXBContext> contexts = new HashMap<>();
@@ -32,19 +35,37 @@ public class JAXBUtils {
      * Marshalls a JAXB Object to a XML String representation.
      *
      * @param <T>
+     * @param encoding
+     * @param formatted
      * @param data @return @throws
      */
-    public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+    public static <T> String marshallJaxBObjectToString(final T data, String encoding, boolean formatted) throws JAXBException {
         JAXBContext jaxbContext = contexts.get(data.getClass().getName());
         if (jaxbContext == null) {
             jaxbContext = JAXBContext.newInstance(data.getClass());
             contexts.put(data.getClass().getName(), jaxbContext);
         }
+
         Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        if (StringUtils.isNotEmpty(encoding)){
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, encoding);
+        }
+        if (formatted){
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        }
         StringWriter sw = new StringWriter();
         marshaller.marshal(data, sw);
         return sw.toString();
+    }
+
+    /**
+     * Marshalls a JAXB Object to a XML String representation.
+     *
+     * @param <T>
+     * @param data @return @throws
+     */
+    public static <T> String marshallJaxBObjectToString(final T data) throws JAXBException {
+        return marshallJaxBObjectToString(data, null, true);
     }
 
     /**
