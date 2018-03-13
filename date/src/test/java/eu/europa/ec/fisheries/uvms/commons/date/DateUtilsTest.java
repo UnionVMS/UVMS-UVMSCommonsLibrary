@@ -9,6 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package eu.europa.ec.fisheries.uvms.commons.date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -20,15 +21,13 @@ public class DateUtilsTest extends TestCase {
 
     public void testDateConversion() {
         Date date = new Date(1441065600000l);
-
         Date result = DateUtils.stringToDate(DateUtils.dateToString(date));
         assertEquals(date, result);
     }
 
-    public void testme(){
-        XMLGregorianCalendar xmlGregorianCalendar = DateUtils.dateToXmlGregorian(new Date());
-
-        System.out.println(xmlGregorianCalendar.toString());
+    public void testDateToXmlGregorian(){
+        XMLGregorianCalendar xmlGregorianCalendar = DateUtils.dateToXmlGregorian(DateUtils.END_OF_TIME.toDate());
+        assertEquals("9999-01-01T01:00:00.000Z", xmlGregorianCalendar.toString());
     }
 
 }

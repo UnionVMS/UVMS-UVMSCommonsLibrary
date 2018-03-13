@@ -35,7 +35,7 @@ public class DateUtils {
     static final public DateTime END_OF_TIME = new DateTime( 9999, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final String DATE_TIME_XML_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String DATE_TIME_XML_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
     public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
@@ -100,12 +100,14 @@ public class DateUtils {
     }
 
     public static XMLGregorianCalendar dateToXmlGregorian(Date date) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         XMLGregorianCalendar gregCalendar = null;
-        try {
-            gregCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(date));
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
+        if (date != null){
+            DateFormat format = new SimpleDateFormat(DATE_TIME_XML_FORMAT);
+            try {
+                gregCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(date));
+            } catch (DatatypeConfigurationException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
         return gregCalendar;
     }
