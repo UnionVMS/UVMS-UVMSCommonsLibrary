@@ -13,9 +13,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +24,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.LoggerFactory;
 
-public class DateUtils {
+public class DateUtils extends XMLDateUtils {
 
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
@@ -35,32 +32,15 @@ public class DateUtils {
     static final public DateTime END_OF_TIME = new DateTime( 9999, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
     public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final String DATE_TIME_XML_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
     public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
-    public static DateTimeFormatter XML_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_XML_FORMAT);
 
     private DateUtils() {
 
-    }
-
-    /**
-     * Get current timestamp in XMLGreorianCalender format
-     *
-     * @see {@link XMLGregorianCalendar}
-     *
-     * @return current timestamp
-     * @throws DatatypeConfigurationException
-     */
-    public static XMLGregorianCalendar getCurrentDate() throws DatatypeConfigurationException {
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-
-        return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
     }
 
     public static String dateToString(Date date) {
@@ -97,19 +77,6 @@ public class DateUtils {
         } else {
             return null;
         }
-    }
-
-    public static XMLGregorianCalendar dateToXmlGregorian(Date date) {
-        XMLGregorianCalendar gregCalendar = null;
-        if (date != null){
-            DateFormat format = new SimpleDateFormat(DATE_TIME_XML_FORMAT);
-            try {
-                gregCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(date));
-            } catch (DatatypeConfigurationException e) {
-                LOG.error(e.getMessage(), e);
-            }
-        }
-        return gregCalendar;
     }
 
     public static String stringToUTC(String dateTime){
