@@ -21,9 +21,17 @@
         <junit.version>4.12</junit.version>
         <commons.collections>3.2.2</commons.collections>
 		<apache.commons.version>3.7</apache.commons.version>
-    </properties>
+		<config.model.version>4.0.7</config.model.version>
+	</properties>
 
-	<dependencies>	
+	<dependencies>
+
+		<dependency>
+			<groupId>eu.europa.ec.fisheries.uvms.config</groupId>
+			<artifactId>config-model</artifactId>
+			<version>${config.model.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
