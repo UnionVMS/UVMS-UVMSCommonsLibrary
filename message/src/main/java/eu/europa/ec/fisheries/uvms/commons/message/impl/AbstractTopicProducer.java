@@ -21,6 +21,8 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.DeliveryMode;
+
+import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,7 @@ public abstract class AbstractTopicProducer {
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer = session.createProducer(destination);
             producer.setDeliveryMode(jmsDeliveryMode);
             producer.setTimeToLive(timeToLiveInMillis);
@@ -80,6 +83,7 @@ public abstract class AbstractTopicProducer {
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             message.setJMSReplyTo(replyToDestination);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer = session.createProducer(destination);
             producer.send(message);
             return message.getJMSMessageID();
@@ -108,6 +112,7 @@ public abstract class AbstractTopicProducer {
             if(StringUtils.isNotEmpty(messageCorrelationId)){
                 message.setJMSCorrelationID(messageCorrelationId);
             }
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer = session.createProducer(destination);
             producer.send(message);
             return message.getJMSMessageID();
