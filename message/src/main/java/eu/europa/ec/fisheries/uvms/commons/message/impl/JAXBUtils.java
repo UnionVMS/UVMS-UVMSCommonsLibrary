@@ -55,7 +55,7 @@ public class JAXBUtils {
         if (formatted){
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         }
-        marshaller.setProperty(COM_SUN_XML_BIND_XML_DECLARATION, Boolean.FALSE);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         StringWriter sw = new StringWriter();
         marshaller.marshal(data, sw);
         return sw.toString();
