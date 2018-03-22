@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -63,6 +64,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 				LOGGER.debug("Message with {} has been successfully received.", correlationId);
 				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
 			}
+			MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((TextMessage) receivedMessage);
 			return receivedMessage;
 		} catch (final Exception e) {
 			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());

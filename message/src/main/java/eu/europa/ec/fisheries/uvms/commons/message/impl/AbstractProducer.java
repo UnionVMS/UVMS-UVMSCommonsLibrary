@@ -27,6 +27,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.DeliveryMode;
 import javax.xml.bind.JAXBException;
+
+import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -69,6 +71,7 @@ public abstract class AbstractProducer implements MessageProducer {
                     message.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             message.setJMSReplyTo(replyTo);
             message.setText(text);
             producer = session.createProducer(getDestination());
@@ -116,6 +119,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
@@ -137,6 +141,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
@@ -159,6 +164,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
@@ -188,6 +194,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
@@ -210,6 +217,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             final TextMessage response = session.createTextMessage();
             response.setText(text);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (JMSException | JAXBException e) {
@@ -245,6 +253,7 @@ public abstract class AbstractProducer implements MessageProducer {
                 message.setJMSCorrelationID(message.getJMSMessageID());
             }
             message.setJMSReplyTo(replyTo);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);
             corrId = message.getJMSMessageID();
         } catch (JMSException e) {
@@ -269,6 +278,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
             final TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
