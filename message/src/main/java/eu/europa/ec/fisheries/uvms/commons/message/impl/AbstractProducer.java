@@ -184,7 +184,7 @@ public abstract class AbstractProducer implements MessageProducer {
     @Deprecated
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendModuleResponseMessage(final TextMessage message, final String text) {
+    public void sendModuleResponseMessage(final TextMessage message, final String text) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -199,6 +199,7 @@ public abstract class AbstractProducer implements MessageProducer {
             producer.send(response);
         } catch (final JMSException e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
+            throw new MessageException("[ Error when sending response message. ]", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
