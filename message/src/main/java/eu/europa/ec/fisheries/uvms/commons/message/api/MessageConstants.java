@@ -55,11 +55,14 @@ public interface MessageConstants {
 
     String QUEUE_USER_IN = "jms/queue/UVMSUserEvent";
     String QUEUE_USER_IN_NAME = "UVMSUserEvent";
-    
     String QUEUE_USER_RESPONSE = "jms/queue/UVMSUser";
 
     String QUEUE_USM4UVMS = "jms/queue/USM4UVMS";
+
     String QUEUE_CONFIG = "jms/queue/UVMSConfigEvent";
+    String QUEUE_CONFIG_IN_NAME = "UVMSConfigEvent";
+    String QUEUE_CONFIG_RESPONSE = "jms/queue/UVMSConfig";
+    String CONFIG_STATUS_TOPIC = "jms/topic/ConfigStatus";
 
     String QUEUE_MODULE_REPORTING_NAME = "UVMSReportingEvent";
     String QUEUE_REPORTING_EVENT = "jms/queue/UVMSReportingEvent";

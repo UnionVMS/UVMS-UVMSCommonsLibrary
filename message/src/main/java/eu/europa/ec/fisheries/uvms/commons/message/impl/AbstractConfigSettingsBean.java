@@ -29,6 +29,7 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +52,11 @@ import org.slf4j.LoggerFactory;
  *   abstract AbstractProducer getProducer() : The producer which will send the request messages to >>Config<< module.
  *                                             An implementation of eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer
  *
- *   abstract String getModuleName() : The module name which will be used as a parameter to get the settings.
- *                                     This will be used to fetch from config all this module configurations plus all the global ones.
+ *   abstract String getModuleName()         : The module name which will be used as a parameter to get the settings.
+ *                                             This will be used to fetch from config all this module configurations plus all the global ones.
  *
- *   abstract String getDestinationName() : The name of this modules internal Queue. Must take it from MessageConstants class residing inside
- *                                          commons-message artifact.
+ *   abstract String getDestinationName()    : The name of this modules internal Queue. Must take it from MessageConstants class residing inside
+ *                                             commons-message artifact.
  * <p>
  * <p>
  *  Example of implementation in Rules module :
@@ -67,6 +68,9 @@ import org.slf4j.LoggerFactory;
  *
  *          @EJB
  *          private RulesResponseConsumerBean consumer;
+ *
+ *          @EJB
+ *          private RulesProducerBean producer;
  *
  *          @Override
  *          protected RulesResponseConsumerBean getConsumer() {
@@ -82,6 +86,11 @@ import org.slf4j.LoggerFactory;
  *          public String getDestinationName() {
  *              return MessageConstants.QUEUE_RULES;
  *          }
+ *
+ *              @Override
+ *          protected AbstractProducer getProducer() {
+ *              return producer;
+ *          }
  *     }
  * </code>
  *
@@ -93,7 +102,7 @@ import org.slf4j.LoggerFactory;
  *  Note : If config module is not deployed this bean cannot fetch the configs and it will "fail fast" in 5s.
  *         The deployment won't fail though, if the Implementing bean is a Singleton Startup bean...
  */
-public abstract class AbstractConfigSettingsBean extends AbstractProducer {
+public abstract class AbstractConfigSettingsBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
 
@@ -105,23 +114,28 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
      * Initializes the Config Settings cache.
      * To be called in the extending class in a @PostConstruct block to load the settings for this module.
      */
-    protected AbstractConfigSettingsBean() {
+    public AbstractConfigSettingsBean() {
         configQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_CONFIG);
         if (cache == null) {
             LOGGER.info("[START] Loading settings for module : [" + getModuleName() + "].");
-            cache = CacheBuilder.newBuilder()
-                    .maximumSize(100)
-                    .expireAfterWrite(1, TimeUnit.HOURS)
-                    .build(new CacheLoader<String, Map<String, String>>() {
-                               @Override
-                               public Map<String, String> load(String moduleName) {
-                                   return getAllModuleConfigurations(moduleName);
-                               }
-                           }
-                    );
+            initCacheObject();
             LOGGER.info("[END] Finished loading settings for module : [" + getModuleName() + "].");
         }
     }
+
+    private void initCacheObject() {
+        cache = CacheBuilder.newBuilder()
+                .maximumSize(100)
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .build(new CacheLoader<String, Map<String, String>>() {
+                           @Override
+                           public Map<String, String> load(String moduleName) {
+                               return getAllModuleConfigurations(moduleName);
+                           }
+                       }
+                );
+    }
+
 
     /**
      * Get a single Setting related to this module from the cache.
@@ -141,13 +155,15 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
      * Calls Config module and gets all the settings related to the module with name = moduleName.
      *
      * @param moduleName
-     * @return Map<String               ,                               String> the object (Settings map) to cache.
+     * @return Map<String                               ,                                                               String> the object (Settings map) to cache.
      */
     private Map<String, String> getAllModuleConfigurations(String moduleName) {
         Map<String, String> settingsMap = new HashMap<>();
         if (StringUtils.isNotEmpty(moduleName)) {
             try {
+                LOGGER.info("[INFO] Going to fetch settings for module [ " + moduleName + " ]");
                 List<SettingType> settingTypeList = getSettingTypes(moduleName);
+                LOGGER.info("[INFO] Got [ " + settingTypeList.size() + " ] settings for module [ " + moduleName + " ]");
                 if (CollectionUtils.isNotEmpty(settingTypeList)) {
                     for (SettingType setting : settingTypeList) {
                         settingsMap.put(setting.getKey(), setting.getValue());
@@ -156,8 +172,10 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
             } catch (MessageException e) {
                 LOGGER.error("[ERROR] Error while trying to fetch settings for module [" + getModuleName() + "]. {}", e);
             }
+        } else {
+            LOGGER.error("[ERROR] Module name cannot be null when fetching settings for it!");
         }
-        LOGGER.info("ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
+        LOGGER.info("[INFO] ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
         return settingsMap;
     }
 
@@ -170,7 +188,14 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
         Map<String, String> result = null;
         String moduleName = getModuleName();
         if (moduleName != null) {
+            if(cache == null){
+                initCacheObject();
+            }
             result = cache.getUnchecked(moduleName);
+            if (MapUtils.isEmpty(result)) {
+                LOGGER.info("[INFO] Cache was empty.. Going to refresh..");
+                cache.refresh(getModuleName());
+            }
         }
         return result != null ? result : new HashMap<String, String>();
     }
@@ -187,8 +212,8 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
      */
     private List<SettingType> getSettingTypes(String moduleName) throws MessageException {
         try {
-            String jmsMessageID = this.sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
-            TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class, 5000L);
+            String jmsMessageID = getProducer().sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
+            TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class, 10000L);
             return ModuleResponseMapper.getSettingsFromPullSettingsResponse(message);
         } catch (JMSException | ModelMapperException e) {
             throw new MessageException("[ERROR] Error while trying to fetch settings from CONFIG module. Is this module deployed?", e);
@@ -196,6 +221,8 @@ public abstract class AbstractConfigSettingsBean extends AbstractProducer {
     }
 
     protected abstract AbstractConsumer getConsumer();
+
+    protected abstract AbstractProducer getProducer();
 
     protected abstract String getModuleName();
 
