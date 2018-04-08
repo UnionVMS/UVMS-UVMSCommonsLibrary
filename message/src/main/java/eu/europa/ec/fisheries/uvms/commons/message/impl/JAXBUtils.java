@@ -23,25 +23,16 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.commons.lang3.StringUtils;
 
 public class JAXBUtils {
-
-    private static final String COM_SUN_XML_BIND_XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
     private static Map<String, JAXBContext> contexts = new HashMap<>();
 
     private JAXBUtils() {}
 
-    /**
-     * Marshalls a JAXB Object to a XML String representation.
-     *
-     * @param <T>
-     * @param encoding
-     * @param formatted
-     * @param data @return @throws
-     */
-    public static <T> String marshallJaxBObjectToString(final T data, String encoding, boolean formatted) throws JAXBException {
+    public static <T> String marshallJaxBObjectToString(final T data, String encoding, boolean formatted, NamespacePrefixMapper prefixMapper) throws JAXBException {
         JAXBContext jaxbContext = contexts.get(data.getClass().getName());
         if (jaxbContext == null) {
             jaxbContext = JAXBContext.newInstance(data.getClass());
@@ -55,10 +46,24 @@ public class JAXBUtils {
         if (formatted){
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         }
+        if (prefixMapper != null){
+            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
+        }
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         StringWriter sw = new StringWriter();
         marshaller.marshal(data, sw);
         return sw.toString();
+    }
+        /**
+         * Marshalls a JAXB Object to a XML String representation.
+         *
+         * @param <T>
+         * @param encoding
+         * @param formatted
+         * @param data @return @throws
+         */
+    public static <T> String marshallJaxBObjectToString(final T data, String encoding, boolean formatted) throws JAXBException {
+        return marshallJaxBObjectToString(data, encoding, formatted, null);
     }
 
     /**
