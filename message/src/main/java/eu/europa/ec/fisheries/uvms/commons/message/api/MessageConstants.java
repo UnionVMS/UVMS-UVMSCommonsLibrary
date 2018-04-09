@@ -49,6 +49,7 @@ public interface MessageConstants {
 
     String QUEUE_MODULE_MOVEMENT = "jms/queue/UVMSMovementEvent";
     String QUEUE_AUDIT_EVENT = "jms/queue/UVMSAuditEvent";
+    String QUEUE_AUDIT_EVENT_NAME = "UVMSAuditEvent";
     String QUEUE_AUDIT = "jms/queue/UVMSAudit";
 
     String QUEUE_USM = "jms/queue/UVMSUserEvent";
