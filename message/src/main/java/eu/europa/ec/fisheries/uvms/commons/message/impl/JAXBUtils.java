@@ -22,6 +22,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -52,16 +54,34 @@ public class JAXBUtils {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         StringWriter sw = new StringWriter();
         marshaller.marshal(data, sw);
-        return sw.toString();
+        return clearEmptyTags(sw.toString());
     }
-        /**
-         * Marshalls a JAXB Object to a XML String representation.
-         *
-         * @param <T>
-         * @param encoding
-         * @param formatted
-         * @param data @return @throws
-         */
+
+    private static String clearEmptyTags(String testSource) {
+        String[] patterns = new String[]{
+                // This will remove empty elements that look like <ram:ElementName/>
+                "\\s*<ram:\\w+/>",
+                // This will remove empty elements that look like <ram:ElementName></ram:ElementName>
+                "\\s*<ram:\\w+></ram:\\w+>",
+                // This will remove empty elements that look like
+                // <ram:ElementName>
+                // </ram:ElementName>
+                "\\s*<ram:\\w+>\n*\\s*</ram:\\w+>"};
+        for (String pattern : patterns) {
+            Matcher matcher = Pattern.compile(pattern).matcher(testSource);
+            testSource = matcher.replaceAll(StringUtils.EMPTY);
+        }
+        return testSource;
+    }
+
+    /**
+     * Marshalls a JAXB Object to a XML String representation.
+     *
+     * @param <T>
+     * @param encoding
+     * @param formatted
+     * @param data @return @throws
+     */
     public static <T> String marshallJaxBObjectToString(final T data, String encoding, boolean formatted) throws JAXBException {
         return marshallJaxBObjectToString(data, encoding, formatted, null);
     }
