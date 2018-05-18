@@ -163,11 +163,13 @@ public abstract class AbstractConfigSettingsBean {
             try {
                 LOGGER.info("[INFO] Going to fetch settings for module [ " + moduleName + " ]");
                 List<SettingType> settingTypeList = getSettingTypes(moduleName);
-                LOGGER.info("[INFO] Got [ " + settingTypeList.size() + " ] settings for module [ " + moduleName + " ]");
                 if (CollectionUtils.isNotEmpty(settingTypeList)) {
+                    LOGGER.info("[INFO] Got [ " + settingTypeList.size() + " ] settings for module [ " + moduleName + " ]");
                     for (SettingType setting : settingTypeList) {
                         settingsMap.put(setting.getKey(), setting.getValue());
                     }
+                } else {
+                    LOGGER.warn("[WARN] No settings found for module : " + moduleName);
                 }
             } catch (MessageException e) {
                 LOGGER.error("[ERROR] Error while trying to fetch settings for module [" + getModuleName() + "]. {}", e);
