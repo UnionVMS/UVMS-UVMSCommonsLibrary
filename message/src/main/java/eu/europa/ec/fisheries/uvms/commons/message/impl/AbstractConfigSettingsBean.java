@@ -168,6 +168,7 @@ public abstract class AbstractConfigSettingsBean {
                     for (SettingType setting : settingTypeList) {
                         settingsMap.put(setting.getKey(), setting.getValue());
                     }
+                    LOGGER.info("[INFO] ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
                 } else {
                     LOGGER.warn("[WARN] No settings found for module : " + moduleName);
                 }
@@ -177,7 +178,6 @@ public abstract class AbstractConfigSettingsBean {
         } else {
             LOGGER.error("[ERROR] Module name cannot be null when fetching settings for it!");
         }
-        LOGGER.info("[INFO] ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
         return settingsMap;
     }
 
