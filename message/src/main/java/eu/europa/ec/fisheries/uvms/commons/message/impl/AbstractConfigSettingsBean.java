@@ -155,7 +155,7 @@ public abstract class AbstractConfigSettingsBean {
      * Calls Config module and gets all the settings related to the module with name = moduleName.
      *
      * @param moduleName
-     * @return Map<String                               ,                                                               String> the object (Settings map) to cache.
+     * @return Map<String,String> the object (Settings map) to cache.
      */
     private Map<String, String> getAllModuleConfigurations(String moduleName) {
         Map<String, String> settingsMap = new HashMap<>();
@@ -163,11 +163,14 @@ public abstract class AbstractConfigSettingsBean {
             try {
                 LOGGER.info("[INFO] Going to fetch settings for module [ " + moduleName + " ]");
                 List<SettingType> settingTypeList = getSettingTypes(moduleName);
-                LOGGER.info("[INFO] Got [ " + settingTypeList.size() + " ] settings for module [ " + moduleName + " ]");
                 if (CollectionUtils.isNotEmpty(settingTypeList)) {
+                    LOGGER.info("[INFO] Got [ " + settingTypeList.size() + " ] settings for module [ " + moduleName + " ]");
                     for (SettingType setting : settingTypeList) {
                         settingsMap.put(setting.getKey(), setting.getValue());
                     }
+                    LOGGER.info("[INFO] ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
+                } else {
+                    LOGGER.warn("[WARN] No settings found for module : " + moduleName);
                 }
             } catch (MessageException e) {
                 LOGGER.error("[ERROR] Error while trying to fetch settings for module [" + getModuleName() + "]. {}", e);
@@ -175,7 +178,6 @@ public abstract class AbstractConfigSettingsBean {
         } else {
             LOGGER.error("[ERROR] Module name cannot be null when fetching settings for it!");
         }
-        LOGGER.info("[INFO] ConfigSettingsBean has just finished refreshing the " + getModuleName() + " Configuration cache.");
         return settingsMap;
     }
 
