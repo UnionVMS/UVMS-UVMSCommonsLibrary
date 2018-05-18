@@ -155,7 +155,7 @@ public abstract class AbstractConfigSettingsBean {
      * Calls Config module and gets all the settings related to the module with name = moduleName.
      *
      * @param moduleName
-     * @return Map<String                               ,                                                               String> the object (Settings map) to cache.
+     * @return Map<String,String> the object (Settings map) to cache.
      */
     private Map<String, String> getAllModuleConfigurations(String moduleName) {
         Map<String, String> settingsMap = new HashMap<>();
