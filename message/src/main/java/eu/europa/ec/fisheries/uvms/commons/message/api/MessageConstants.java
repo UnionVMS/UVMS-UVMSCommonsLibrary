@@ -76,6 +76,10 @@ public interface MessageConstants {
     String QUEUE_MODULE_RULES = "jms/queue/UVMSRulesEvent";
     String QUEUE_RULES = "jms/queue/UVMSRules";
     String RULES_MESSAGE_IN_QUEUE_NAME = "UVMSRulesEvent";
+    
+    String QUEUE_MOVEMENTRULES_EVENT = "jms/queue/UVMSMovementRulesEvent";
+    String QUEUE_MOVEMENTRULES_EVENT_NAME = "UVMSMovementRulesEvent";
+    String QUEUE_MOVEMENTRULES = "jms/queue/UVMSMovementRules";
 
     String UPLOAD_QUEUE_NAME = "UVMSUploadEvent";
     String UPLOAD_EVENT_QUEUE = "jms/queue/UVMSUploadEvent";
