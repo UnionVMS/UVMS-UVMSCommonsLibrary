@@ -289,6 +289,30 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        try {
+            connection = getConnectionFactory().createConnection();
+            session = JMSUtils.connectToQueue(connection);
+            producer = session.createProducer(destination);
+            LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
+            final TextMessage message = session.createTextMessage(messageToSend);
+            message.setJMSReplyTo(replyTo);
+            producer.setTimeToLive(timeToLiveInMillis);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+            producer.send(message);
+            return message.getJMSMessageID();
+        } catch (JMSException e) {
+            throw new MessageException("[ Error when sending message. ]", e);
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
     protected ConnectionFactory getConnectionFactory() {
         if (connectionFactory == null) {
             connectionFactory = JMSUtils.lookupConnectionFactory();
