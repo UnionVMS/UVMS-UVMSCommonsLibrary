@@ -51,8 +51,12 @@ public class XMLDateUtils {
     }
 
     public static Date xmlGregorianCalendarToDate(XMLGregorianCalendar xmlGregorianCalendar) {
-        TimeZone.setDefault(TimeZone.getTimeZone(UTC));
-        return new Date(xmlGregorianCalendar.toGregorianCalendar().getTimeInMillis());
+        if (xmlGregorianCalendar != null){
+            TimeZone.setDefault(TimeZone.getTimeZone(UTC));
+            return new Date(xmlGregorianCalendar.toGregorianCalendar().getTimeInMillis());
+        }
+        return null;
+
     }
 
     public static XMLGregorianCalendar dateToXmlGregorian(Date date) {
