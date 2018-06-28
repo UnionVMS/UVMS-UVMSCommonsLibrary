@@ -15,24 +15,18 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.DeliveryMode;
-import javax.xml.bind.JAXBException;
-
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.*;
+import javax.xml.bind.JAXBException;
+import java.util.Map;
 
 public abstract class AbstractProducer implements MessageProducer {
 
@@ -105,6 +99,7 @@ public abstract class AbstractProducer implements MessageProducer {
      *
      * @param message
      * @param text
+     * @deprecated use sendResponseMessageToSender(...) instead.
      */
     @Deprecated
     @Override
@@ -180,6 +175,7 @@ public abstract class AbstractProducer implements MessageProducer {
      *
      * @param message
      * @param text
+     * @deprecated use sendResponseMessageToSender(...) instead.
      */
     @Deprecated
     @Override
@@ -269,24 +265,7 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = getConnectionFactory().createConnection();
-            session = JMSUtils.connectToQueue(connection);
-            producer = session.createProducer(destination);
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
-            final TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        } catch (JMSException e) {
-            throw new MessageException("[ Error when sending message. ]", e);
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
+        return sendMessageToSpecificQueue(messageToSend, destination, replyTo, Message.DEFAULT_TIME_TO_LIVE);
     }
 
     @Override
