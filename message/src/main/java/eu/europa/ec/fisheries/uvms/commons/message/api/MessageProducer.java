@@ -54,4 +54,7 @@ public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 }
