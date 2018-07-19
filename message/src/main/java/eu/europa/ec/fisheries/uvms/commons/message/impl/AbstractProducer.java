@@ -127,6 +127,12 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text) throws MessageException {
+        sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -138,6 +144,7 @@ public abstract class AbstractProducer implements MessageProducer {
             response.setJMSCorrelationID(message.getJMSMessageID());
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
+            producer.setTimeToLive(timeToLive);
             producer.send(response);
         } catch (final JMSException e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
