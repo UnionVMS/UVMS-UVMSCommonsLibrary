@@ -12,11 +12,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.api;
 
-import java.util.Map;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Destination;
 import javax.jms.TextMessage;
+import java.util.Map;
 
 public interface MessageProducer {
 
@@ -32,6 +32,26 @@ public interface MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageNonPersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
+
+    /**
+     * Deprecated use sendResponseMessageToSender(...) instead.
+     *
+     * @param message
+     * @param text
+     * @deprecated use sendResponseMessageToSender(...) instead.
+     */
+    @Deprecated
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    void sendModuleResponseMessage(TextMessage message, String text) throws MessageException;
+
+    /**
+     * Deprecated use sendResponseMessageToSender(...) instead.
+     *
+     * @param message
+     * @param text
+     * @deprecated use sendResponseMessageToSender(...) instead.
+     */
+    @Deprecated
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
 
@@ -39,10 +59,11 @@ public interface MessageProducer {
     void sendResponseMessageToSender(TextMessage message, String text) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    void sendResponseMessageToSender(TextMessage message, String text, String moduleName) throws MessageException;
+    void sendResponseMessageToSender(TextMessage message, String text, long timeToLive) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    void sendModuleResponseMessage(TextMessage message, String text) throws MessageException;
+    void sendResponseMessageToSender(TextMessage message, String text, String moduleName) throws MessageException;
+
 
 	String getDestinationName();
 
