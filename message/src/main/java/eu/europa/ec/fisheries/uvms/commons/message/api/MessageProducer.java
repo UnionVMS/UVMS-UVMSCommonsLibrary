@@ -62,6 +62,9 @@ public interface MessageProducer {
     void sendResponseMessageToSender(TextMessage message, String text, long timeToLive) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    void sendResponseMessageToSender(TextMessage message, String text, long timeToLive, int deliveryMode) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendResponseMessageToSender(TextMessage message, String text, String moduleName) throws MessageException;
 
 
