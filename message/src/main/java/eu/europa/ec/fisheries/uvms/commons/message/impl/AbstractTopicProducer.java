@@ -11,21 +11,15 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.DeliveryMode;
-
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.*;
 
 public abstract class AbstractTopicProducer {
 
@@ -96,6 +90,11 @@ public abstract class AbstractTopicProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId) throws MessageException {
+        return sendEventBusMessageWithSpecificIds(text, serviceName, replyToDestination, messageId, messageCorrelationId, 0, DeliveryMode.PERSISTENT);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId, int timeToLive, int deliveryMode) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -114,6 +113,8 @@ public abstract class AbstractTopicProducer {
             }
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer = session.createProducer(destination);
+            producer.setTimeToLive(timeToLive);
+            producer.setDeliveryMode(deliveryMode);
             producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
@@ -122,7 +123,6 @@ public abstract class AbstractTopicProducer {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
     }
-
 
     protected ConnectionFactory getConnectionFactory() {
         if (connectionFactory == null) {
