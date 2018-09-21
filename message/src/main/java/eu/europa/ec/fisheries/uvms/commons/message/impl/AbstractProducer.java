@@ -13,6 +13,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
@@ -289,6 +290,31 @@ public abstract class AbstractProducer implements MessageProducer {
             final TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
             producer.setTimeToLive(timeToLiveInMillis);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+            producer.send(message);
+            return message.getJMSMessageID();
+        } catch (JMSException e) {
+            throw new MessageException("[ Error when sending message. ]", e);
+        } finally {
+            JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function) throws MessageException {
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        try {
+            connection = getConnectionFactory().createConnection();
+            session = JMSUtils.connectToQueue(connection);
+            producer = session.createProducer(destination);
+            LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
+            final TextMessage message = session.createTextMessage(messageToSend);
+            message.setJMSReplyTo(replyTo);
+            message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
+            producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);
             return message.getJMSMessageID();

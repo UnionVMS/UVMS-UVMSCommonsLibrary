@@ -111,4 +111,6 @@ public interface MessageConstants {
     String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
     String QUEUE_FLUX_FA_MESSAGE_IN_NAME = "UVMSFAPluginEvent";
     String QUEUE_FLUX_FA_MESSAGE_IN = "jms/queue/UVMSFAPluginEvent";
+
+    String JMS_FUNCTION_PROPERTY = "FUNCTION";
 }
