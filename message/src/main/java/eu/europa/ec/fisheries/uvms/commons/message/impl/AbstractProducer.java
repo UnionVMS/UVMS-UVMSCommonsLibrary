@@ -119,7 +119,7 @@ public abstract class AbstractProducer implements MessageProducer {
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOGGER.error("[ Error when returning {} request. ] {} {}", moduleName, e.getMessage(), e.getStackTrace());
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
@@ -133,7 +133,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws MessageException {
+    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -146,6 +146,7 @@ public abstract class AbstractProducer implements MessageProducer {
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
             producer.setTimeToLive(timeToLive);
+            producer.setDeliveryMode(deliveryMode);
             producer.send(response);
         } catch (final JMSException e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
@@ -153,6 +154,12 @@ public abstract class AbstractProducer implements MessageProducer {
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws MessageException {
+        sendResponseMessageToSender(message, text, timeToLive, DeliveryMode.PERSISTENT);
     }
 
     @Override
@@ -171,7 +178,7 @@ public abstract class AbstractProducer implements MessageProducer {
             producer = session.createProducer(message.getJMSReplyTo());
             producer.send(response);
         } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning" + moduleName + "request. ] {} {}", e.getMessage(), e.getStackTrace());
+            LOGGER.error("[ Error when returning {} request. ] {} {}", moduleName, e.getMessage(), e.getStackTrace());
             throw new MessageException("[ Error when sending response message. ]", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
@@ -279,6 +286,12 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws MessageException {
+        return sendMessageToSpecificQueue(messageToSend, destination, replyTo, timeToLiveInMillis, DeliveryMode.PERSISTENT);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -286,10 +299,11 @@ public abstract class AbstractProducer implements MessageProducer {
             connection = getConnectionFactory().createConnection();
             session = JMSUtils.connectToQueue(connection);
             producer = session.createProducer(destination);
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
+            LOGGER.debug("Sending message on queue: {}", destination);
             final TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
             producer.setTimeToLive(timeToLiveInMillis);
+            producer.setDeliveryMode(deliveryMode);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);
             return message.getJMSMessageID();
