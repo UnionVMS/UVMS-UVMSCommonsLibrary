@@ -316,7 +316,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function) throws MessageException {
+    public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -328,6 +328,7 @@ public abstract class AbstractProducer implements MessageProducer {
             final TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
             message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
+            message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
             producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);

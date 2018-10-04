@@ -71,7 +71,7 @@ public interface MessageProducer {
 	String getDestinationName();
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function) throws MessageException;
+    String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendFault(TextMessage textMessage, Fault fault);

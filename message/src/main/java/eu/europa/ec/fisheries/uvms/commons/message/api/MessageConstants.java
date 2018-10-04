@@ -113,4 +113,9 @@ public interface MessageConstants {
     String QUEUE_FLUX_FA_MESSAGE_IN = "jms/queue/UVMSFAPluginEvent";
 
     String JMS_FUNCTION_PROPERTY = "FUNCTION";
+    String JMS_MESSAGE_GROUP = "JMSXGroupID";
+    String JMS_MESSAGE_GROUP_ORDERING = "JMSXGroupSeq";
+    int JMS_MAX_REDELIVERIES = 6;
+
+
 }
