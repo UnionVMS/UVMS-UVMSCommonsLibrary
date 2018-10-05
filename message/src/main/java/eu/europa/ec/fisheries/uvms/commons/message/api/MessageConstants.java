@@ -116,6 +116,7 @@ public interface MessageConstants {
     String JMS_MESSAGE_GROUP = "JMSXGroupID";
     String JMS_MESSAGE_GROUP_ORDERING = "JMSXGroupSeq";
     int JMS_MAX_REDELIVERIES = 6;
+    int JMS_REDELIVERY_DELAY = 100;
 
 
 }
