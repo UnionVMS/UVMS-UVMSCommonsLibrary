@@ -11,19 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.rest.filter;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -31,11 +25,11 @@ import org.slf4j.LoggerFactory;
 @WebFilter(asyncSupported = true, urlPatterns = {"/*"})
 public class CrossOriginFilter implements Filter {
 
-    final static Logger LOG = LoggerFactory.getLogger(CrossOriginFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CrossOriginFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        LOG.info("Requstfilter starting up!");
+        LOG.debug("Cross origin filter starting up");
     }
 
     @Override
@@ -49,7 +43,7 @@ public class CrossOriginFilter implements Filter {
 
     @Override
     public void destroy() {
-        LOG.info("Requstfilter shuting down!");
+        LOG.debug("Cross origin filter shutting down");
     }
 
 }
