@@ -155,7 +155,7 @@ public class JMSUtils {
                 connection.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e.getMessage());
+            LOG.error("[ Error when closing JMS connection ] {}", e);
         }
     }
 
@@ -164,14 +164,22 @@ public class JMSUtils {
             if (producer != null) {
                 producer.close();
             }
+        } catch (final JMSException e) {
+            LOG.error("[ Error when closing producer ] {}", e);
+        }
+        try {
             if (session != null) {
                 session.close();
             }
+        } catch (final JMSException e) {
+            LOG.error("[ Error when closing session ] {}", e);
+        }
+        try {
             if (connection != null) {
                 connection.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e.getMessage());
+            LOG.error("[ Error when closing JMS connection ] {}", e);
         }
     }
 
@@ -180,14 +188,22 @@ public class JMSUtils {
             if (consumer != null) {
                 consumer.close();
             }
+        } catch (final JMSException e) {
+            LOG.error("[ Error when closing consumer ] {}", e);
+        }
+        try {
             if (session != null) {
                 session.close();
             }
+        } catch (final JMSException e) {
+            LOG.error("[ Error when closing session ] {}", e);
+        }
+        try {
             if (connection != null) {
                 connection.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e.getMessage());
+            LOG.error("[ Error when closing JMS connection ] {}", e);
         }
     }
 }
