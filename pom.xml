@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fish.focus.maven</groupId>
 		<artifactId>focus-pom</artifactId>
-		<version>1.12</version>
+		<version>1.14</version>
 		<relativePath />
 	</parent>
 
@@ -20,7 +20,7 @@
 		<!-- ================= -->
 		<!-- Global Properties -->
 		<!-- ================= -->
-		<focus-pom.java.version>1.7</focus-pom.java.version>
+		<focus-pom.java.version>1.8</focus-pom.java.version>
 
 		<!-- Maven default properties -->
 		<project.scm.id>github</project.scm.id>
