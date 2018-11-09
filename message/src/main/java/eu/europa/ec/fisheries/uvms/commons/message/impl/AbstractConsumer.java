@@ -31,7 +31,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
 
-	private static long MILLISECONDS = 600000;
+	private static long ONE_MINUTE = 60000L;
 	private ConnectionFactory connectionFactory;
 	private Destination destination;
 
@@ -82,7 +82,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	}
 
 	protected long getMilliseconds() {
-		return MILLISECONDS;
+		return ONE_MINUTE;
 	}
 
 	@Override
