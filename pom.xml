@@ -26,6 +26,7 @@
 		<project.scm.id>github</project.scm.id>
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
 		<scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
+		<javaee.version>8.0</javaee.version>
 	</properties>
 
 	<modules>
