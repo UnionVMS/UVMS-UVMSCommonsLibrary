@@ -21,10 +21,10 @@ import java.util.Map;
 public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props) throws MessageException;
+    String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, Object> props) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException;
+    String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, Object> props, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;

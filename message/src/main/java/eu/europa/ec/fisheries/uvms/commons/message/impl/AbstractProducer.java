@@ -12,6 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.*;
+import javax.xml.bind.JAXBException;
+import java.util.Map;
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
@@ -21,13 +27,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.*;
-import javax.xml.bind.JAXBException;
-import java.util.Map;
 
 public abstract class AbstractProducer implements MessageProducer {
 
@@ -51,7 +50,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, Object> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
@@ -85,7 +84,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, Object> props) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
     }
 
