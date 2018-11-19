@@ -62,7 +62,7 @@ public abstract class AbstractProducer implements MessageProducer {
             if (MapUtils.isNotEmpty(props)) {
                 for (Object o : props.entrySet()) {
                     Map.Entry<String, String> entry = (Map.Entry) o;
-                    message.setStringProperty(entry.getKey(), entry.getValue());
+                    message.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
