@@ -12,18 +12,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import javax.annotation.PostConstruct;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +69,11 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		}
 	}
 
-	@Override
+	public <T> T getMessage(final String correlationId, final Long timeoutInMillis) throws MessageException {
+		return getMessage(correlationId, null, timeoutInMillis);
+	}
+
+		@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@SuppressWarnings(value = "unchecked")
 	public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
