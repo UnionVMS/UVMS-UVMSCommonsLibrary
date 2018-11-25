@@ -69,8 +69,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		}
 	}
 
-	public <T> T getMessage(final String correlationId, final Long timeoutInMillis) throws MessageException {
-		return getMessage(correlationId, null, timeoutInMillis);
+	public TextMessage getMessage(final String correlationId, final Long timeoutInMillis) throws MessageException {
+		return getMessage(correlationId, TextMessage.class, timeoutInMillis);
 	}
 
 		@Override
