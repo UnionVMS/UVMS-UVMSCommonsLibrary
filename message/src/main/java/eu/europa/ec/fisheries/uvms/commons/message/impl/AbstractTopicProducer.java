@@ -23,14 +23,14 @@ import javax.jms.*;
 
 public abstract class AbstractTopicProducer {
 
-    public static final String SERVICE_NAME = "ServiceName";
+    private static final String SERVICE_NAME = "ServiceName";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
-    private ConnectionFactory connectionFactory;
+
     private Destination destination;
 
     @PostConstruct
     public void initializeConnectionFactory() {
-        connectionFactory = JMSUtils.lookupConnectionFactory();
         destination = getDestination();
     }
 
@@ -38,10 +38,10 @@ public abstract class AbstractTopicProducer {
     public String sendEventBusMessage(String text, String serviceName, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException {
         Connection connection = null;
         Session session = null;
-        javax.jms.MessageProducer producer = null;
+        MessageProducer producer = null;
         try {
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
@@ -69,10 +69,10 @@ public abstract class AbstractTopicProducer {
     public String sendEventBusMessage(String text, String serviceName, Destination replyToDestination) throws MessageException {
         Connection connection = null;
         Session session = null;
-        javax.jms.MessageProducer producer = null;
+        MessageProducer producer = null;
         try {
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
@@ -97,10 +97,10 @@ public abstract class AbstractTopicProducer {
     public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId, int timeToLive, int deliveryMode) throws MessageException {
         Connection connection = null;
         Session session = null;
-        javax.jms.MessageProducer producer = null;
+        MessageProducer producer = null;
         try {
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
@@ -124,23 +124,16 @@ public abstract class AbstractTopicProducer {
         }
     }
 
-    protected ConnectionFactory getConnectionFactory() {
-        if (connectionFactory == null) {
-            connectionFactory = JMSUtils.lookupConnectionFactory();
-        }
-        return connectionFactory;
-    }
-
-    public Destination getDestination() {
+    private Destination getDestination() {
         if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
             destination = JMSUtils.lookupTopic(getDestinationName());
         }
         return destination;
     }
 
-    protected Connection getConnection() throws JMSException {
-        return getConnectionFactory().createConnection();
+    private Connection getConnection() throws JMSException {
+        return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
 
-    protected abstract String getDestinationName();
+    public abstract String getDestinationName();
 }

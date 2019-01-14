@@ -33,13 +33,10 @@ public abstract class AbstractProducer implements MessageProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
-    private ConnectionFactory connectionFactory;
-
     private Destination destination;
 
     @PostConstruct
-    public void initializeConnectionFactory() {
-        connectionFactory = JMSUtils.lookupConnectionFactory();
+    public void initializeDestination() {
         destination = getDestination();
     }
 
@@ -51,13 +48,25 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
+        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode,
+                                             final long timeToLiveInMillis) throws MessageException {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
             TextMessage message = session.createTextMessage();
             if (MapUtils.isNotEmpty(props)) {
@@ -83,51 +92,22 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws MessageException {
-        return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
-        return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
-    }
-
-
-    /**
-     * Deprecated use sendResponseMessageToSender(...) instead.
-     *
-     * @param message
-     * @param text
-     * @deprecated use sendResponseMessageToSender(...) instead.
-     */
-    @Deprecated
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendModuleResponseMessage(final TextMessage message, final String text, final String moduleName) {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
-            LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
-            TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(response);
-        } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning {} request. ] {} {}", moduleName, e.getMessage(), e.getStackTrace());
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
-    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text) throws MessageException {
+        sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws MessageException {
+        sendResponseMessageToSender(message, text, timeToLive, DeliveryMode.PERSISTENT);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void sendResponseMessageToSender(final TextMessage message, final String text, final String moduleName) throws MessageException {
         sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
     }
 
@@ -139,7 +119,7 @@ public abstract class AbstractProducer implements MessageProducer {
         javax.jms.MessageProducer producer = null;
         try {
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
             response.setJMSCorrelationID(message.getJMSMessageID());
@@ -158,66 +138,6 @@ public abstract class AbstractProducer implements MessageProducer {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws MessageException {
-        sendResponseMessageToSender(message, text, timeToLive, DeliveryMode.PERSISTENT);
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendResponseMessageToSender(final TextMessage message, final String text, final String moduleName) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
-            LOGGER.debug("Sending message back to recipient from {} with correlationId {} on queue: {}",moduleName, message.getJMSMessageID(), message.getJMSReplyTo());
-            TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(response);
-        } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning {} request. ] {} {}", moduleName, e.getMessage(), e.getStackTrace());
-            throw new MessageException("[ Error when sending response message. ]", e);
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
-    }
-
-    /**
-     * Deprecated use sendResponseMessageToSender(...) instead.
-     *
-     * @param message
-     * @param text
-     * @deprecated use sendResponseMessageToSender(...) instead.
-     */
-    @Deprecated
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendModuleResponseMessage(final TextMessage message, final String text) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
-            LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
-            TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(response);
-        } catch (final JMSException e) {
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
-            throw new MessageException("[ Error when sending response message. ]", e);
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendFault(final TextMessage message, Fault fault) {
         Connection connection = null;
         Session session = null;
@@ -225,7 +145,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             String text = JAXBUtils.marshallJaxBObjectToString(fault);
             connection = getConnection();
-            session = JMSUtils.connectToQueue(connection);
+            session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             final TextMessage response = session.createTextMessage();
             response.setText(text);
@@ -249,10 +169,10 @@ public abstract class AbstractProducer implements MessageProducer {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
-        String corrId = null;
+        String corrId;
         try {
-            connection = getConnectionFactory().createConnection();
-            session = JMSUtils.connectToQueue(connection);
+            connection = getConnection();
+            session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message with correlationId {} on queue: {}", jmsCorrelationID, destination);
             final TextMessage message = session.createTextMessage(messageToSend);
@@ -296,8 +216,8 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnectionFactory().createConnection();
-            session = JMSUtils.connectToQueue(connection);
+            connection = getConnection();
+            session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message on queue: {}", destination);
             final TextMessage message = session.createTextMessage(messageToSend);
@@ -321,8 +241,8 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnectionFactory().createConnection();
-            session = JMSUtils.connectToQueue(connection);
+            connection = getConnection();
+            session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
             final TextMessage message = session.createTextMessage(messageToSend);
@@ -340,13 +260,6 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
-    protected ConnectionFactory getConnectionFactory() {
-        if (connectionFactory == null) {
-            connectionFactory = JMSUtils.lookupConnectionFactory();
-        }
-        return connectionFactory;
-    }
-
     public Destination getDestination() {
         if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
             destination = JMSUtils.lookupQueue(getDestinationName());
@@ -355,6 +268,6 @@ public abstract class AbstractProducer implements MessageProducer {
     }
 
     protected Connection getConnection() throws JMSException {
-        return getConnectionFactory().createConnection();
+        return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
 }

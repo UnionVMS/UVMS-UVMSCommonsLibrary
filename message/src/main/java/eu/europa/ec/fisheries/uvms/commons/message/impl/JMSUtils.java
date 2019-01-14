@@ -13,21 +13,12 @@
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * Created by osdjup on 2016-12-02.
@@ -35,129 +26,85 @@ import org.slf4j.LoggerFactory;
 
 public class JMSUtils {
 
+    private JMSUtils() {}
+
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
 
-    private static InitialContext CACHED_INITIAL_CONTEXT;
+    // ConnectionFactory object is a JMS administered object and supports concurrent use.
+    static final ConnectionFactory CACHED_CONNECTION_FACTORY = lookupConnectionFactory();
 
-    public static ConnectionFactory lookupConnectionFactory() {
-        ConnectionFactory connectionFactory = null;
+    private static ConnectionFactory lookupConnectionFactory() {
+        ConnectionFactory connectionFactory;
+        InitialContext ctx = null;
         LOG.debug("Open connection to JMS broker");
         try {
-            final InitialContext ctx = getInitialContext();
+            ctx = getInitialContext();
             connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
         } catch (final NamingException ne) {
-            // if we did not find the connection factory we might need to add java:/ at the
-            // start
+            // if we did not find the connection factory we might need to add java:/ at the start
             LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
             final String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
             try {
-                LOG.debug("trying " + wfName);
-                connectionFactory = (QueueConnectionFactory) CACHED_INITIAL_CONTEXT.lookup(wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (final Exception e) {
-                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and "
-                        + wfName);
+                LOG.error("[ERROR] Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
                 throw new RuntimeException(e);
             }
+        } finally {
+            closeInitialContext(ctx);
         }
-
         return connectionFactory;
     }
 
-    private static InitialContext getInitialContext() throws NamingException {
-        if (CACHED_INITIAL_CONTEXT == null) {
-            CACHED_INITIAL_CONTEXT = new InitialContext();
-        }
-        return CACHED_INITIAL_CONTEXT;
-    }
-
-    public static Queue lookupQueue(final String queue) {
-        InitialContext ctx;
+    public static Queue lookupQueue(final String queueName) {
         try {
-            ctx = getInitialContext();
-            return lookupQueue(ctx, queue);
+            InitialContext ctx = getInitialContext();
+            Queue queueObj;
+            try {
+                queueObj = (Queue) ctx.lookup(queueName);
+            } catch (final NamingException e) {
+                // if we did not find the queue we might need to add java:/ at the start
+                final String wfQueueName = "java:/" + queueName;
+                try {
+                    queueObj = (Queue) ctx.lookup(wfQueueName);
+                } catch (final Exception e2) {
+                    LOG.error("Queue lookup failed for both " + queueName + " and " + wfQueueName);
+                    throw new RuntimeException(e);
+                }
+            } finally {
+                ctx.close();
+            }
+            return queueObj;
         } catch (final NamingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Topic lookupTopic(final String topic) {
-        InitialContext ctx;
+    public static Topic lookupTopic(final String topicName) {
+        InitialContext ctx = getInitialContext();
+        Topic topicObj;
         try {
-            ctx = getInitialContext();
-            return lookupTopic(ctx, topic);
-        } catch (final NamingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Queue lookupQueue(final InitialContext ctx, final String queue) {
-        try {
-            return (Queue) ctx.lookup(queue);
+            topicObj = (Topic) ctx.lookup(topicName);
         } catch (final NamingException e) {
             // if we did not find the queue we might need to add java:/ at the start
-            LOG.debug("Queue lookup failed for " + queue);
-            final String wfQueueName = "java:/" + queue;
+            final String wfTopicName = "java:/" + topicName;
             try {
-                LOG.debug("trying " + wfQueueName);
-                return (Queue) ctx.lookup(wfQueueName);
+                topicObj = (Topic) ctx.lookup(wfTopicName);
             } catch (final Exception e2) {
-                LOG.error("Queue lookup failed for both " + queue + " and " + wfQueueName);
+                LOG.error("Topic lookup failed for both " + topicName + " and " + wfTopicName);
                 throw new RuntimeException(e);
             }
         }
+        return topicObj;
     }
 
-    public static Topic lookupTopic(final InitialContext ctx, final String topic) {
-        try {
-            return (Topic) ctx.lookup(topic);
-        } catch (final NamingException e) {
-            // if we did not find the queue we might need to add java:/ at the start
-            LOG.debug("Queue lookup failed for " + topic);
-            final String wfTopicName = "java:/" + topic;
-            try {
-                LOG.debug("trying " + wfTopicName);
-                return (Topic) ctx.lookup(wfTopicName);
-            } catch (final Exception e2) {
-                LOG.error("Topic lookup failed for both " + topic + " and " + wfTopicName);
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
-    public static MessageProducer getProducer(final Session session, final Destination destination)
-            throws JMSException {
-        final javax.jms.MessageProducer producer = session.createProducer(destination);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        producer.setTimeToLive(60000L);
-        return producer;
-    }
-
-    public static Session connectToQueue(final Connection connection) throws JMSException {
+    static Session createSessionAndStartConnection(final Connection connection) throws JMSException {
         final Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         connection.start();
         return session;
     }
 
-    /**
-     * @deprecated Use :
-     *
-     *  1. disconnectQueue(final Connection connection, Session session, MessageProducer producer)
-     *  2. disconnectQueue(final Connection connection, Session session, MessageConsumer consumer)
-     *
-     *  depending on the use case (Producer, Consumer).
-     *
-     * @param connection
-     */
-    @Deprecated
-    public static void disconnectQueue(final Connection connection) {
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e);
-        }
-    }
 
     public static void disconnectQueue(final Connection connection, Session session, MessageProducer producer) {
         try {
@@ -204,6 +151,24 @@ public class JMSUtils {
             }
         } catch (final JMSException e) {
             LOG.error("[ Error when closing JMS connection ] {}", e);
+        }
+    }
+
+    private static void closeInitialContext(InitialContext ctx) {
+        if(ctx != null){
+            try {
+                ctx.close();
+            } catch (NamingException e) {
+                LOG.error("[ERROR] Error while trying to close context!");
+            }
+        }
+    }
+
+    private static InitialContext getInitialContext() {
+        try {
+            return new InitialContext();
+        } catch (NamingException e) {
+            throw new RuntimeException("Couldn't initialize the IntialContext!");
         }
     }
 }

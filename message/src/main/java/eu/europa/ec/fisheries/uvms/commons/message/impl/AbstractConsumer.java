@@ -15,51 +15,74 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.jms.*;
 
 public abstract class AbstractConsumer implements MessageConsumer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
 
-	private static long ONE_MINUTE = 60000L;
-	private ConnectionFactory connectionFactory;
+	private static long DEFAULT_TIME_TO_CONSUME = 120000;
+
+	private static long FIVE_SECONDS_TO_CONSUME = 5000L;
+
 	private Destination destination;
 
 	@PostConstruct
-	public void initializeConnectionFactory() {
-		connectionFactory = JMSUtils.lookupConnectionFactory();
+	public void initializeDestination() {
 		destination = JMSUtils.lookupQueue(getDestinationName());
 	}
 
+    @Override
+    @SuppressWarnings(value = "unchecked")
+    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+        return getMessage(correlationId, type, getMilliseconds());
+    }
 
+	/**
+	 *  When the broker has many sync consumers that are slow to receive (when system is overloaded happens a lot..) it blocks..
+	 *  "Restarting" the connection of the slow consumers each 5 seconds makes the broker system more reliable and costs almost nothing!
+	 *
+	 * @param correlationId
+	 * @param type
+	 * @param timeoutInMillis
+	 * @param <T>
+	 * @return
+	 * @throws MessageException
+	 */
 	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@SuppressWarnings(value = "unchecked")
 	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
+		Long newTimeout = timeoutInMillis;
+		while (newTimeout > 0){
+			T message = getMessageInFiveSeconds(correlationId);
+			if(message != null){
+				return message;
+			}
+			newTimeout -= FIVE_SECONDS_TO_CONSUME;
+		}
+		throw new MessageException("TimeOut occurred while trying to consume message!");
+	}
+
+	@SuppressWarnings(value = "unchecked")
+	private <T> T getMessageInFiveSeconds(final String correlationId) throws MessageException {
 		Connection connection = null;
 		Session session = null;
 		javax.jms.MessageConsumer consumer = null;
 		try {
-			connection = getConnectionFactory().createConnection();
-			session = JMSUtils.connectToQueue(connection);
-			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, type, timeoutInMillis);
+			connection = getConnection();
+			session = JMSUtils.createSessionAndStartConnection(connection);
+			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, FIVE_SECONDS_TO_CONSUME);
 			if (correlationId == null || correlationId.isEmpty()) {
 				throw new MessageException("No CorrelationID provided!");
 			}
 			consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
-			final T receivedMessage = (T) consumer.receive(timeoutInMillis);
+			final T receivedMessage = (T) consumer.receive(FIVE_SECONDS_TO_CONSUME);
 			if (receivedMessage == null) {
-				throw new MessageException("Message either null or timeout occurred. Timeout was set to: " + timeoutInMillis);
+				return null;
 			} else {
 				LOGGER.debug("Message with {} has been successfully received.", correlationId);
 				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
@@ -68,21 +91,15 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			return receivedMessage;
 		} catch (final Exception e) {
 			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
-			throw new MessageException("Error when retrieving message: " + e.getMessage());
+			return null;
 		} finally {
 			JMSUtils.disconnectQueue(connection, session, consumer);
 		}
 	}
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@SuppressWarnings(value = "unchecked")
-	public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-		return getMessage(correlationId, type, getMilliseconds());
-	}
 
 	protected long getMilliseconds() {
-		return ONE_MINUTE;
+		return DEFAULT_TIME_TO_CONSUME;
 	}
 
 	@Override
@@ -94,13 +111,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	}
 
 	protected Connection getConnection() throws JMSException {
-		return getConnectionFactory().createConnection();
+		return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
 	}
 
-	protected ConnectionFactory getConnectionFactory() {
-		if (connectionFactory == null) {
-			connectionFactory = JMSUtils.lookupConnectionFactory();
-		}
-		return connectionFactory;
-	}
 }

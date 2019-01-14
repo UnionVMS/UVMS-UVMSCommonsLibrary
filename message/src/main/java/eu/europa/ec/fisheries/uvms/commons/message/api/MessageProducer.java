@@ -32,29 +32,6 @@ public interface MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageNonPersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
-
-    /**
-     * Deprecated use sendResponseMessageToSender(...) instead.
-     *
-     * @param message
-     * @param text
-     * @deprecated use sendResponseMessageToSender(...) instead.
-     */
-    @Deprecated
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    void sendModuleResponseMessage(TextMessage message, String text) throws MessageException;
-
-    /**
-     * Deprecated use sendResponseMessageToSender(...) instead.
-     *
-     * @param message
-     * @param text
-     * @deprecated use sendResponseMessageToSender(...) instead.
-     */
-    @Deprecated
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    void sendModuleResponseMessage(TextMessage message, String text, String moduleName);
-
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendResponseMessageToSender(TextMessage message, String text) throws MessageException;
 
@@ -66,9 +43,6 @@ public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     void sendResponseMessageToSender(TextMessage message, String text, String moduleName) throws MessageException;
-
-
-	String getDestinationName();
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws MessageException;
@@ -87,4 +61,7 @@ public interface MessageProducer {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws MessageException;
+
+    String getDestinationName();
+
 }
