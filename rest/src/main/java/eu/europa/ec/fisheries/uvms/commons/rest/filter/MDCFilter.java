@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -39,7 +40,18 @@ public class MDCFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (MDC.get("requestId") == null) {
+
+        /*
+        check if called internally
+        caller is responsible for putting a value in the header
+
+         */
+
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        String requestId = httpServletRequest.getHeader("requestId");
+        if (requestId != null) {
+            MDC.put("requestId", requestId);
+        } else {
             MDC.put("requestId", UUID.randomUUID().toString());
         }
         chain.doFilter(request, res);
