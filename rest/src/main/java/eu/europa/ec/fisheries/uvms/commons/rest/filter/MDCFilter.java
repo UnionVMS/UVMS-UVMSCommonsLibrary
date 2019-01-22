@@ -6,6 +6,7 @@ import org.slf4j.MDC;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class MDCFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         /*
         check if called internally
@@ -52,9 +53,12 @@ public class MDCFilter implements Filter {
         if (requestId != null) {
             MDC.put("requestId", requestId);
         } else {
-            MDC.put("requestId", UUID.randomUUID().toString());
+            requestId = UUID.randomUUID().toString();
+            MDC.put("requestId",requestId);
         }
-        chain.doFilter(request, res);
+        HttpServletResponse httpServletResponse = (HttpServletResponse)response;
+        httpServletResponse.setHeader("requestId", requestId);
+        chain.doFilter(request, httpServletResponse);
     }
 
     @Override
