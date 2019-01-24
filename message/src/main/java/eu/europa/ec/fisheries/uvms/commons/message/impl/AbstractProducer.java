@@ -33,7 +33,11 @@ public abstract class AbstractProducer implements MessageProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
+    private static final String ERROR_WHEN_SENDING_MESSAGE = "[ Error when sending message. ]";
+
     private Destination destination;
+
+    private static final int RETRIES = 100;
 
     @PostConstruct
     public void initializeDestination() {
@@ -70,8 +74,7 @@ public abstract class AbstractProducer implements MessageProducer {
             LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
             TextMessage message = session.createTextMessage();
             if (MapUtils.isNotEmpty(props)) {
-                for (Object o : props.entrySet()) {
-                    Map.Entry<String, String> entry = (Map.Entry) o;
+                for (Map.Entry<String, String> entry : props.entrySet()) {
                     message.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
@@ -81,12 +84,11 @@ public abstract class AbstractProducer implements MessageProducer {
             producer = session.createProducer(getDestination());
             producer.setDeliveryMode(jmsDeliveryMode);
             producer.setTimeToLive(timeToLiveInMillis);
-            producer.send(message);
+            sendMessageWithRetry(producer, message, RETRIES);
             LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         } catch (final JMSException e) {
-            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MessageException("[ Error when sending message. ]", e);
+            throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
@@ -127,7 +129,7 @@ public abstract class AbstractProducer implements MessageProducer {
             producer = session.createProducer(message.getJMSReplyTo());
             producer.setTimeToLive(timeToLive);
             producer.setDeliveryMode(deliveryMode);
-            producer.send(response);
+            sendMessageWithRetry(producer, message, RETRIES);
         } catch (final JMSException e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
             throw new MessageException("[ Error when sending response message. ]", e);
@@ -151,8 +153,8 @@ public abstract class AbstractProducer implements MessageProducer {
             response.setText(text);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
             producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(response);
-        } catch (JMSException | JAXBException e) {
+            sendMessageWithRetry(producer, message, RETRIES);
+        } catch (JMSException | JAXBException | MessageException e) {
             LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(),
                     e.getStackTrace());
         } finally {
@@ -169,7 +171,6 @@ public abstract class AbstractProducer implements MessageProducer {
         Connection connection = null;
         Session session = null;
         javax.jms.MessageProducer producer = null;
-        String corrId;
         try {
             connection = getConnection();
             session = JMSUtils.createSessionAndStartConnection(connection);
@@ -186,15 +187,13 @@ public abstract class AbstractProducer implements MessageProducer {
             }
             message.setJMSReplyTo(replyTo);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            corrId = message.getJMSMessageID();
+            sendMessageWithRetry(producer, message, RETRIES);
+            return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOGGER.error("Error when returning request!", e);
             throw new MessageException("Error when returning request!", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
-        return corrId;
     }
 
     @Override
@@ -225,10 +224,10 @@ public abstract class AbstractProducer implements MessageProducer {
             producer.setTimeToLive(timeToLiveInMillis);
             producer.setDeliveryMode(deliveryMode);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
+            sendMessageWithRetry(producer, message, RETRIES);
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            throw new MessageException("[ Error when sending message. ]", e);
+            throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
@@ -251,12 +250,30 @@ public abstract class AbstractProducer implements MessageProducer {
             message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
             producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
+            sendMessageWithRetry(producer, message, RETRIES);
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            throw new MessageException("[ Error when sending message. ]", e);
+            throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
+        }
+    }
+
+    private void sendMessageWithRetry(javax.jms.MessageProducer producer, TextMessage message, int retries) throws MessageException {
+        try {
+            producer.send(message);
+        } catch (JMSException ignored) {
+            LOGGER.warn("\n\nMessage not sent.. Probably the broker is restarting... Trying for the [-" + (RETRIES-retries) + "-] time now.. [After sleeping for 1.5 Second..] \n\n");
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ignored1) {
+            }
+            int actualRetries = retries - 1;
+            if(actualRetries > 0){
+                sendMessageWithRetry(producer, message, actualRetries);
+            } else {
+                throw new MessageException(ERROR_WHEN_SENDING_MESSAGE);
+            }
         }
     }
 
@@ -270,4 +287,5 @@ public abstract class AbstractProducer implements MessageProducer {
     protected Connection getConnection() throws JMSException {
         return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
+
 }
