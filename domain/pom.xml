@@ -4,14 +4,14 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.0.33-SNAPSHOT</version>
+		<version>3.0.33-W14J8</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-domain</artifactId>
 	<packaging>jar</packaging>
 
-	<version>3.0.33-SNAPSHOT</version>
+	<version>3.0.33-W14J8</version>
 	<name>uvms-commons-domain</name>
 
 	<properties>
