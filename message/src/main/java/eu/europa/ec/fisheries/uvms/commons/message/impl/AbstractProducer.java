@@ -69,7 +69,7 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
             TextMessage message = session.createTextMessage();
@@ -120,7 +120,7 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             TextMessage response = session.createTextMessage(text);
@@ -146,7 +146,7 @@ public abstract class AbstractProducer implements MessageProducer {
         javax.jms.MessageProducer producer = null;
         try {
             String text = JAXBUtils.marshallJaxBObjectToString(fault);
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
             final TextMessage response = session.createTextMessage();
@@ -172,7 +172,7 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message with correlationId {} on queue: {}", jmsCorrelationID, destination);
@@ -215,7 +215,7 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message on queue: {}", destination);
@@ -240,11 +240,11 @@ public abstract class AbstractProducer implements MessageProducer {
         Session session = null;
         javax.jms.MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             producer = session.createProducer(destination);
             LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
-            final TextMessage message = session.createTextMessage(messageToSend);
+            TextMessage message = session.createTextMessage(messageToSend);
             message.setJMSReplyTo(replyTo);
             message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
             message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
@@ -263,7 +263,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             producer.send(message);
         } catch (JMSException ignored) {
-            LOGGER.warn("\n\nMessage not sent.. Probably the broker is restarting... Trying for the [-" + (RETRIES-retries) + "-] time now.. [After sleeping for 1.5 Second..] \n\n");
+            LOGGER.warn("\n\nMessage not sent.. Probably the broker is restarting... Trying for the [-" + (RETRIES-retries) + "-] time now.. [After sleeping for 1.5 Seconds] \n\n");
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException ignored1) {
@@ -277,6 +277,23 @@ public abstract class AbstractProducer implements MessageProducer {
         }
     }
 
+    private Connection getConnectionWithRetry(int retries) throws MessageException {
+        try {
+            return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+        } catch (JMSException e) {
+            if(retries > 0){
+                LOGGER.warn("Couldn't create connection.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException ignored1) {
+                }
+                int newRetries = retries - 1;
+                return getConnectionWithRetry(newRetries);
+            }
+            throw new MessageException("Couldn't create connection", e);
+        }
+    }
+
     public Destination getDestination() {
         if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
             destination = JMSUtils.lookupQueue(getDestinationName());
@@ -284,6 +301,7 @@ public abstract class AbstractProducer implements MessageProducer {
         return destination;
     }
 
+    @Deprecated
     protected Connection getConnection() throws JMSException {
         return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
