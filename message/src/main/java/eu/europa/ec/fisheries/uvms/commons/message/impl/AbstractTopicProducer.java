@@ -29,6 +29,8 @@ public abstract class AbstractTopicProducer {
 
     private Destination destination;
 
+    private static final int RETRIES = 100;
+
     @PostConstruct
     public void initializeConnectionFactory() {
         destination = getDestination();
@@ -40,7 +42,7 @@ public abstract class AbstractTopicProducer {
         Session session = null;
         MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = JMSUtils.getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
@@ -71,7 +73,7 @@ public abstract class AbstractTopicProducer {
         Session session = null;
         MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = JMSUtils.getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
@@ -99,7 +101,7 @@ public abstract class AbstractTopicProducer {
         Session session = null;
         MessageProducer producer = null;
         try {
-            connection = getConnection();
+            connection = JMSUtils.getConnectionWithRetry(RETRIES);
             session = JMSUtils.createSessionAndStartConnection(connection);
             LOGGER.debug("Sending message to EventBus...");
             TextMessage message = session.createTextMessage(text);
@@ -129,10 +131,6 @@ public abstract class AbstractTopicProducer {
             destination = JMSUtils.lookupTopic(getDestinationName());
         }
         return destination;
-    }
-
-    private Connection getConnection() throws JMSException {
-        return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
 
     public abstract String getDestinationName();

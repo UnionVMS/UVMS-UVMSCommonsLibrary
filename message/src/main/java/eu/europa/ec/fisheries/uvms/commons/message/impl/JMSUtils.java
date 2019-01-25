@@ -13,6 +13,7 @@
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,9 @@ public class JMSUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(JMSUtils.class);
 
-    // ConnectionFactory object is a JMS administered object and supports concurrent use.
+    private static final int RETRIES = 100;
+
+    // ConnectionFactory object is a JMS administered object and supports concurrent use! @ConnectionFactory.
     static final ConnectionFactory CACHED_CONNECTION_FACTORY = lookupConnectionFactory();
 
     private static ConnectionFactory lookupConnectionFactory() {
@@ -169,6 +172,23 @@ public class JMSUtils {
             return new InitialContext();
         } catch (NamingException e) {
             throw new RuntimeException("Couldn't initialize the IntialContext!");
+        }
+    }
+
+    static Connection getConnectionWithRetry(int retries) throws MessageException {
+        try {
+            return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+        } catch (JMSException e) {
+            if(retries > 0){
+                LOG.warn("Couldn't create connection.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException ignored1) {
+                }
+                int newRetries = retries - 1;
+                return getConnectionWithRetry(newRetries);
+            }
+            throw new MessageException("Couldn't create connection", e);
         }
     }
 }
