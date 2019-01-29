@@ -34,7 +34,7 @@ public class JMSUtils {
     private static final int RETRIES = 100;
 
     // ConnectionFactory object is a JMS administered object and supports concurrent use! @ConnectionFactory.
-    static final ConnectionFactory CACHED_CONNECTION_FACTORY = lookupConnectionFactory();
+    static ConnectionFactory CACHED_CONNECTION_FACTORY = lookupConnectionFactory();
 
     private static ConnectionFactory lookupConnectionFactory() {
         ConnectionFactory connectionFactory;
@@ -102,9 +102,21 @@ public class JMSUtils {
     }
 
 
-    static Session createSessionAndStartConnection(final Connection connection) throws JMSException {
-        final Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        connection.start();
+    public static Session createSessionAndStartConnection(Connection connection) throws JMSException {
+        Session session = null;
+        try {
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        } catch (JMSException ex){ // Probably the connection was already closed by the broker..!
+            if(session != null){
+                session.close();
+            }
+            ConnectionFactory connectionFactory = lookupConnectionFactory();
+            CACHED_CONNECTION_FACTORY = connectionFactory;
+            connection = connectionFactory.createConnection();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        }
         return session;
     }
 
@@ -177,7 +189,9 @@ public class JMSUtils {
 
     static Connection getConnectionWithRetry(int retries) throws MessageException {
         try {
-            return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+            Connection conn = JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+            conn.start();
+            return conn;
         } catch (JMSException e) {
             if(retries > 0){
                 LOG.warn("Couldn't create connection.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
@@ -190,5 +204,44 @@ public class JMSUtils {
             }
             throw new MessageException("Couldn't create connection", e);
         }
+    }
+
+    /**
+     * Tries to create the {connection, sesssion, producer} objcects.
+     * If the can succesfully be created it means the broker accepts connections..
+     *
+     * It tries each second for @param secondsToWait times..
+     *
+     * @param secondsToWait
+     * @param destination
+     * @return
+     */
+    protected static boolean waitForConnection(int secondsToWait, Destination destination){
+        Connection connection = null;
+        Session session = null;
+        javax.jms.MessageProducer producer = null;
+        boolean couldConnect;
+        while(secondsToWait > 0){
+            try {
+                Thread.sleep(1000);
+                connection = JMSUtils.getConnection();
+                session = JMSUtils.createSessionAndStartConnection(connection);
+                producer = session.createProducer(destination);
+                couldConnect = true;
+            } catch (InterruptedException | JMSException ignored1) {
+                couldConnect = false;
+            } finally {
+                JMSUtils.disconnectQueue(connection, session, producer);
+            }
+            if(couldConnect){
+                return true;
+            }
+            secondsToWait--;
+        }
+        return false;
+    }
+
+    static Connection getConnection() throws JMSException {
+        return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
     }
 }

@@ -102,16 +102,16 @@ public abstract class AbstractConsumer implements MessageConsumer {
 		return DEFAULT_TIME_TO_CONSUME;
 	}
 
+	protected Connection getConnection() throws JMSException {
+		return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+	}
+
 	@Override
 	public Destination getDestination() {
 		if (destination == null) {
 			destination = JMSUtils.lookupQueue(getDestinationName());
-		}		
+		}
 		return destination;
-	}
-
-	protected Connection getConnection() throws JMSException {
-		return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
 	}
 
 }
