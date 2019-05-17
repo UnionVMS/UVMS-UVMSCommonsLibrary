@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.commons.notifications;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import junit.framework.TestCase;
 
 public class TestNotificationUtils extends TestCase {

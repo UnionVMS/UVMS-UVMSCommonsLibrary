@@ -12,10 +12,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.commons.service.dao;
 
 
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
+
 import java.util.List;
 import java.util.Map;
-
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 
 public interface DAO<T> {
 

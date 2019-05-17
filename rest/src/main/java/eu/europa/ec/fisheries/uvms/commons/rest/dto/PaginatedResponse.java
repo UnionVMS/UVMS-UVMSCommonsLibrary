@@ -13,9 +13,9 @@
 
 package eu.europa.ec.fisheries.uvms.commons.rest.dto;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
 
 /**
  * Created by georgige on 19/09/2016.

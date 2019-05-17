@@ -12,12 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.rest.resource;
 
+import eu.europa.ec.fisheries.uvms.commons.rest.dto.PaginatedResponse;
+import eu.europa.ec.fisheries.uvms.commons.rest.dto.ResponseDto;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.util.List;
-
-import eu.europa.ec.fisheries.uvms.commons.rest.dto.PaginatedResponse;
-import eu.europa.ec.fisheries.uvms.commons.rest.dto.ResponseDto;
 
 public abstract class UnionVMSResource {
 

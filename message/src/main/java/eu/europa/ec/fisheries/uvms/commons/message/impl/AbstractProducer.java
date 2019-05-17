@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.*;
@@ -35,14 +35,19 @@ public abstract class AbstractProducer implements MessageProducer {
 
     private static final String ERROR_WHEN_SENDING_MESSAGE = "[ Error when sending message. ]";
 
-    private Destination destination;
+    private volatile Destination destination;
+
+    private volatile Connection connection;
+
+    private volatile Session session;
+
+    private volatile javax.jms.MessageProducer producer;
 
     private static final int RETRIES = 100;
 
-    @PostConstruct
-    public void initializeDestination() {
-        destination = getDestination();
-    }
+    private static final long TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES = 1800000; // 30 MINUTES
+
+    private static final String FAILED_AFTER_RETRY = "[FAILED-TO-SEND] After +" + RETRIES + "+ of retries still failed sending message!";
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -64,54 +69,7 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws MessageException {
-        return sendModuleMessageWithPropsWithRetry(text, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, RETRIES, true);
-    }
-
-    private String sendModuleMessageWithPropsWithRetry(String text, Destination replyTo, Map<String, String> props, int jmsDeliveryMode, long timeToLiveInMillis, int retries, boolean waitForConnection) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message with replyTo: [{}]", replyTo);
-            TextMessage message = session.createTextMessage();
-            if (MapUtils.isNotEmpty(props)) {
-                for (Map.Entry<String, String> entry : props.entrySet()) {
-                    message.setStringProperty(entry.getKey(), entry.getValue());
-                }
-            }
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            message.setJMSReplyTo(replyTo);
-            message.setText(text);
-            producer = session.createProducer(getDestination());
-            producer.setDeliveryMode(jmsDeliveryMode);
-            producer.setTimeToLive(timeToLiveInMillis);
-            producer.send(message);
-            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
-            return message.getJMSMessageID();
-        } catch (final JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't send message.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                }
-                int newRetries = retries - 1;
-                return sendModuleMessageWithPropsWithRetry(text, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, newRetries, true);
-            } else {
-                LOGGER.warn("Failed to send messages for 100 times now.. Going to try to wait for a connection for 1 minute!");
-                if(waitForConnection && JMSUtils.waitForConnection(60, getDestination())){
-                    LOGGER.info("[INFO] Could reconnect :).. Going to send message now!");
-                    return sendModuleMessageWithPropsWithRetry(text, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, 1, false);
-                } else {
-                    throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
-                }
-            }
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
+        return sendMessageWithRetry(text, null, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, null, null,null, RETRIES);
     }
 
     @Override
@@ -135,141 +93,35 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws MessageException {
-        sendResponseMessageToSenderWithRetry(message, text, timeToLive, deliveryMode, RETRIES, true);
-    }
-
-    private void sendResponseMessageToSenderWithRetry(TextMessage message, String text, long timeToLive, int deliveryMode, int retries, boolean waitForConnection) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
+        Destination jmsReplyTo;
+        String messageId;
         try {
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
-            TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer = session.createProducer(message.getJMSReplyTo());
-            producer.setTimeToLive(timeToLive);
-            producer.setDeliveryMode(deliveryMode);
-            producer.send(response);
-        } catch (final JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't return response message.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                }
-                int newRetries = retries - 1;
-                sendResponseMessageToSenderWithRetry(message, text, timeToLive, deliveryMode, newRetries, true);
-            } else {
-                LOGGER.warn("Failed to send messages for 100 times now.. Going to try to wait for a connection for 1 minute!");
-                if(waitForConnection && JMSUtils.waitForConnection(60, getDestination())){
-                    LOGGER.info("[INFO] Could reconnect :).. Going to send message now!");
-                    sendResponseMessageToSenderWithRetry(message, text, timeToLive, deliveryMode, 1, false);
-                } else {
-                    throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
-                }
-                throw new MessageException("[ Error when sending response message. ]", e);
-            }
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
+            jmsReplyTo = message.getJMSReplyTo();
+            messageId = message.getJMSMessageID();
+        } catch (JMSException e) {
+           throw new MessageException("Could Not get the sender destination to send the response to!! {}", e);
         }
+        sendMessageWithRetry(text, jmsReplyTo, null, null,deliveryMode, timeToLive, messageId, null, null, RETRIES);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendFault(final TextMessage message, Fault fault) {
-        sendFaultWithRetry(message, fault, RETRIES);
-    }
-
-    private void sendFaultWithRetry(TextMessage message, Fault fault, int retries) {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
+    public void sendFault(final TextMessage message, Fault fault) throws MessageException {
+        String faultMsgText;
+        Destination jmsReplyTo;
         try {
-            String text = JAXBUtils.marshallJaxBObjectToString(fault);
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message back to recipient from  with correlationId {} on queue: {}", message.getJMSMessageID(), message.getJMSReplyTo());
-            final TextMessage response = session.createTextMessage();
-            response.setText(text);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(message);
-        } catch (JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't send fault message.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                }
-                int newRetries = retries - 1;
-                sendFaultWithRetry(message, fault, newRetries);
-            }
-            LOGGER.error("[ Error when returning request. ] {} {}", e.getMessage(), e.getStackTrace());
-        } catch (JAXBException e) {
-            LOGGER.error("[ Error while unmarshalling request message. ] {} {}", e.getMessage(), e.getStackTrace());
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
+            faultMsgText = JAXBUtils.marshallJaxBObjectToString(fault);
+            jmsReplyTo = message.getJMSReplyTo();
+        } catch (JAXBException | JMSException e) {
+            throw new MessageException("Error while marshalling Fault message or getting JMSReplyTo!");
         }
+        sendMessageWithRetry(faultMsgText, jmsReplyTo, null, null, DeliveryMode.NON_PERSISTENT, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, null, null, RETRIES);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws MessageException {
-        return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, RETRIES, true);
-    }
-
-    private String sendMessageWithSpecificIdsWithRetry(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID, int retries, boolean waitForConnection) throws MessageException {
-        if(destination == null){
-            throw new MessageException("Destination cannot be null!");
-        }
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            producer = session.createProducer(destination);
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", jmsCorrelationID, destination);
-            final TextMessage message = session.createTextMessage(messageToSend);
-            if (StringUtils.isNotEmpty(jmsMessageID)) {
-                message.setJMSMessageID(jmsMessageID);
-            }
-            if (StringUtils.isNotEmpty(jmsCorrelationID)) {
-                message.setJMSCorrelationID(jmsCorrelationID);
-            } else {
-                message.setJMSCorrelationID(message.getJMSMessageID());
-            }
-            message.setJMSReplyTo(replyTo);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        } catch (JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't return response message.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                }
-                int newRetries = retries - 1;
-                return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, newRetries, true);
-            } else {
-                LOGGER.warn("Failed to send messages for 100 times now.. Going to try to wait for a connection for 1 minute!");
-                if(waitForConnection && JMSUtils.waitForConnection(60, getDestination())){
-                    LOGGER.info("[INFO] Could reconnect :).. Going to send message now!");
-                    return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, 1, false);
-                } else {
-                    throw new MessageException("Error send message with specific IDs!", e);
-                }
-            }
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
+        return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, RETRIES);
     }
 
     @Override
@@ -287,93 +139,133 @@ public abstract class AbstractProducer implements MessageProducer {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws MessageException {
-        return sendMessageToSpecificQueueWithRetry(messageToSend, destination, replyTo, timeToLiveInMillis, deliveryMode, RETRIES, true);
+        return sendMessageWithRetry(messageToSend, destination, replyTo, null, deliveryMode, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, null, null, RETRIES);
     }
 
-    private String sendMessageToSpecificQueueWithRetry(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode, int retries, boolean waitForConnection) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            producer = session.createProducer(destination);
-            LOGGER.debug("Sending message on queue: {}", destination);
-            final TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            producer.setTimeToLive(timeToLiveInMillis);
-            producer.setDeliveryMode(deliveryMode);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        } catch (JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't send message to specific queue.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                }
-                int newRetries = retries - 1;
-                return sendMessageToSpecificQueueWithRetry(messageToSend, destination, replyTo, timeToLiveInMillis, deliveryMode, newRetries, true);
-            } else {
-                LOGGER.warn("Failed to send messages for 100 times now.. Going to try to wait for a connection for 1 minute!");
-                if(waitForConnection && JMSUtils.waitForConnection(60, getDestination())){
-                    LOGGER.info("[INFO] Could reconnect :).. Going to send message now!");
-                    return sendMessageToSpecificQueueWithRetry(messageToSend, destination, replyTo, timeToLiveInMillis, deliveryMode, 1, false);
-                } else {
-                    throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
-                }
-            }
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
-        }
-    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws MessageException {
-        return sendMessageToSpecificQueueWithFunctionWithRetry(messageToSend, destination, replyTo, function, grouping, RETRIES, true);
+        return sendMessageWithRetry(messageToSend, destination, replyTo, null, DeliveryMode.NON_PERSISTENT, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, function, grouping, RETRIES);
     }
 
-    private String sendMessageToSpecificQueueWithFunctionWithRetry(String messageToSend, Destination destination, Destination replyTo, String function, String grouping, int retries, boolean waitForConnection) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
+    private String sendMessageWithRetry(String messageToSend, Destination destination, Destination replyTo, Map<String, String> props, int jmsDeliveryMode, long timeToLiveInMillis,
+                                        String jmsCorrIdForResponseMessage, String function, String grouping, int retries) throws MessageException {
         try {
-            connection = JMSUtils.getConnection();
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            producer = session.createProducer(destination);
-            LOGGER.debug("Sending message with correlationId {} on queue: {}", destination);
-            TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
-            message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
-            producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
+            initializeConnectionAndDestination(destination != null ? destination : getDestination());
+            TextMessage message = session.createTextMessage();
+            if (MapUtils.isNotEmpty(props)) {
+                for (Map.Entry<String, String> entry : props.entrySet()) {
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            if(StringUtils.isNotEmpty(function)){
+                message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
+            }
+            if(StringUtils.isNotEmpty(grouping)){
+                message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
+            }
+            if(StringUtils.isNotEmpty(jmsCorrIdForResponseMessage)){
+                message.setJMSCorrelationID(jmsCorrIdForResponseMessage);
+            }
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+            message.setJMSReplyTo(replyTo);
+            message.setText(messageToSend);
+            producer.setDeliveryMode(jmsDeliveryMode);
+            producer.setTimeToLive(timeToLiveInMillis);
             producer.send(message);
+            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
-        } catch (JMSException e) {
-            JMSUtils.disconnectQueue(connection, session, producer);
-            if(retries > 0){
-                LOGGER.warn("Couldn't send message to specific queue with function.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
+        } catch (final JMSException e) {
+            closeResources();
+            if (retries > 0) {
+                LOGGER.warn("Couldn't send message.. Going to retry for the [-" + (RETRIES - retries) + "-] time now [After sleeping for 1.5 Seconds]..");
                 try {
                     Thread.sleep(1500);
                 } catch (InterruptedException ignored1) {
                 }
                 int newRetries = retries - 1;
-                return sendMessageToSpecificQueueWithFunctionWithRetry(messageToSend, destination, replyTo, function, grouping, newRetries, true);
+                return sendMessageWithRetry(messageToSend, destination, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, jmsCorrIdForResponseMessage, function, grouping, newRetries);
             } else {
-                LOGGER.warn("Failed to send messages for 100 times now.. Going to try to wait for a connection for 1 minute!");
-                if(waitForConnection && JMSUtils.waitForConnection(60, getDestination())){
-                    LOGGER.info("[INFO] Could reconnect :).. Going to send message now!");
-                    return sendMessageToSpecificQueueWithFunctionWithRetry(messageToSend, destination, replyTo, function, grouping, 1, false);
-                } else {
-                    throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
-                }
+                LOGGER.error(FAILED_AFTER_RETRY);
+                throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
             }
         } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
+            closeResources();
+        }
+    }
+
+    private String sendMessageWithSpecificIdsWithRetry(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID, int retries) throws MessageException {
+        try {
+            initializeConnectionAndDestination(destination);
+            final TextMessage message = session.createTextMessage(messageToSend);
+            if (StringUtils.isNotEmpty(jmsMessageID)) {
+                message.setJMSMessageID(jmsMessageID);
+            }
+            if (StringUtils.isNotEmpty(jmsCorrelationID)) {
+                message.setJMSCorrelationID(jmsCorrelationID);
+            } else {
+                message.setJMSCorrelationID(message.getJMSMessageID());
+            }
+            message.setJMSReplyTo(replyTo);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+            producer.send(message);
+            return message.getJMSMessageID();
+        } catch (JMSException e) {
+            closeResources();
+            if (retries > 0) {
+                LOGGER.warn("Couldn't return response message.. Going to retry for the [-" + (RETRIES - retries) + "-] time now [After sleeping for 1.5 Seconds]..");
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException ignored1) {
+                }
+                int newRetries = retries - 1;
+                return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, newRetries);
+            } else {
+                LOGGER.error(FAILED_AFTER_RETRY);
+                throw new MessageException("Error send message with specific IDs!", e);
+            }
+        } finally {
+            closeResources();
+        }
+    }
+
+
+    private void initializeConnectionAndDestination(Destination destin) {
+        try {
+            connection = JMSUtils.getConnectionV2();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            destination = destin;
+            producer = session.createProducer(destination);
+        } catch (JMSException e) {
+            LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!");
+        }
+    }
+
+    @PreDestroy
+    public void preDistroy(){
+        LOGGER.info("[DESTROYING-PRODUCER] Predestroy producer...");
+        closeResources();
+    }
+
+
+    private void closeResources() {
+        try {
+            if (producer != null) {
+                producer.close();
+                producer = null;
+            }
+            if (session != null) {
+                session.close();
+                session = null;
+            }
+            if (connection != null) {
+                connection.close();
+                connection = null;
+            }
+        } catch (JMSException e) {
+            LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed! {} - {}", e.getMessage(), e.getStackTrace());
         }
     }
 

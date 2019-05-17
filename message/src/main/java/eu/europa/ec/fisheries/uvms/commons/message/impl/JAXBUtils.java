@@ -12,6 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -22,9 +25,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-import org.apache.commons.lang3.StringUtils;
 
 public class JAXBUtils {
 
@@ -109,7 +109,7 @@ public class JAXBUtils {
         }
         StringReader sr = new StringReader(textMessage);
         StreamSource source = new StreamSource(sr);
-        return  (R) unmarshaller.unmarshal(source);
+        return (R) unmarshaller.unmarshal(source);
     }
 
 }

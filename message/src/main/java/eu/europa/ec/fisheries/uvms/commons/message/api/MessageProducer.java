@@ -48,7 +48,7 @@ public interface MessageProducer {
     String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    void sendFault(TextMessage textMessage, Fault fault);
+    void sendFault(TextMessage textMessage, Fault fault) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws MessageException;

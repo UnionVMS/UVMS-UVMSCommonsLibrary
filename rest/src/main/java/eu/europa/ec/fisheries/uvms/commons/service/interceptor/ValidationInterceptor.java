@@ -11,8 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.service.interceptor;
 
-import java.util.List;
-import java.util.Set;
+import eu.europa.ec.fisheries.uvms.commons.rest.constants.ErrorCodes;
+import eu.europa.ec.fisheries.uvms.commons.rest.dto.ResponseDto;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -23,9 +23,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.core.Response;
-
-import eu.europa.ec.fisheries.uvms.commons.rest.constants.ErrorCodes;
-import eu.europa.ec.fisheries.uvms.commons.rest.dto.ResponseDto;
+import java.util.List;
+import java.util.Set;
 
 
 @Interceptor

@@ -11,11 +11,10 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.commons.geometry.model;
 
-import org.opengis.feature.simple.SimpleFeature;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.opengis.feature.simple.SimpleFeature;
 
 @AllArgsConstructor
 @NoArgsConstructor

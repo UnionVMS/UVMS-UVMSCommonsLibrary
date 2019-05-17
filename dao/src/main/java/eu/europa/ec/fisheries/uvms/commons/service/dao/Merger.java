@@ -11,11 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.service.dao;
 
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 
 public abstract class Merger<I,O> {
 

@@ -20,7 +20,7 @@ public enum AuditActionEnum {
     SHARE("share"),
     UNDEFINED("undefined");
 	
-	private AuditActionEnum(String reportType) {
+	AuditActionEnum(String reportType) {
 		this.reportType = reportType;
 	}
 

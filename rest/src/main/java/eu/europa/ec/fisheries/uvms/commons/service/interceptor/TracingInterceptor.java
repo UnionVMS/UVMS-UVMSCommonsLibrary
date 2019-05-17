@@ -12,12 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.service.interceptor;
 
+import com.google.common.base.Stopwatch;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import java.util.Arrays;
-
-import com.google.common.base.Stopwatch;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TracingInterceptor {

@@ -18,29 +18,31 @@ import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticConte
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.jms.*;
 
 public abstract class AbstractConsumer implements MessageConsumer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
 
-	private static long DEFAULT_TIME_TO_CONSUME = 120000;
+	private static final long DEFAULT_TIME_TO_CONSUME = 120000;
 
-	private static long FIVE_SECONDS_TO_CONSUME = 5000L;
+	private static final long FIVE_SECONDS_TO_CONSUME = 5000L;
 
 	private Destination destination;
 
-	@PostConstruct
-	public void initializeDestination() {
-		destination = JMSUtils.lookupQueue(getDestinationName());
-	}
+	private volatile Connection connection;
 
-    @Override
-    @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-        return getMessage(correlationId, type, getMilliseconds());
-    }
+	private volatile Session session;
+
+	private static final int RETRIES = 100;
+
+
+	@Override
+	@SuppressWarnings(value = "unchecked")
+	public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+		return getMessage(correlationId, type, DEFAULT_TIME_TO_CONSUME);
+	}
 
 	/**
 	 *  When the broker has many sync consumers that are slow to receive (when system is overloaded happens a lot..) it blocks..
@@ -69,16 +71,14 @@ public abstract class AbstractConsumer implements MessageConsumer {
 
 	@SuppressWarnings(value = "unchecked")
 	private <T> T getMessageInFiveSeconds(final String correlationId) throws MessageException {
-		Connection connection = null;
-		Session session = null;
 		javax.jms.MessageConsumer consumer = null;
 		try {
-			connection = getConnection();
-			session = JMSUtils.createSessionAndStartConnection(connection);
 			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, FIVE_SECONDS_TO_CONSUME);
 			if (correlationId == null || correlationId.isEmpty()) {
-				throw new MessageException("No CorrelationID provided!");
+				throw new MessageException("No CorrelationID provided! Cannot consume synchronously without a CorrelationID!");
 			}
+			closeResources(consumer);
+			initializeConnectionAndDestination();
 			consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
 			final T receivedMessage = (T) consumer.receive(FIVE_SECONDS_TO_CONSUME);
 			if (receivedMessage == null) {
@@ -93,17 +93,44 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
 			return null;
 		} finally {
-			JMSUtils.disconnectQueue(connection, session, consumer);
+			closeResources(consumer);
 		}
 	}
 
-
-	protected long getMilliseconds() {
-		return DEFAULT_TIME_TO_CONSUME;
+	private void initializeConnectionAndDestination() {
+		try {
+			connection = JMSUtils.getConnectionV2();
+			connection.start();
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		} catch (JMSException e) {
+			LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!");
+		}
+		destination = getDestination();
 	}
 
-	protected Connection getConnection() throws JMSException {
-		return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
+	private void closeResources(javax.jms.MessageConsumer consumer) {
+		try {
+			if(consumer != null){
+				consumer.close();
+			}
+			if(session != null){
+				session.close();
+				session = null;
+			}
+			if(connection != null){
+				LOGGER.debug("END : [CLOSING-CONNECTION] ID : {}", connection.hashCode());
+				connection.close();
+				connection = null;
+			}
+		} catch (JMSException e) {
+			LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed! {} - {}", e.getMessage(), e.getStackTrace());
+		}
+	}
+
+	@PreDestroy
+	public void preDestroy(){
+		LOGGER.info("[DESTROYING-CONSUMER] Consumer has been destroyed..");
+		closeResources(null);
 	}
 
 	@Override

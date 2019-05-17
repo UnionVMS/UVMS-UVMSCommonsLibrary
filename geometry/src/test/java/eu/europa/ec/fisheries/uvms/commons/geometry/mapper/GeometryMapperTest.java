@@ -1,12 +1,12 @@
 package eu.europa.ec.fisheries.uvms.commons.geometry.mapper;
 
-import static java.util.Arrays.asList;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import eu.europa.ec.fisheries.uvms.commons.geometry.model.FeatureCollectionWrapper;
+import eu.europa.ec.fisheries.uvms.commons.geometry.model.GeometryWrapper;
+import eu.europa.ec.fisheries.uvms.commons.geometry.model.SimpleFeatureWrapper;
+import lombok.SneakyThrows;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -14,14 +14,12 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
-import eu.europa.ec.fisheries.uvms.commons.geometry.model.FeatureCollectionWrapper;
-import eu.europa.ec.fisheries.uvms.commons.geometry.model.GeometryWrapper;
-import eu.europa.ec.fisheries.uvms.commons.geometry.model.SimpleFeatureWrapper;
-import lombok.SneakyThrows;
+import static java.util.Arrays.asList;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class GeometryMapperTest {
 

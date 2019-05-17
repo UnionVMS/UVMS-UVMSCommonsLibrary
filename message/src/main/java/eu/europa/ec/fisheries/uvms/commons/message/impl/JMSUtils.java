@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by osdjup on 2016-12-02.
@@ -239,6 +240,21 @@ public class JMSUtils {
             secondsToWait--;
         }
         return false;
+    }
+
+    public static Connection getConnectionV2() throws JMSException {
+        AtomicReference<Connection> connection = new AtomicReference<>(lookupConnectionFactory().createConnection());
+        connection.get().setExceptionListener(exception -> {
+            LOG.error("ExceptionListener triggered -> " + exception.getMessage(), exception);
+            try {
+                Thread.sleep(5000); // Wait 5 seconds (JMS server restarted?)
+                connection.set(lookupConnectionFactory().createConnection());
+            } catch (InterruptedException | JMSException e) {
+                LOG.error("Error pausing thread or retrying to create connection! -> {}", e.getMessage());
+                throw new RuntimeException("[FATAL] Unrecoverable error during Connection creation...");
+            }
+        });
+        return connection.get();
     }
 
     static Connection getConnection() throws JMSException {

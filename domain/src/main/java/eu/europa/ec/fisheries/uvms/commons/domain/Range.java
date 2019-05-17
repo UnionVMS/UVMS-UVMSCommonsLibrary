@@ -12,10 +12,10 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import javax.persistence.Embeddable;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import javax.persistence.Embeddable;
 
 @Embeddable
 @EqualsAndHashCode
