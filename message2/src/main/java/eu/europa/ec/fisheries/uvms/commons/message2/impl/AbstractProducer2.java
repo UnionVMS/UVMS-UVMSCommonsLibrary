@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.commons.message2.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message2.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message2.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message2.api.MessageProducer2;
 import eu.europa.ec.fisheries.uvms.commons.message2.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ import javax.jms.*;
 import javax.xml.bind.JAXBException;
 import java.util.Map;
 
-public abstract class AbstractProducer2 {
+public abstract class AbstractProducer2 implements MessageProducer2 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer2.class);
 
@@ -68,7 +69,6 @@ public abstract class AbstractProducer2 {
             producer.setDeliveryMode(jmsDeliveryMode);
             producer.setTimeToLive(timeToLiveInMillis);
             producer.send(message);
-            LOGGER.debug("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         }
     }
@@ -127,10 +127,10 @@ public abstract class AbstractProducer2 {
              MessageProducer producer = session.createProducer(destination);
         ) {
             final TextMessage message = session.createTextMessage(messageToSend);
-            if(jmsMessageID != null && jmsMessageID.length() > 0){
+            if (jmsMessageID != null && jmsMessageID.length() > 0) {
                 message.setJMSMessageID(jmsMessageID);
             }
-            if(jmsCorrelationID != null && jmsCorrelationID.length() > 0){
+            if (jmsCorrelationID != null && jmsCorrelationID.length() > 0) {
                 message.setJMSCorrelationID(jmsCorrelationID);
             }
             message.setJMSReplyTo(replyTo);
