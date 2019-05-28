@@ -10,9 +10,10 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more d
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.europa.ec.fisheries.uvms.commons.message.api;
+package eu.europa.ec.fisheries.uvms.commons.message2.api;
 
 public interface MessageConstants {
+
 
     String CONNECTION_FACTORY = "ConnectionFactory";
     String CONNECTION_TYPE = "javax.jms.MessageListener";
@@ -76,7 +77,7 @@ public interface MessageConstants {
     String QUEUE_MODULE_RULES = "jms/queue/UVMSRulesEvent";
     String QUEUE_RULES = "jms/queue/UVMSRules";
     String RULES_MESSAGE_IN_QUEUE_NAME = "UVMSRulesEvent";
-    
+
     String QUEUE_MOVEMENTRULES_EVENT = "jms/queue/UVMSMovementRulesEvent";
     String QUEUE_MOVEMENTRULES_EVENT_NAME = "UVMSMovementRulesEvent";
     String QUEUE_MOVEMENTRULES = "jms/queue/UVMSMovementRules";
@@ -117,6 +118,5 @@ public interface MessageConstants {
     String JMS_MESSAGE_GROUP_ORDERING = "JMSXGroupSeq";
     int JMS_MAX_REDELIVERIES = 6;
     int JMS_REDELIVERY_DELAY = 100;
-
 
 }
