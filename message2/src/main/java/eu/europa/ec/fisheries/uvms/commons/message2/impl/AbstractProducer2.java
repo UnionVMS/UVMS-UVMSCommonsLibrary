@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.jms.*;
 import javax.xml.bind.JAXBException;
 import java.util.Map;
@@ -35,22 +33,18 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
 
     public abstract Destination getDestination();
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws JMSException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.PERSISTENT, 0L);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props) throws JMSException {
         return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws JMSException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws JMSException {
         try (Connection connection = connectionFactory.createConnection();
              Session session = connection.createSession(false, 1);
@@ -73,22 +67,18 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text) throws JMSException {
         sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive) throws JMSException {
         sendResponseMessageToSender(message, text, timeToLive, DeliveryMode.PERSISTENT);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text, final String moduleName) throws JMSException {
         sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws JMSException {
         try (Connection connection = connectionFactory.createConnection();
              Session session = connection.createSession(false, 1);
@@ -103,7 +93,6 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendFault(final TextMessage message, Fault fault) throws JMSException, JAXBException {
         try (Connection connection = connectionFactory.createConnection();
              Session session = connection.createSession(false, 1);
@@ -117,7 +106,6 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
         if (destination == null) {
             throw new RuntimeException("Destination cannot be null!");
@@ -140,18 +128,15 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws JMSException {
         return sendMessageToSpecificQueue(messageToSend, destination, replyTo, Message.DEFAULT_TIME_TO_LIVE);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws JMSException {
         return sendMessageToSpecificQueue(messageToSend, destination, replyTo, timeToLiveInMillis, DeliveryMode.PERSISTENT);
     }
 
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws JMSException {
 
         try (Connection connection = connectionFactory.createConnection();
@@ -168,7 +153,6 @@ public abstract class AbstractProducer2 implements MessageProducer2 {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws JMSException {
 
         try (Connection connection = connectionFactory.createConnection();
