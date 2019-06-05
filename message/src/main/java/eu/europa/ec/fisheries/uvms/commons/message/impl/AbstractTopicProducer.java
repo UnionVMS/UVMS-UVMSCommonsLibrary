@@ -12,126 +12,95 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.annotation.Resource;
 import javax.jms.*;
 
 public abstract class AbstractTopicProducer {
 
+    @Resource(mappedName = "java:/ConnectionFactory")
+    private ConnectionFactory connectionFactory;
+
     private static final String SERVICE_NAME = "ServiceName";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTopicProducer.class);
 
-    private Destination destination;
 
-    private static final int RETRIES = 100;
 
-    @PostConstruct
-    public void initializeConnectionFactory() {
-        destination = getDestination();
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessage(String text, String serviceName, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnectionWithRetry(RETRIES);
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message to EventBus...");
+    public String sendEventBusMessage(String text, String serviceName, int jmsDeliveryMode, long timeToLiveInMillis) throws JMSException {
+        try (
+            Connection connection = connectionFactory.createConnection();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageProducer producer = session.createProducer(getDestination());
+        ){
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer = session.createProducer(destination);
             producer.setDeliveryMode(jmsDeliveryMode);
             producer.setTimeToLive(timeToLiveInMillis);
             producer.send(message);
-            LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         } catch (JMSException e) {
             LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MessageException("[ Error when sending message. ]", e);
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
+            throw  e;
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessage(String text, String serviceName) throws MessageException {
+    public String sendEventBusMessage(String text, String serviceName) throws JMSException {
         return sendEventBusMessage(text, serviceName,DeliveryMode.PERSISTENT, 0L);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendEventBusMessage(String text, String serviceName, Destination replyToDestination) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnectionWithRetry(RETRIES);
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message to EventBus...");
+        try (
+                Connection connection = connectionFactory.createConnection();
+                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                MessageProducer producer = session.createProducer(getDestination());
+        )
+        {
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             message.setJMSReplyTo(replyToDestination);
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer = session.createProducer(destination);
             producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
             throw new MessageException("Error while trying to send EventBus Message..");
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId) throws MessageException {
+
+    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId) throws JMSException {
         return sendEventBusMessageWithSpecificIds(text, serviceName, replyToDestination, messageId, messageCorrelationId, 0, DeliveryMode.PERSISTENT);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId, int timeToLive, int deliveryMode) throws MessageException {
-        Connection connection = null;
-        Session session = null;
-        MessageProducer producer = null;
-        try {
-            connection = JMSUtils.getConnectionWithRetry(RETRIES);
-            session = JMSUtils.createSessionAndStartConnection(connection);
-            LOGGER.debug("Sending message to EventBus...");
+    public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId, int timeToLive, int deliveryMode) throws JMSException {
+        try (
+                Connection connection = connectionFactory.createConnection();
+                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                MessageProducer producer = session.createProducer(getDestination());
+        ){
             TextMessage message = session.createTextMessage(text);
             message.setStringProperty(SERVICE_NAME, serviceName);
             message.setJMSReplyTo(replyToDestination);
-            if(StringUtils.isNotEmpty(messageId)){
+
+            if (messageId != null && messageId.length() > 0) {
                 message.setJMSMessageID(messageId);
             }
-            if(StringUtils.isNotEmpty(messageCorrelationId)){
+            if (messageCorrelationId != null && messageCorrelationId.length() > 0) {
                 message.setJMSCorrelationID(messageCorrelationId);
             }
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer = session.createProducer(destination);
             producer.setTimeToLive(timeToLive);
             producer.setDeliveryMode(deliveryMode);
             producer.send(message);
             return message.getJMSMessageID();
-        } catch (JMSException e) {
-            throw new MessageException("Error while trying to send EventBus Message..");
-        } finally {
-            JMSUtils.disconnectQueue(connection, session, producer);
         }
     }
 
-    private Destination getDestination() {
-        if (destination == null && StringUtils.isNotEmpty(getDestinationName())) {
-            destination = JMSUtils.lookupTopic(getDestinationName());
-        }
-        return destination;
-    }
 
-    public abstract String getDestinationName();
+
+
+    public abstract Destination getDestination();
 }

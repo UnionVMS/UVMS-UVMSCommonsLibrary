@@ -38,7 +38,6 @@
 		<module>dao</module>
 		<module>notification</module>
 		<module>geometry</module>
-        <module>message2</module>
     </modules>
 
 	<repositories>

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -108,6 +109,7 @@ public abstract class AbstractConfigSettingsBean {
 
     private LoadingCache<String, Map<String, String>> cache;
 
+    @Resource(name = "java:/" + MessageConstants.QUEUE_CONFIG)
     private Queue configQueue;
 
     /**
@@ -115,7 +117,6 @@ public abstract class AbstractConfigSettingsBean {
      * To be called in the extending class in a @PostConstruct block to load the settings for this module.
      */
     public AbstractConfigSettingsBean() {
-        configQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_CONFIG);
         if (cache == null) {
             LOGGER.info("[START] Loading settings for module : [" + getModuleName() + "].");
             initCacheObject();
@@ -213,7 +214,7 @@ public abstract class AbstractConfigSettingsBean {
      * @throws JMSException
      */
     private List<SettingType> getSettingTypes(String moduleName) throws MessageException {
-        try {
+        try{
             String jmsMessageID = getProducer().sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
             TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class, 20000L);
             return ModuleResponseMapper.getSettingsFromPullSettingsResponse(message);
