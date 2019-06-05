@@ -46,7 +46,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws JMSException {
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(getDestination());
         ) {
 
@@ -80,7 +80,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws JMSException {
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(message.getJMSReplyTo());
         ) {
             TextMessage response = session.createTextMessage(text);
@@ -94,7 +94,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     public void sendFault(final TextMessage message, Fault fault) throws JMSException, JAXBException {
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(message.getJMSReplyTo());
         ) {
             String text = JAXBUtils.marshallJaxBObjectToString(fault);
@@ -110,7 +110,7 @@ public abstract class AbstractProducer implements MessageProducer {
             throw new RuntimeException("Destination cannot be null!");
         }
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(destination);
         ) {
             final TextMessage message = session.createTextMessage(messageToSend);
@@ -139,7 +139,7 @@ public abstract class AbstractProducer implements MessageProducer {
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws JMSException {
 
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(destination);
         ) {
             final TextMessage message = session.createTextMessage(messageToSend);
@@ -155,7 +155,7 @@ public abstract class AbstractProducer implements MessageProducer {
     public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws JMSException {
 
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageProducer producer = session.createProducer(destination);
         ) {
             TextMessage message = session.createTextMessage(messageToSend);

@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,37 +27,18 @@ public abstract class AbstractConsumer  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
 
-    private static long DEFAULT_TIME_TO_CONSUME = 120000;
-    private static long FIVE_SECONDS_TO_CONSUME = 5000L;
 
     public abstract Destination getDestination();
 
-    @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-        return getMessage(correlationId, type, getMilliseconds());
-    }
-
-    public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
-        Long newTimeout = timeoutInMillis;
-        while (newTimeout > 0) {
-            T message = getMessageInFiveSeconds(correlationId);
-            if (message != null) {
-                return message;
-            }
-            newTimeout -= FIVE_SECONDS_TO_CONSUME;
-        }
-        throw new MessageException("TimeOut occurred while trying to consume message!");
-    }
-
-    private <T> T getMessageInFiveSeconds(final String correlationId)  throws RuntimeException {
+    public <T> T getMessage(final String correlationId, final Class type)  {
         try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageConsumer consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
         ) {
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new RuntimeException("No CorrelationID provided!");
             }
-            final T receivedMessage = (T) consumer.receive(FIVE_SECONDS_TO_CONSUME);
+            final T receivedMessage = (T) consumer.receive();
             if (receivedMessage == null) {
                 return null;
             }
@@ -70,9 +50,7 @@ public abstract class AbstractConsumer  {
         }
     }
 
-    protected long getMilliseconds() {
-        return DEFAULT_TIME_TO_CONSUME;
-    }
+
 
 
 }
