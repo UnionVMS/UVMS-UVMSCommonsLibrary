@@ -15,24 +15,18 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jms.*;
 
 public abstract class AbstractConsumer {
 
     private static long DEFAULT_TIME_TO_CONSUME = 120000;
 
-
-    @Resource(mappedName = "java:/ConnectionFactory")
-    private ConnectionFactory connectionFactory;
-
+    @Inject
+    JMSContext context;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
-
-
     public abstract Destination getDestination();
-
 
     public <T> T getMessage(final String correlationId, Class<T> targetclazz ) throws JMSException {
         T  message = getMessage(correlationId,  targetclazz,DEFAULT_TIME_TO_CONSUME);
@@ -44,9 +38,8 @@ public abstract class AbstractConsumer {
 
 
     public <T> T getMessage(final String correlationId, Class<T> targetclazz,  Long timeoutInMillis) throws JMSException {
-        try (
-                JMSContext context = connectionFactory.createContext(JMSContext.AUTO_ACKNOWLEDGE);
-        ) {
+        try
+        {
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new RuntimeException("No CorrelationID provided!");
             }

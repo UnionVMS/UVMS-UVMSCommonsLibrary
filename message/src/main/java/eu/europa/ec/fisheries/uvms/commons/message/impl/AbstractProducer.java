@@ -18,17 +18,17 @@ import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticConte
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jms.*;
 import javax.xml.bind.JAXBException;
 import java.util.Map;
 
-public abstract class AbstractProducer  {
+public abstract class AbstractProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
-    @Resource(mappedName = "java:/ConnectionFactory")
-    private ConnectionFactory connectionFactory;
+    @Inject
+    JMSContext context;
 
     public abstract Destination getDestination();
 
@@ -45,25 +45,21 @@ public abstract class AbstractProducer  {
     }
 
     public String sendModuleMessageWithProps(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis) throws JMSException {
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(getDestination());
-        ) {
 
-            TextMessage message = session.createTextMessage();
-            if (props != null && props.size() > 0) {
-                for (Map.Entry<String, String> entry : props.entrySet()) {
-                    message.setStringProperty(entry.getKey(), entry.getValue());
-                }
+        TextMessage message = context.createTextMessage();
+        if (props != null && props.size() > 0) {
+            for (Map.Entry<String, String> entry : props.entrySet()) {
+                message.setStringProperty(entry.getKey(), entry.getValue());
             }
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            message.setJMSReplyTo(replyTo);
-            message.setText(text);
-            producer.setDeliveryMode(jmsDeliveryMode);
-            producer.setTimeToLive(timeToLiveInMillis);
-            producer.send(message);
-            return message.getJMSMessageID();
         }
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+        message.setJMSReplyTo(replyTo);
+        message.setText(text);
+        context.createProducer()
+                .setDeliveryMode(jmsDeliveryMode)
+                .setTimeToLive(timeToLiveInMillis)
+                .send(getDestination(), message);
+        return message.getJMSMessageID();
     }
 
     public void sendResponseMessageToSender(final TextMessage message, final String text) throws JMSException {
@@ -79,52 +75,40 @@ public abstract class AbstractProducer  {
     }
 
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws JMSException {
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(message.getJMSReplyTo());
-        ) {
-            TextMessage response = session.createTextMessage(text);
-            response.setJMSCorrelationID(message.getJMSMessageID());
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer.setTimeToLive(timeToLive);
-            producer.setDeliveryMode(deliveryMode);
-            producer.send(response);
-        }
+
+        TextMessage responseMessage = context.createTextMessage(text);
+        responseMessage.setJMSCorrelationID(message.getJMSMessageID());
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(responseMessage);
+        context.createProducer()
+                .setDeliveryMode(deliveryMode)
+                .setTimeToLive(timeToLive)
+                .send(getDestination(), responseMessage);
     }
 
     public void sendFault(final TextMessage message, Fault fault) throws JMSException, JAXBException {
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(message.getJMSReplyTo());
-        ) {
-            String text = JAXBUtils.marshallJaxBObjectToString(fault);
-            final TextMessage response = session.createTextMessage();
-            response.setText(text);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-            producer.send(message);
-        }
+        String text = JAXBUtils.marshallJaxBObjectToString(fault);
+        final TextMessage response = context.createTextMessage();
+        response.setText(text);
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
+        context.createProducer()
+                .send(message.getJMSReplyTo(), response);
     }
 
-    public String sendMessageWithSpecificIds(String messageToSend, Destination destination, Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
-        if (destination == null) {
-            throw new RuntimeException("Destination cannot be null!");
+    public String sendMessageWithSpecificIds(String messageToSend,  Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
+        final TextMessage message = context.createTextMessage(messageToSend);
+        if (jmsMessageID != null && jmsMessageID.length() > 0) {
+            message.setJMSMessageID(jmsMessageID);
         }
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(destination);
-        ) {
-            final TextMessage message = session.createTextMessage(messageToSend);
-            if (jmsMessageID != null && jmsMessageID.length() > 0) {
-                message.setJMSMessageID(jmsMessageID);
-            }
-            if (jmsCorrelationID != null && jmsCorrelationID.length() > 0) {
-                message.setJMSCorrelationID(jmsCorrelationID);
-            }
-            message.setJMSReplyTo(replyTo);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
+        if (jmsCorrelationID != null && jmsCorrelationID.length() > 0) {
+            message.setJMSCorrelationID(jmsCorrelationID);
         }
+        message.setJMSReplyTo(replyTo);
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+
+        context.createProducer()
+                .setDeliveryMode(DeliveryMode.PERSISTENT)
+                .send(getDestination(), message);
+        return message.getJMSMessageID();
     }
 
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws JMSException {
@@ -138,34 +122,32 @@ public abstract class AbstractProducer  {
 
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws JMSException {
 
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(destination);
-        ) {
-            final TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            producer.setTimeToLive(timeToLiveInMillis);
-            producer.setDeliveryMode(deliveryMode);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        }
+
+        final TextMessage message = context.createTextMessage(messageToSend);
+        message.setJMSReplyTo(replyTo);
+
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+
+        context.createProducer()
+                .setTimeToLive(timeToLiveInMillis)
+                .setDeliveryMode(deliveryMode)
+                .send(destination, message);
+
+        return message.getJMSMessageID();
     }
 
     public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function, String grouping) throws JMSException {
 
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageProducer producer = session.createProducer(destination);
-        ) {
-            TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
-            message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
-            producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        }
+        TextMessage message = context.createTextMessage(messageToSend);
+        message.setJMSReplyTo(replyTo);
+        message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
+        message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+
+        context.createProducer()
+                .setTimeToLive(Message.DEFAULT_TIME_TO_LIVE)
+                .send(destination, message);
+
+        return message.getJMSMessageID();
     }
 }
