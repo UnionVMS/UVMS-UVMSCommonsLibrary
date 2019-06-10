@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.jms.*;
 
-public abstract class AbstractConsumer  {
+public abstract class AbstractConsumer {
+
+    private static long DEFAULT_TIME_TO_CONSUME = 120000;
+
 
     @Resource(mappedName = "java:/ConnectionFactory")
     private ConnectionFactory connectionFactory;
@@ -30,7 +34,17 @@ public abstract class AbstractConsumer  {
 
     public abstract Destination getDestination();
 
-    public <T> T getMessage(final String correlationId, final Class type)  {
+
+    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
+        T message = getMessage(correlationId, type, DEFAULT_TIME_TO_CONSUME);
+        if (message != null) {
+            return message;
+        }
+        throw new MessageException("TimeOut occurred while trying to consume message!");
+    }
+
+
+    public <T> T getMessage(final String correlationId, final Class type, Long timeoutInMillis) {
         try (Connection connection = connectionFactory.createConnection();
              Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageConsumer consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
@@ -38,10 +52,11 @@ public abstract class AbstractConsumer  {
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new RuntimeException("No CorrelationID provided!");
             }
-            final T receivedMessage = (T) consumer.receive();
+            final T receivedMessage = (T) consumer.receive(timeoutInMillis);
             if (receivedMessage == null) {
                 return null;
             }
+            connection.start();
             MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((TextMessage) receivedMessage);
             return receivedMessage;
         } catch (final Exception e) {
@@ -51,6 +66,5 @@ public abstract class AbstractConsumer  {
     }
 
 
-
-
 }
+

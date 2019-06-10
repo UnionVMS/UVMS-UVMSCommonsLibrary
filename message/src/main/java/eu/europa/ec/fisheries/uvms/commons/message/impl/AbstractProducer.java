@@ -23,7 +23,7 @@ import javax.jms.*;
 import javax.xml.bind.JAXBException;
 import java.util.Map;
 
-public abstract class AbstractProducer implements MessageProducer {
+public abstract class AbstractProducer  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 

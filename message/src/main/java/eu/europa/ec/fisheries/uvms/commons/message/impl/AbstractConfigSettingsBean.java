@@ -105,7 +105,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractConfigSettingsBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfigSettingsBean.class);
 
     private LoadingCache<String, Map<String, String>> cache;
 
