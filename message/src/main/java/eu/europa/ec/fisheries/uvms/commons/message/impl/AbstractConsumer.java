@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +34,16 @@ public abstract class AbstractConsumer {
     public abstract Destination getDestination();
 
 
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-        T message = getMessage(correlationId, type, DEFAULT_TIME_TO_CONSUME);
+    public TextMessage getMessage(final String correlationId) {
+        TextMessage message = getMessage(correlationId, DEFAULT_TIME_TO_CONSUME);
         if (message != null) {
             return message;
         }
-        throw new MessageException("TimeOut occurred while trying to consume message!");
+        throw new RuntimeException("TimeOut occurred while trying to consume message!");
     }
 
 
-    public <T> T getMessage(final String correlationId, final Class type, Long timeoutInMillis) {
+    public TextMessage getMessage(final String correlationId, Long timeoutInMillis) {
         try (Connection connection = connectionFactory.createConnection();
              Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
              MessageConsumer consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
@@ -52,13 +51,13 @@ public abstract class AbstractConsumer {
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new RuntimeException("No CorrelationID provided!");
             }
-            final T receivedMessage = (T) consumer.receive(timeoutInMillis);
-            if (receivedMessage == null) {
-                return null;
-            }
             connection.start();
-            MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((TextMessage) receivedMessage);
-            return receivedMessage;
+            final Message receivedMessage = consumer.receive(timeoutInMillis);
+            if (receivedMessage != null) {
+                MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
+                return (TextMessage) receivedMessage;
+            }
+            throw new JMSException("");
         } catch (final Exception e) {
             LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
             return null;

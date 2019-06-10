@@ -10,7 +10,6 @@ details. You should have received a copy of the GNU General Public License along
 */
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ public abstract class AbstractTopicProducer {
         return sendEventBusMessage(text, serviceName,DeliveryMode.PERSISTENT, 0L);
     }
 
-    public String sendEventBusMessage(String text, String serviceName, Destination replyToDestination) throws MessageException {
+    public String sendEventBusMessage(String text, String serviceName, Destination replyToDestination)  throws JMSException {
         try (
                 Connection connection = connectionFactory.createConnection();
                 Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -65,8 +64,6 @@ public abstract class AbstractTopicProducer {
             MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
             producer.send(message);
             return message.getJMSMessageID();
-        } catch (JMSException e) {
-            throw new MessageException("Error while trying to send EventBus Message..");
         }
     }
 
