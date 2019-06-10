@@ -57,7 +57,7 @@ public abstract class AbstractConsumer {
                 MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
                 return (TextMessage) receivedMessage;
             }
-            throw new JMSException("No message retrieved");
+            throw new JMSException("No TextMessage retrieved");
         } catch (final Exception e) {
             LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
             return null;
