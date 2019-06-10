@@ -34,35 +34,39 @@ public abstract class AbstractConsumer {
     public abstract Destination getDestination();
 
 
-    public TextMessage getMessage(final String correlationId) {
-        TextMessage message = getMessage(correlationId, DEFAULT_TIME_TO_CONSUME);
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz ) throws JMSException {
+        T  message = getMessage(correlationId,  targetclazz,DEFAULT_TIME_TO_CONSUME);
         if (message != null) {
             return message;
         }
-        throw new RuntimeException("TimeOut occurred while trying to consume message!");
+        throw new RuntimeException("Message not received");
     }
 
 
-    public TextMessage getMessage(final String correlationId, Long timeoutInMillis) {
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-             MessageConsumer consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz,  Long timeoutInMillis) throws JMSException {
+        try (
+                JMSContext context = connectionFactory.createContext(JMSContext.AUTO_ACKNOWLEDGE);
         ) {
             if (correlationId == null || correlationId.isEmpty()) {
                 throw new RuntimeException("No CorrelationID provided!");
             }
-            connection.start();
-            final Message receivedMessage = consumer.receive(timeoutInMillis);
-            if (receivedMessage != null) {
-                MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
-                return (TextMessage) receivedMessage;
+            Message  receivedMessage = context.createConsumer(getDestination()).receive( timeoutInMillis);
+            if(receivedMessage != null) {
+                MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((Message) receivedMessage);
+                return (T)  receivedMessage;
             }
-            throw new JMSException("No TextMessage retrieved");
+            else{
+                throw new JMSException("No Message retrieved");
+            }
         } catch (final Exception e) {
             LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
-            return null;
+            throw new JMSException("No TextMessage retrieved");
         }
     }
+
+
+
+
 
 
 }

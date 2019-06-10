@@ -210,7 +210,7 @@ public abstract class AbstractConfigSettingsBean {
     private List<SettingType> getSettingTypes(String moduleName) {
         try{
             String jmsMessageID = getProducer().sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
-            TextMessage message = getConsumer().getMessage(jmsMessageID,  20000L);
+            TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class,  20000L);
             return ModuleResponseMapper.getSettingsFromPullSettingsResponse(message);
         } catch (JMSException | ModelMapperException e) {
             throw new RuntimeException("[ERROR] Error while trying to fetch settings from CONFIG module. Is this module deployed?", e);
