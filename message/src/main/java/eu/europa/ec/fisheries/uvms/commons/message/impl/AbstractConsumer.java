@@ -13,54 +13,50 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.jms.*;
 
 public abstract class AbstractConsumer {
 
-    private static long DEFAULT_TIME_TO_CONSUME = 120000;
+    private static final long DEFAULT_TIME_TO_CONSUME = 120000;
 
     @Inject
     JMSContext context;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
     public abstract Destination getDestination();
 
-    public <T> T getMessage(final String correlationId, Class<T> targetclazz ) throws JMSException {
-        T  message = getMessage(correlationId,  targetclazz,DEFAULT_TIME_TO_CONSUME);
-        if (message != null) {
-            return message;
-        }
-        throw new RuntimeException("Message not received");
+    public <T> T getMessage(final String correlationId, Class targetclazz) throws JMSException {
+        return getMessage(correlationId, targetclazz, DEFAULT_TIME_TO_CONSUME);
     }
 
-
-    public <T> T getMessage(final String correlationId, Class<T> targetclazz,  Long timeoutInMillis) throws JMSException {
-        try
-        {
-            if (correlationId == null || correlationId.isEmpty()) {
-                throw new RuntimeException("No CorrelationID provided!");
-            }
-            Message  receivedMessage = context.createConsumer(getDestination()).receive( timeoutInMillis);
-            if(receivedMessage != null) {
-                MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((Message) receivedMessage);
-                return (T)  receivedMessage;
-            }
-            else{
-                throw new JMSException("No Message retrieved");
-            }
-        } catch (final Exception e) {
-            LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
-            throw new JMSException("No TextMessage retrieved");
+    @SuppressWarnings("unchecked")
+    public <T> T getMessage(final String correlationId, Class targetclazz, Long timeoutInMillis) throws JMSException {
+        if (correlationId == null || correlationId.isEmpty()) {
+            throw new IllegalArgumentException("No CorrelationID provided!");
         }
+        Message receivedMessage = context.createConsumer(getDestination())
+                                        .receive(timeoutInMillis);
+        if (receivedMessage != null) {
+            MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
+            return (T) receivedMessage;
+        }
+        throw new JMSException("No TextMessage retrieved");
     }
 
+    public <T> T getMessageBody(final String correlationId, Class<T> messageBodyType) throws JMSException {
+        return getMessage(correlationId, messageBodyType, DEFAULT_TIME_TO_CONSUME);
+    }
 
-
-
-
-
+    public <T> T getMessageBody(final String correlationId, Class<T> messageBodyType, Long timeoutInMillis) throws JMSException {
+        if (correlationId == null || correlationId.isEmpty()) {
+            throw new IllegalArgumentException("No CorrelationID provided!");
+        }
+        Message receivedMessage = context.createConsumer(getDestination())
+                                        .receive(timeoutInMillis);
+        if (receivedMessage != null) {
+            MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
+            return receivedMessage.getBody(messageBodyType);
+        }
+        throw new JMSException("No TextMessage retrieved");
+    }
 }
-

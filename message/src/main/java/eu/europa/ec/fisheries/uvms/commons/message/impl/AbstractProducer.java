@@ -15,8 +15,6 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.jms.*;
@@ -24,8 +22,6 @@ import javax.xml.bind.JAXBException;
 import java.util.Map;
 
 public abstract class AbstractProducer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
     @Inject
     JMSContext context;
@@ -70,10 +66,6 @@ public abstract class AbstractProducer {
         sendResponseMessageToSender(message, text, timeToLive, DeliveryMode.PERSISTENT);
     }
 
-    public void sendResponseMessageToSender(final TextMessage message, final String text, final String moduleName) throws JMSException {
-        sendResponseMessageToSender(message, text, Message.DEFAULT_TIME_TO_LIVE);
-    }
-
     public void sendResponseMessageToSender(final TextMessage message, final String text, long timeToLive, int deliveryMode) throws JMSException {
 
         TextMessage responseMessage = context.createTextMessage(text);
@@ -82,13 +74,12 @@ public abstract class AbstractProducer {
         context.createProducer()
                 .setDeliveryMode(deliveryMode)
                 .setTimeToLive(timeToLive)
-                .send(getDestination(), responseMessage);
+                .send(message.getJMSReplyTo(), responseMessage);
     }
 
     public void sendFault(final TextMessage message, Fault fault) throws JMSException, JAXBException {
         String text = JAXBUtils.marshallJaxBObjectToString(fault);
-        final TextMessage response = context.createTextMessage();
-        response.setText(text);
+        TextMessage response = context.createTextMessage(text);
         MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
         context.createProducer()
                 .send(message.getJMSReplyTo(), response);
@@ -122,7 +113,6 @@ public abstract class AbstractProducer {
 
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis, int deliveryMode) throws JMSException {
 
-
         final TextMessage message = context.createTextMessage(messageToSend);
         message.setJMSReplyTo(replyTo);
 
@@ -145,7 +135,6 @@ public abstract class AbstractProducer {
         MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
         context.createProducer()
-                .setTimeToLive(Message.DEFAULT_TIME_TO_LIVE)
                 .send(destination, message);
 
         return message.getJMSMessageID();

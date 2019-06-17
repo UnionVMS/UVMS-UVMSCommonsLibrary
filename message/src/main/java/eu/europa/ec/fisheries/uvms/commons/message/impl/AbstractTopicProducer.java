@@ -11,22 +11,18 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.jms.*;
 
 public abstract class AbstractTopicProducer {
 
+    private static final String SERVICE_NAME = "ServiceName";
 
     @Inject
     JMSContext context;
 
-    private static final String SERVICE_NAME = "ServiceName";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTopicProducer.class);
-
+    public abstract Destination getDestination();
 
     public String sendEventBusMessage(String text, String serviceName, int jmsDeliveryMode, long timeToLiveInMillis) throws JMSException {
         TextMessage message = context.createTextMessage(text);
@@ -57,7 +53,6 @@ public abstract class AbstractTopicProducer {
 
     }
 
-
     public String sendEventBusMessageWithSpecificIds(String text, String serviceName, Destination replyToDestination, String messageId, String messageCorrelationId) throws JMSException {
         return sendEventBusMessageWithSpecificIds(text, serviceName, replyToDestination, messageId, messageCorrelationId, 0, DeliveryMode.PERSISTENT);
     }
@@ -82,7 +77,4 @@ public abstract class AbstractTopicProducer {
                 .send(getDestination(), message);
         return message.getJMSMessageID();
     }
-
-
-    public abstract Destination getDestination();
 }
