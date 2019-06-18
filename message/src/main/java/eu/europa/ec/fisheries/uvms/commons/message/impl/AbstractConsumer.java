@@ -25,16 +25,16 @@ public abstract class AbstractConsumer {
 
     public abstract Destination getDestination();
 
-    public <T> T getMessage(final String correlationId, Class targetclazz) throws JMSException {
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz) throws JMSException {
         return getMessage(correlationId, targetclazz, DEFAULT_TIME_TO_CONSUME);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getMessage(final String correlationId, Class targetclazz, Long timeoutInMillis) throws JMSException {
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz, Long timeoutInMillis) throws JMSException {
         if (correlationId == null || correlationId.isEmpty()) {
             throw new IllegalArgumentException("No CorrelationID provided!");
         }
-        Message receivedMessage = context.createConsumer(getDestination())
+        Message receivedMessage = context.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
                                         .receive(timeoutInMillis);
         if (receivedMessage != null) {
             MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
@@ -51,7 +51,7 @@ public abstract class AbstractConsumer {
         if (correlationId == null || correlationId.isEmpty()) {
             throw new IllegalArgumentException("No CorrelationID provided!");
         }
-        Message receivedMessage = context.createConsumer(getDestination())
+        Message receivedMessage = context.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
                                         .receive(timeoutInMillis);
         if (receivedMessage != null) {
             MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
