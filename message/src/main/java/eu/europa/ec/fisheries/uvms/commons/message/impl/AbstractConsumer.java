@@ -12,106 +12,51 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.jms.*;
 
-public abstract class AbstractConsumer implements MessageConsumer {
+public abstract class AbstractConsumer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
+    private static final long DEFAULT_TIME_TO_CONSUME = 120000;
 
-	private static long DEFAULT_TIME_TO_CONSUME = 120000;
+    @Inject
+    JMSContext context;
 
-	private static long FIVE_SECONDS_TO_CONSUME = 5000L;
+    public abstract Destination getDestination();
 
-	private Destination destination;
-
-	@PostConstruct
-	public void initializeDestination() {
-		destination = JMSUtils.lookupQueue(getDestinationName());
-	}
-
-    @Override
-    @SuppressWarnings(value = "unchecked")
-    public <T> T getMessage(final String correlationId, final Class type) throws MessageException {
-        return getMessage(correlationId, type, getMilliseconds());
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz) throws JMSException {
+        return getMessage(correlationId, targetclazz, DEFAULT_TIME_TO_CONSUME);
     }
 
-	/**
-	 *  When the broker has many sync consumers that are slow to receive (when system is overloaded happens a lot..) it blocks..
-	 *  "Restarting" the connection of the slow consumers each 5 seconds makes the broker system more reliable and costs almost nothing!
-	 *
-	 * @param correlationId
-	 * @param type
-	 * @param timeoutInMillis
-	 * @param <T>
-	 * @return
-	 * @throws MessageException
-	 */
-	@Override
-	@SuppressWarnings(value = "unchecked")
-	public <T> T getMessage(final String correlationId, final Class type, final Long timeoutInMillis) throws MessageException {
-		Long newTimeout = timeoutInMillis;
-		while (newTimeout > 0){
-			T message = getMessageInFiveSeconds(correlationId);
-			if(message != null){
-				return message;
-			}
-			newTimeout -= FIVE_SECONDS_TO_CONSUME;
-		}
-		throw new MessageException("TimeOut occurred while trying to consume message!");
-	}
+    @SuppressWarnings("unchecked")
+    public <T> T getMessage(final String correlationId, Class<T> targetclazz, Long timeoutInMillis) throws JMSException {
+        if (correlationId == null || correlationId.isEmpty()) {
+            throw new IllegalArgumentException("No CorrelationID provided!");
+        }
+        Message receivedMessage = context.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
+                                        .receive(timeoutInMillis);
+        if (receivedMessage != null) {
+            MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
+            return (T) receivedMessage;
+        }
+        throw new JMSException("No TextMessage retrieved");
+    }
 
-	@SuppressWarnings(value = "unchecked")
-	private <T> T getMessageInFiveSeconds(final String correlationId) throws MessageException {
-		Connection connection = null;
-		Session session = null;
-		javax.jms.MessageConsumer consumer = null;
-		try {
-			connection = getConnection();
-			session = JMSUtils.createSessionAndStartConnection(connection);
-			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, FIVE_SECONDS_TO_CONSUME);
-			if (correlationId == null || correlationId.isEmpty()) {
-				throw new MessageException("No CorrelationID provided!");
-			}
-			consumer = session.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'");
-			final T receivedMessage = (T) consumer.receive(FIVE_SECONDS_TO_CONSUME);
-			if (receivedMessage == null) {
-				return null;
-			} else {
-				LOGGER.debug("Message with {} has been successfully received.", correlationId);
-				LOGGER.debug("JMS message received: {} \n Content: {}", receivedMessage, ((TextMessage) receivedMessage).getText());
-			}
-			MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((TextMessage) receivedMessage);
-			return receivedMessage;
-		} catch (final Exception e) {
-			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
-			return null;
-		} finally {
-			JMSUtils.disconnectQueue(connection, session, consumer);
-		}
-	}
+    public <T> T getMessageBody(final String correlationId, Class<T> messageBodyType) throws JMSException {
+        return getMessage(correlationId, messageBodyType, DEFAULT_TIME_TO_CONSUME);
+    }
 
-
-	protected long getMilliseconds() {
-		return DEFAULT_TIME_TO_CONSUME;
-	}
-
-	protected Connection getConnection() throws JMSException {
-		return JMSUtils.CACHED_CONNECTION_FACTORY.createConnection();
-	}
-
-	@Override
-	public Destination getDestination() {
-		if (destination == null) {
-			destination = JMSUtils.lookupQueue(getDestinationName());
-		}
-		return destination;
-	}
-
+    public <T> T getMessageBody(final String correlationId, Class<T> messageBodyType, Long timeoutInMillis) throws JMSException {
+        if (correlationId == null || correlationId.isEmpty()) {
+            throw new IllegalArgumentException("No CorrelationID provided!");
+        }
+        Message receivedMessage = context.createConsumer(getDestination(), "JMSCorrelationID='" + correlationId + "'")
+                                        .receive(timeoutInMillis);
+        if (receivedMessage != null) {
+            MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext(receivedMessage);
+            return receivedMessage.getBody(messageBodyType);
+        }
+        throw new JMSException("No TextMessage retrieved");
+    }
 }

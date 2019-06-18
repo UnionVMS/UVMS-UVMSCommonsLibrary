@@ -16,7 +16,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -104,10 +104,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractConfigSettingsBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfigSettingsBean.class);
 
     private LoadingCache<String, Map<String, String>> cache;
 
+    @Resource(name = "java:/" + MessageConstants.QUEUE_CONFIG)
     private Queue configQueue;
 
     /**
@@ -115,7 +116,6 @@ public abstract class AbstractConfigSettingsBean {
      * To be called in the extending class in a @PostConstruct block to load the settings for this module.
      */
     public AbstractConfigSettingsBean() {
-        configQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_CONFIG);
         if (cache == null) {
             LOGGER.info("[START] Loading settings for module : [" + getModuleName() + "].");
             initCacheObject();
@@ -160,7 +160,6 @@ public abstract class AbstractConfigSettingsBean {
     private Map<String, String> getAllModuleConfigurations(String moduleName) {
         Map<String, String> settingsMap = new HashMap<>();
         if (StringUtils.isNotEmpty(moduleName)) {
-            try {
                 LOGGER.info("[INFO] Going to fetch settings for module [ " + moduleName + " ]");
                 List<SettingType> settingTypeList = getSettingTypes(moduleName);
                 if (CollectionUtils.isNotEmpty(settingTypeList)) {
@@ -172,9 +171,6 @@ public abstract class AbstractConfigSettingsBean {
                 } else {
                     LOGGER.warn("[WARN] No settings found for module : " + moduleName);
                 }
-            } catch (MessageException e) {
-                LOGGER.error("[ERROR] Error while trying to fetch settings for module [" + getModuleName() + "]. {}", e);
-            }
         } else {
             LOGGER.error("[ERROR] Module name cannot be null when fetching settings for it!");
         }
@@ -208,17 +204,16 @@ public abstract class AbstractConfigSettingsBean {
      *
      * @param moduleName
      * @return List<SettingType>, the setting of the module we requested
-     * @throws MessageException
      * @throws ModelMapperException
-     * @throws JMSException
+     * @throws RuntimeException
      */
-    private List<SettingType> getSettingTypes(String moduleName) throws MessageException {
-        try {
+    private List<SettingType> getSettingTypes(String moduleName) {
+        try{
             String jmsMessageID = getProducer().sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
-            TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class, 20000L);
+            TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class,  20000L);
             return ModuleResponseMapper.getSettingsFromPullSettingsResponse(message);
         } catch (JMSException | ModelMapperException e) {
-            throw new MessageException("[ERROR] Error while trying to fetch settings from CONFIG module. Is this module deployed?", e);
+            throw new RuntimeException("[ERROR] Error while trying to fetch settings from CONFIG module. Is this module deployed?", e);
         }
     }
 
