@@ -19,9 +19,13 @@ import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticConte
 import javax.inject.Inject;
 import javax.jms.*;
 import javax.xml.bind.JAXBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public abstract class AbstractProducer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
     @Inject
     JMSContext context;
@@ -77,12 +81,16 @@ public abstract class AbstractProducer {
                 .send(message.getJMSReplyTo(), responseMessage);
     }
 
-    public void sendFault(final TextMessage message, Fault fault) throws JMSException, JAXBException {
-        String text = JAXBUtils.marshallJaxBObjectToString(fault);
-        TextMessage response = context.createTextMessage(text);
-        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
-        context.createProducer()
-                .send(message.getJMSReplyTo(), response);
+    public void sendFault(final TextMessage message, Fault fault) {
+        try {
+            String text = JAXBUtils.marshallJaxBObjectToString(fault);
+            TextMessage response = context.createTextMessage(text);
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(response);
+            context.createProducer()
+                    .send(message.getJMSReplyTo(), response);
+        } catch (JAXBException | JMSException e) {
+            LOGGER.warn("Could not send fault message.", e);
+        }
     }
 
     public String sendMessageWithSpecificIds(String messageToSend,  Destination replyTo, String jmsMessageID, String jmsCorrelationID) throws JMSException {
