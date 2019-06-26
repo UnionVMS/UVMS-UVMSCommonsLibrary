@@ -20,6 +20,7 @@ public abstract class AbstractTopicProducer {
     private static final String SERVICE_NAME = "ServiceName";
 
     @Inject
+    @JMSConnectionFactory("java:/JmsXA")
     JMSContext context;
 
     public abstract Destination getDestination();
