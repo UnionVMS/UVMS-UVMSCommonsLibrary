@@ -28,6 +28,7 @@ public abstract class AbstractProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
     @Inject
+    @JMSConnectionFactory("java:/JmsXA")
     JMSContext context;
 
     public abstract Destination getDestination();
