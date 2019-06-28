@@ -21,7 +21,6 @@ public abstract class AbstractConsumer {
     private static final long DEFAULT_TIME_TO_CONSUME = 120000;
 
     @Inject
-    @JMSConnectionFactory("java:/JmsXA")
     JMSContext context;
 
     public abstract Destination getDestination();
