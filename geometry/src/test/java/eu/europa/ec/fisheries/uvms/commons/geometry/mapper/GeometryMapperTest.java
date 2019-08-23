@@ -21,13 +21,11 @@ import com.vividsolutions.jts.geom.Polygon;
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.FeatureCollectionWrapper;
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.GeometryWrapper;
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.SimpleFeatureWrapper;
-import lombok.SneakyThrows;
 
 public class GeometryMapperTest {
 
     @Test
-    @SneakyThrows
-    public void testJsonToGeometryJson(){
+    public void testJsonToGeometryJson() throws Exception{
 
         String json = "{\"type\":\"Point\"," +
                        "\"coordinates\":[100.1,0.1]" +
@@ -41,8 +39,7 @@ public class GeometryMapperTest {
     }
 
     @Test
-    @SneakyThrows
-    public void testGeoJsonSimpleToSimpleFeature(){
+    public void testGeoJsonSimpleToSimpleFeature() throws Exception{
 
         String feature = "{\n" +
                 "    \"type\": \"Feature\",\n" +
@@ -90,8 +87,7 @@ public class GeometryMapperTest {
     }
 
     @Test
-    @SneakyThrows
-    public void testGeoJsonFeatureCollectionToFeatureCollection(){
+    public void testGeoJsonFeatureCollectionToFeatureCollection() throws Exception{
 
         String featureCollection = "{ \"type\": \"FeatureCollection\",\n" +
                 "    \"features\": [\n" +
@@ -136,8 +132,7 @@ public class GeometryMapperTest {
     }
 
     @Test
-    @SneakyThrows
-    public void testSimpleFeatureToGeoJson(){
+    public void testSimpleFeatureToGeoJson() throws Exception{
 
         SimpleFeatureTypeBuilder sb = new SimpleFeatureTypeBuilder();
         sb.setCRS(DefaultGeographicCRS.WGS84);

@@ -11,6 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -18,13 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 @MappedSuperclass
-@ToString
-@EqualsAndHashCode
 public class BaseEntity implements Serializable {
 
     protected BaseEntity(){

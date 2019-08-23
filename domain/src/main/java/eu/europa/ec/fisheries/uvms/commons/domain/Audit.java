@@ -12,21 +12,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.util.Date;
+import java.util.Objects;
 
 @Embeddable
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
 public class Audit {
 
     private static final String CREATED_ON = "created_on";
@@ -34,6 +27,7 @@ public class Audit {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = CREATED_ON, nullable = false)
     private Date createdOn;
+
 
     public Audit(Date createdOn) {
         this.createdOn = createdOn;
@@ -45,5 +39,25 @@ public class Audit {
 
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Audit audit = (Audit) o;
+        return createdOn.equals(audit.createdOn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(createdOn);
+    }
+
+    @Override
+    public String toString() {
+        return "Audit{" +
+                "createdOn=" + createdOn +
+                '}';
     }
 }

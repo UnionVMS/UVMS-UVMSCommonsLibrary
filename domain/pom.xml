@@ -15,18 +15,15 @@
 	<name>uvms-commons-domain</name>
 
 	<properties>
-		<sl4j.version>1.7.25</sl4j.version>
-		<logback.version>1.2.3</logback.version>
-		<logback.core.version>1.2.3</logback.core.version>
-		<junit.version>4.12</junit.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<lombok.version>1.16.18</lombok.version>
-		<hibernate-search-orm.version>5.3.0.Final</hibernate-search-orm.version>
-		<jackson.version>2.6.7.1</jackson.version>
-		<uvms.test.version>0.0.8</uvms.test.version>
+		<hibernate-search-orm.version>5.11.2.Final</hibernate-search-orm.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-logging-deps</artifactId>
+			<type>pom</type>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -40,70 +37,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>eu.europa.ec.fisheries.uvms</groupId>
-			<artifactId>uvms-test</artifactId>
-			<version>${uvms.test.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.resteasy</groupId>
-					<artifactId>resteasy-client</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.wildfly.arquillian</groupId>
-					<artifactId>wildfly-arquillian-container-remote</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.arquillian.junit</groupId>
-					<artifactId>arquillian-junit-container</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.shrinkwrap.resolver</groupId>
-					<artifactId>
-            			shrinkwrap-resolver-impl-maven
-            		</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.arquillian</groupId>
-					<artifactId>arquillian-bom</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${sl4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback.core.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>${javaee.version}</version>
@@ -114,11 +47,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>${commons.lang.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>

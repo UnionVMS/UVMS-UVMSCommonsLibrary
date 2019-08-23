@@ -12,22 +12,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
-
 import junit.framework.TestCase;
+
+import java.time.Instant;
 
 public class DateUtilsTest extends TestCase {
 
     public void testDateConversion() {
-        Date date = new Date(1441065600000l);
-        Date result = DateUtils.stringToDate(DateUtils.dateToString(date));
+        Instant date = Instant.ofEpochMilli(1441065600000l);
+        Instant result = DateUtils.stringToDate(DateUtils.dateToString(date));
         assertEquals(date, result);
-    }
-
-    public void testDateToXmlGregorian(){
-        XMLGregorianCalendar xmlGregorianCalendar = DateUtils.dateToXmlGregorian(DateUtils.END_OF_TIME.toDate());
-        assertEquals("9999-01-01T01:00:00Z", xmlGregorianCalendar.toString());
     }
 
 }

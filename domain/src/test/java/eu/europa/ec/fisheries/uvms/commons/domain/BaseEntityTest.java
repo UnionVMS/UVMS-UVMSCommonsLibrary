@@ -11,16 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import static junit.framework.TestCase.assertEquals;
+import org.junit.Test;
+import org.unitils.UnitilsJUnit4;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.junit.Test;
+import static junit.framework.TestCase.assertEquals;
 
-import eu.europa.ec.fisheries.uvms.BaseUnitilsTest;
-
-public class BaseEntityTest extends BaseUnitilsTest {
+public class BaseEntityTest extends UnitilsJUnit4 {
 
     @Test
     public void test(){

@@ -27,7 +27,21 @@
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
 		<scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
 		<javaee.version>8.0</javaee.version>
+		<jackson.version>2.9.9.3</jackson.version>
+		<commons.lang.version>2.6</commons.lang.version>
+		<junit.version>4.12</junit.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-logging-deps</artifactId>
+				<version>1.24</version>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<modules>
 		<module>message</module>

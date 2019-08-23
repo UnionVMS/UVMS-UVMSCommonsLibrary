@@ -14,13 +14,9 @@ package eu.europa.ec.fisheries.uvms.commons.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.Objects;
 
 @Embeddable
-@EqualsAndHashCode
-@ToString
 public class RectangleCoordinates {
 
 	@Column(name = "south")
@@ -67,4 +63,29 @@ public class RectangleCoordinates {
 		this.east = east;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RectangleCoordinates that = (RectangleCoordinates) o;
+		return Double.compare(that.south, south) == 0 &&
+				Double.compare(that.west, west) == 0 &&
+				Double.compare(that.north, north) == 0 &&
+				Double.compare(that.east, east) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(south, west, north, east);
+	}
+
+	@Override
+	public String toString() {
+		return "RectangleCoordinates{" +
+				"south=" + south +
+				", west=" + west +
+				", north=" + north +
+				", east=" + east +
+				'}';
+	}
 }

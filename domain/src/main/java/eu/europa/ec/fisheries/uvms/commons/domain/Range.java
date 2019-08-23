@@ -13,13 +13,9 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
 import javax.persistence.Embeddable;
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.Objects;
 
 @Embeddable
-@EqualsAndHashCode
-@ToString
 public class Range {
 
     private Float min;
@@ -48,5 +44,27 @@ public class Range {
 
     public void setMax(Float max) {
         this.max = max;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Range range = (Range) o;
+        return min.equals(range.min) &&
+                max.equals(range.max);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(min, max);
+    }
+
+    @Override
+    public String toString() {
+        return "Range{" +
+                "min=" + min +
+                ", max=" + max +
+                '}';
     }
 }
