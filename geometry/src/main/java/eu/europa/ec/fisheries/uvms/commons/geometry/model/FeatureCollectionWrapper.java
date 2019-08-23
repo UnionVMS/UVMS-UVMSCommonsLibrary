@@ -14,16 +14,18 @@ package eu.europa.ec.fisheries.uvms.commons.geometry.model;
 
 import org.geotools.feature.FeatureCollection;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class FeatureCollectionWrapper {
 
     private FeatureCollection value;
+
+    public FeatureCollectionWrapper() {
+    }
+
+    public FeatureCollectionWrapper(FeatureCollection value) {
+        this.value = value;
+    }
 
     public FeatureCollection getValue() {
         return value;
@@ -31,5 +33,25 @@ public class FeatureCollectionWrapper {
 
     public void setValue(FeatureCollection value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FeatureCollectionWrapper that = (FeatureCollectionWrapper) o;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "FeatureCollectionWrapper{" +
+                "value=" + value +
+                '}';
     }
 }

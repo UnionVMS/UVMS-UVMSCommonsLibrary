@@ -17,22 +17,22 @@ import javax.interceptor.InvocationContext;
 import java.util.Arrays;
 
 import com.google.common.base.Stopwatch;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class TracingInterceptor {
-
+    private static final Logger LOG = LoggerFactory.getLogger(TracingInterceptor.class);
     @AroundInvoke
     public Object logTraceAndPerformance(InvocationContext context) throws Exception {
 
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {
-            log.info("START {} {}", context.getMethod().getName(), Arrays.toString(context.getParameters()));
+            LOG.info("START {} {}", context.getMethod().getName(), Arrays.toString(context.getParameters()));
             return context.proceed();
         }
         finally{
-            log.info("STOP Elapsed time ==> {}", stopwatch);
+            LOG.info("STOP Elapsed time ==> {}", stopwatch);
         }
     }
 }

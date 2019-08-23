@@ -11,14 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.service.interceptor;
 
+import com.google.common.base.Stopwatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import com.google.common.base.Stopwatch;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class SimpleTracingInterceptor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleTracingInterceptor.class);
 
     @AroundInvoke
     public Object logCall(InvocationContext context) throws Exception {
@@ -26,12 +28,12 @@ public class SimpleTracingInterceptor {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {
-            log.info(String.format("[START] %s ", context.getMethod().getName()));
+            LOG.info(String.format("[START] %s ", context.getMethod().getName()));
 
             return context.proceed();
         }
         finally{
-            log.info(String.format("[END] It took %s to evaluate the message.", stopwatch));
+            LOG.info(String.format("[END] It took %s to evaluate the message.", stopwatch));
         }
     }
 }

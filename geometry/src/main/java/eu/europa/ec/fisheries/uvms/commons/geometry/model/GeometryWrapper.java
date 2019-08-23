@@ -13,16 +13,18 @@ package eu.europa.ec.fisheries.uvms.commons.geometry.model;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class GeometryWrapper {
 
     private Geometry value;
+
+    public GeometryWrapper() {
+    }
+
+    public GeometryWrapper(Geometry value) {
+        this.value = value;
+    }
 
     public Geometry getValue() {
         return value;
@@ -30,5 +32,25 @@ public class GeometryWrapper {
 
     public void setValue(Geometry value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GeometryWrapper that = (GeometryWrapper) o;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "GeometryWrapper{" +
+                "value=" + value +
+                '}';
     }
 }

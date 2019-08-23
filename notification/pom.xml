@@ -15,15 +15,14 @@
 	<name>uvms-commons-notification</name>
 
 	<properties>
-		<sl4j.version>1.7.25</sl4j.version>
-		<logback.version>1.2.3</logback.version>
-		<logback.core.version>1.2.3</logback.core.version>
-		<junit.version>4.12</junit.version>
-		<joda.time.version>2.9.9</joda.time.version>
-		<jackson.version>2.6.7.1</jackson.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-logging-deps</artifactId>
+			<type>pom</type>
+		</dependency>
 	  	<dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -36,45 +35,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${sl4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback.core.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>${javaee.version}</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>${joda.time.version}</version>
 		</dependency>
 	</dependencies>
 

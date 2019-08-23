@@ -16,7 +16,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
 import java.util.HashMap;
@@ -204,7 +203,6 @@ public abstract class AbstractConfigSettingsBean {
      *
      * @param moduleName
      * @return List<SettingType>, the setting of the module we requested
-     * @throws ModelMapperException
      * @throws RuntimeException
      */
     private List<SettingType> getSettingTypes(String moduleName) {
@@ -212,7 +210,7 @@ public abstract class AbstractConfigSettingsBean {
             String jmsMessageID = getProducer().sendMessageToSpecificQueue(ModuleRequestMapper.toPullSettingsRequest(moduleName), getConfigQueue(), getConsumer().getDestination());
             TextMessage message = getConsumer().getMessage(jmsMessageID, TextMessage.class,  20000L);
             return ModuleResponseMapper.getSettingsFromPullSettingsResponse(message);
-        } catch (JMSException | ModelMapperException e) {
+        } catch (JMSException e) {
             throw new RuntimeException("[ERROR] Error while trying to fetch settings from CONFIG module. Is this module deployed?", e);
         }
     }

@@ -12,16 +12,8 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.commons.rest.dto;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class PaginationDto {
 
     @NotNull
@@ -30,4 +22,49 @@ public class PaginationDto {
     @NotNull
     private Integer pageSize;
 
+    public PaginationDto() {
+    }
+
+    public PaginationDto(@NotNull Integer offset, @NotNull Integer pageSize) {
+        this.offset = offset;
+        this.pageSize = pageSize;
+    }
+
+    public Integer getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PaginationDto that = (PaginationDto) o;
+        return offset.equals(that.offset) &&
+                pageSize.equals(that.pageSize);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(offset, pageSize);
+    }
+
+    @Override
+    public String toString() {
+        return "PaginationDto{" +
+                "offset=" + offset +
+                ", pageSize=" + pageSize +
+                '}';
+    }
 }

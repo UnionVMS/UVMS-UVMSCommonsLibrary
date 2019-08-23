@@ -12,15 +12,11 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.commons.geometry.utils;
 
-import static java.lang.Math.toRadians;
-
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import eu.europa.ec.fisheries.uvms.commons.geometry.mapper.GeometryMapper;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 import org.apache.commons.collections.CollectionUtils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -32,22 +28,21 @@ import org.geotools.resources.i18n.Errors;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import eu.europa.ec.fisheries.uvms.commons.geometry.mapper.GeometryMapper;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
-import lombok.extern.slf4j.Slf4j;
+import static java.lang.Math.toRadians;
 
-@Slf4j
 public final class GeometryUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GeometryUtils.class);
 
     private static final String EPSG = "EPSG:";
 
@@ -122,7 +117,7 @@ public final class GeometryUtils {
             theWktString = GeometryMapper.INSTANCE.geometryToWkt(centroid).getValue();
 
         } catch (ParseException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
 
         return theWktString;
@@ -260,7 +255,7 @@ public final class GeometryUtils {
         try {
             return CRS.decode(EPSG + DEFAULT_EPSG_SRID);
         } catch (FactoryException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -269,7 +264,7 @@ public final class GeometryUtils {
         try {
             return CRS.decode(EPSG + srid);
         } catch (FactoryException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }

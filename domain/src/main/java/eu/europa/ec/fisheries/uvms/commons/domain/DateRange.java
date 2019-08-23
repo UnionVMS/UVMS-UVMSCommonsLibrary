@@ -12,27 +12,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Resolution;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 @Embeddable
-@EqualsAndHashCode
-@ToString
 @Indexed
 public class DateRange implements Serializable {
 
@@ -92,5 +86,25 @@ public class DateRange implements Serializable {
         this.endDate = endDate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DateRange dateRange = (DateRange) o;
+        return startDate.equals(dateRange.startDate) &&
+                endDate.equals(dateRange.endDate);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(startDate, endDate);
+    }
+
+    @Override
+    public String toString() {
+        return "DateRange{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 }

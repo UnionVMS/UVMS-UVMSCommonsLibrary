@@ -10,6 +10,8 @@
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
+import org.slf4j.LoggerFactory;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -19,17 +21,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.LoggerFactory;
-
 public class XMLDateUtils {
 
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(XMLDateUtils.class);
 
     private static final String UTC = "UTC";
     public static final String DATE_TIME_XML_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    public static DateTimeFormatter XML_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_XML_FORMAT);
 
     protected XMLDateUtils() {
 
