@@ -21,17 +21,16 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 
 public class DateUtils extends XMLDateUtils {
 
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
 
-    public static final String DATE_TIME_UI_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-
-    public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-    public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_TIME_UI_FORMAT = DateFormats.DATE_TIME_PATTERN_UTC_WITH_T.getFormat();
 
     // thread safe formatter
 
@@ -42,7 +41,7 @@ public class DateUtils extends XMLDateUtils {
     public static String dateToString(Instant date) {
         String dateString = null;
         if (date != null) {
-            dateString = date.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(FORMAT));
+            dateString = date.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(DateFormats.DATE_TIME_PATTERN.getFormat()));
         }
         return dateString;
     }
@@ -65,15 +64,43 @@ public class DateUtils extends XMLDateUtils {
 
     public static Instant stringToDate(String dateString) throws IllegalArgumentException {
         if (dateString != null) {
-            return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern(FORMAT)).toInstant();
+            return convertDateTimeInUTC(dateString);
         } else {
             return null;
         }
     }
 
+    public static Instant convertDateTimeInUTC(String dateTimeInUTC){
+        if(dateTimeInUTC == null){
+            return null;
+        }
+        if(dateTimeInUTC.length() < 20){    //if there is no offset info, assume UTC and add it
+            dateTimeInUTC = dateTimeInUTC.concat(" Z");
+        }
+        for (DateFormats format : DateFormats.values()) {
+            Instant date = convertDateTimeInUTC(dateTimeInUTC, format.getFormat());
+            if (date != null) {
+                return date;
+            }
+        }
+        LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
+        return null;
+    }
+
+    public static Instant convertDateTimeInUTC(String dateTimeInUTC, String pattern){
+        if (dateTimeInUTC != null) {
+            try {
+                return ZonedDateTime.parse(dateTimeInUTC, DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)).toInstant();   //goes via ZonedDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z and does not cry in pain from a zone
+            } catch (DateTimeParseException e) {
+                LOG.info("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern: " + pattern + ". Error: " + e.getMessage() + ". Trying next pattern");
+            }
+        }
+        return null;
+    }
+
     public static String stringToUTC(String dateTime){
         Instant date = DateUtils.stringToDate(dateTime);
-        DateFormat df = new SimpleDateFormat(DATE_TIME);
+        DateFormat df = new SimpleDateFormat(DateFormats.DATE_TIME_PATTERN_UTC.getFormat());
         String dateString = df.format(date);
         return dateString;
     }
