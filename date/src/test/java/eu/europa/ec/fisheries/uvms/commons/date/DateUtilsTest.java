@@ -27,7 +27,7 @@ public class DateUtilsTest extends TestCase {
 
     public void testDateToXmlGregorian(){
         XMLGregorianCalendar xmlGregorianCalendar = DateUtils.dateToXmlGregorian(DateUtils.END_OF_TIME.toDate());
-        assertEquals("9999-01-01T01:00:00Z", xmlGregorianCalendar.toString());
+        assertEquals("9999-01-01T00:00:00Z", xmlGregorianCalendar.toString());
     }
 
 }

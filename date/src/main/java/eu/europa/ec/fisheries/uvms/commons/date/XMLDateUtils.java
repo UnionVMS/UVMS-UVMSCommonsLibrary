@@ -63,6 +63,7 @@ public class XMLDateUtils {
         XMLGregorianCalendar gregCalendar = null;
         if (date != null){
             DateFormat format = new SimpleDateFormat(DATE_TIME_XML_FORMAT);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
             try {
                 gregCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(date));
             } catch (DatatypeConfigurationException e) {
