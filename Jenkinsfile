@@ -25,7 +25,7 @@ pipeline {
 		          // or globally to the entire master navigating to  "Manage Jenkins / Global Tools Configuration"
 		          mavenSettingsConfig: 'sword-settings',
 		          mavenLocalRepo: '.repo') {
-		          	sh 'mvn -Dclean deploy -DaltDeploymentRepository=swordnexus-repo-snapshot::default::http://nexus:8081/repository/maven-snapshots/'
+		          	sh 'mvn -Dclean deploy -DaltDeploymentRepository=swordnexus-repo-snapshot::default::http://nexus:8081/repository/unionvms-snapshots/'
 		      	}
 	      	}
 	   	}
