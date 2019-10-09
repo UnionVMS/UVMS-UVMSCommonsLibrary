@@ -12,9 +12,9 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.commons.geometry.utils;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import eu.europa.ec.fisheries.uvms.commons.geometry.mapper.GeometryMapper;
 import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,9 +22,9 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.measure.Latitude;
 import org.geotools.measure.Longitude;
+import org.geotools.metadata.i18n.ErrorKeys;
+import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.i18n.ErrorKeys;
-import org.geotools.resources.i18n.Errors;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;

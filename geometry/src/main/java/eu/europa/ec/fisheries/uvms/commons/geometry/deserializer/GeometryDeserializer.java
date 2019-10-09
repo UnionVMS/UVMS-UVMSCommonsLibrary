@@ -17,8 +17,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
 
 import eu.europa.ec.fisheries.uvms.commons.geometry.mapper.GeometryMapper;
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.GeometryWrapper;

@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.FeatureCollectionWrapper;
 import eu.europa.ec.fisheries.uvms.commons.geometry.model.GeometryWrapper;
