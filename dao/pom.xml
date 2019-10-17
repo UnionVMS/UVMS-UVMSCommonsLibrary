@@ -4,21 +4,13 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.4-SNAPSHOT</version>
+		<version>${uvms.commonsLibrary.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-dao</artifactId>
 	<packaging>jar</packaging>
 	<name>uvms-commons-dao</name>
-
-    <properties>
-        <sl4j.version>1.7.25</sl4j.version>
-        <logback.version>1.2.3</logback.version>
-        <logback.core.version>1.2.3</logback.core.version>
-        <junit.version>4.12</junit.version>
-        <lombok.version>1.16.18</lombok.version>
-    </properties>
 
 	<dependencies>	
 		<dependency>

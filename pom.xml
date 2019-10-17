@@ -2,9 +2,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>fish.focus.maven</groupId>
-		<artifactId>focus-pom</artifactId>
-		<version>1.14</version>
+		<groupId>eu.europa.ec.fisheries.uvms</groupId>
+		<artifactId>mare-pom</artifactId>
+		<version>1.6.0-MARE</version>
 		<relativePath />
 	</parent>
 
@@ -12,7 +12,7 @@
 	<artifactId>uvms-commons-parent</artifactId>
 	<packaging>pom</packaging>
 
-	<version>3.4-SNAPSHOT</version>
+	<version>${uvms.commonsLibrary.version}</version>
 	<name>uvms-commons-parent</name>
 	<url>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary</url>
 
@@ -27,6 +27,29 @@
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
 		<scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
 		<javaee.version>8.0</javaee.version>
+		<!-- project properties -->
+		<sl4j.version>1.7.25</sl4j.version>
+        <logback.version>1.2.3</logback.version>
+        <logback.core.version>1.2.3</logback.core.version>
+        <junit.version>4.12</junit.version>
+        <lombok.version>1.16.18</lombok.version>
+		<joda.time.version>2.9.9</joda.time.version>
+		<jackson.version>2.6.7.1</jackson.version>
+		<unitils.version>3.4.6</unitils.version>
+		<commons.lang.version>2.6</commons.lang.version>
+		<commons.io.version>2.6</commons.io.version>
+		<commons.collections>3.2.2</commons.collections>
+		<hibernate-search-orm.version>5.3.0.Final</hibernate-search-orm.version>
+		<uvms.test.version>0.0.8</uvms.test.version>
+		<jts.version>1.13</jts.version>
+		<geotools.version>14.4</geotools.version>
+		<mapstruct.version>1.0.0.Final</mapstruct.version>
+		<apache.commons.version>3.7</apache.commons.version>
+		<!-- TODO: why do we need to depend on config model? -->
+		<config.model.version>4.0.15</config.model.version>
+		<jaxb.version>2.3.0</jaxb.version>
+		<guava.version>20.0</guava.version>
+		<resteasy.version>3.0.13.Final</resteasy.version>
 	</properties>
 
 	<modules>

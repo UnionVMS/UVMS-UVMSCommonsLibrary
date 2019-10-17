@@ -4,24 +4,23 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.4-SNAPSHOT</version>
+		<version>${uvms.commonsLibrary.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-rest</artifactId>
 	<packaging>jar</packaging>
 
-	<version>3.4-SNAPSHOT</version>
 	<name>uvms-commons-rest</name>
 
-	<properties>
+<!-- 	<properties>
 		<sl4j.version>1.7.25</sl4j.version>
 		<logback.version>1.2.3</logback.version>
 		<logback.core.version>1.2.3</logback.core.version>
 		<junit.version>4.12</junit.version>
 		<jackson.version>2.6.7.1</jackson.version>
 		<lombok.version>1.16.18</lombok.version>
-	</properties>
+	</properties> -->
 
 	<dependencies>
 		<dependency>
@@ -32,12 +31,12 @@
 		<dependency>
 		    <groupId>com.google.guava</groupId>
 		    <artifactId>guava</artifactId>
-		    <version>20.0</version>
+			<version>${guava.version}</version>
 		</dependency>			
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-multipart-provider</artifactId>
-			<version>3.0.13.Final</version>
+			<version>${resteasy.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.james</groupId>
@@ -68,13 +67,13 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>2.2.7</version>
+			<version>${jaxb.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
+			<version>${commons.io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
