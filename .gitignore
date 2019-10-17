@@ -4,3 +4,4 @@ target/*
 container-conf/*
 .DS_Store
 .idea/
+.flattened-pom.xml

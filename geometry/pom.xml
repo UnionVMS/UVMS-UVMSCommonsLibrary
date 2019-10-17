@@ -4,28 +4,14 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.4-SNAPSHOT</version>
+		<version>${uvms.commonsLibrary.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-geometry</artifactId>
 	<packaging>jar</packaging>
 
-	<version>3.4-SNAPSHOT</version>
 	<name>uvms-commons-geometry</name>
-
-	<properties>
-		<sl4j.version>1.7.25</sl4j.version>
-		<logback.version>1.2.3</logback.version>
-		<logback.core.version>1.2.3</logback.core.version>
-		<junit.version>4.12</junit.version>
-		<jts.version>1.13</jts.version>
-		<lombok.version>1.16.18</lombok.version>
-		<geotools.version>14.4</geotools.version>
-		<commons.collections>3.2.2</commons.collections>
-		<mapstruct.version>1.0.0.Final</mapstruct.version>
-		<jackson.version>2.6.7.1</jackson.version>
-	</properties>
 
 	<dependencies>
 		<dependency>

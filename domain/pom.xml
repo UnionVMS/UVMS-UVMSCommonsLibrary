@@ -4,27 +4,14 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>3.4-SNAPSHOT</version>
+		<version>${uvms.commonsLibrary.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-domain</artifactId>
 	<packaging>jar</packaging>
 
-	<version>3.4-SNAPSHOT</version>
 	<name>uvms-commons-domain</name>
-
-	<properties>
-		<sl4j.version>1.7.25</sl4j.version>
-		<logback.version>1.2.3</logback.version>
-		<logback.core.version>1.2.3</logback.core.version>
-		<junit.version>4.12</junit.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<lombok.version>1.16.18</lombok.version>
-		<hibernate-search-orm.version>5.3.0.Final</hibernate-search-orm.version>
-		<jackson.version>2.6.7.1</jackson.version>
-		<uvms.test.version>0.0.8</uvms.test.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -36,7 +23,7 @@
 		<dependency>
 			<groupId>org.unitils</groupId>
 			<artifactId>unitils-inject</artifactId>
-			<version>3.4.6</version>
+			<version>${unitils.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
