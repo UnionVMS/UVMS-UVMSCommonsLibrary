@@ -30,7 +30,7 @@ public class DateUtils extends XMLDateUtils {
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtils.class);
 
 
-    public static final String DATE_TIME_UI_FORMAT = DateFormats.DATE_TIME_PATTERN_UTC_WITH_T.getFormat();
+    public static final String DATE_TIME_UI_FORMAT = DateFormats.Strings.DATE_TIME_PATTERN_UTC_WITH_T;
 
     // thread safe formatter
 
