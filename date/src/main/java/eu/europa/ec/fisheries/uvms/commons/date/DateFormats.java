@@ -17,13 +17,12 @@ package eu.europa.ec.fisheries.uvms.commons.date;
  */
 public enum DateFormats {
 
-    FORMAT("yyyy-MM-dd HH:mm:ss Z"),
-    FORMAT_2("EEE MMM dd HH:mm:ss z yyyy"),
-    DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X"),
-    DATE_TIME_PATTERN_WITH_T("yyyy-MM-dd'T'HH:mm:ss X"),
-    DATE_TIME_PATTERN_UTC("yyyy-MM-dd HH:mm:ss"),
-    DATE_TIME_PATTERN_UTC_WITH_T("yyyy-MM-dd'T'HH:mm:ss");
-
+    FORMAT(Strings.FORMAT),
+    FORMAT_2(Strings.FORMAT_2),
+    DATE_TIME_PATTERN(Strings.DATE_TIME_PATTERN),
+    DATE_TIME_PATTERN_WITH_T(Strings.DATE_TIME_PATTERN_WITH_T),
+    DATE_TIME_PATTERN_UTC(Strings.DATE_TIME_PATTERN_UTC),
+    DATE_TIME_PATTERN_UTC_WITH_T(Strings.DATE_TIME_PATTERN_UTC_WITH_T);
 
     String format;
 
@@ -33,5 +32,20 @@ public enum DateFormats {
 
     public String getFormat() {
         return format;
+    }
+
+    /**
+     * These constants can be used as values in annotations, the {@link #getFormat()} can not
+     * <p>
+     * Example: @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = {@value eu.europa.ec.fisheries.uvms.commons.date.DateFormats.Strings#DATE_TIME_PATTERN_UTC})
+     */
+    public static class Strings {
+        public final static String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+        public final static String FORMAT_2 = "EEE MMM dd HH:mm:ss z yyyy";
+        public final static String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss X";
+        public final static String DATE_TIME_PATTERN_WITH_T = "yyyy-MM-dd'T'HH:mm:ss X";
+        public final static String DATE_TIME_PATTERN_UTC = "yyyy-MM-dd HH:mm:ss";
+        public final static String DATE_TIME_PATTERN_UTC_WITH_T = "yyyy-MM-dd'T'HH:mm:ss";
+
     }
 }
