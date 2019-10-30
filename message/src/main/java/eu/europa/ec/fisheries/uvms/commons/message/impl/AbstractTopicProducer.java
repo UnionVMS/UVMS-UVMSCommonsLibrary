@@ -10,6 +10,7 @@ details. You should have received a copy of the GNU General Public License along
 */
 package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 
 import javax.inject.Inject;
@@ -33,6 +34,19 @@ public abstract class AbstractTopicProducer {
         context.createProducer()
                 .setDeliveryMode(jmsDeliveryMode)
                 .setTimeToLive(timeToLiveInMillis)
+                .send(getDestination(), message);
+        return message.getJMSMessageID();
+    }
+
+    public String sendMessageToEventStream(String data, String eventName, String subscriberListJson) throws JMSException {
+        TextMessage message = context.createTextMessage(data);
+        message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, eventName);
+        message.setStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST, subscriberListJson);
+
+        MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
+        context.createProducer()
+                .setDeliveryMode(DeliveryMode.NON_PERSISTENT)
+                .setTimeToLive(5000)
                 .send(getDestination(), message);
         return message.getJMSMessageID();
     }

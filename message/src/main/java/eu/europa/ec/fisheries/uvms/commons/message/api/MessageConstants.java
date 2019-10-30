@@ -107,6 +107,11 @@ public interface MessageConstants {
     String EVENT_BUS_TOPIC = "jms/topic/EventBus";
     String EVENT_BUS_TOPIC_NAME = "EventBus";
 
+    String EVENT_STREAM_TOPIC = "jms/topic/EventStream";
+    String EVENT_STREAM_TOPIC_NAME = "EventStream";
+    String EVENT_STREAM_EVENT = "event";
+    String EVENT_STREAM_SUBSCRIBER_LIST = "subscribers";
+
     String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
     String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
     String QUEUE_FLUX_FA_MESSAGE_IN_NAME = "UVMSFAPluginEvent";
