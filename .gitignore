@@ -5,3 +5,7 @@ container-conf/*
 .DS_Store
 .idea/
 .flattened-pom.xml
+.project
+.classpath
+.settings/
+pom.xml.versionsBackup
