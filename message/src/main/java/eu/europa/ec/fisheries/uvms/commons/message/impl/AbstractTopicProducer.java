@@ -38,10 +38,11 @@ public abstract class AbstractTopicProducer {
         return message.getJMSMessageID();
     }
 
-    public String sendMessageToEventStream(String data, String eventName, String subscriberListJson) throws JMSException {
+    public String sendMessageToEventStream(String data, String eventName, String subscriberListJson, String movementSource) throws JMSException {
         TextMessage message = context.createTextMessage(data);
         message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, eventName);
         message.setStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST, subscriberListJson);
+        message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, movementSource);
 
         MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
         context.createProducer()
