@@ -111,6 +111,7 @@ public interface MessageConstants {
     String EVENT_STREAM_TOPIC_NAME = "EventStream";
     String EVENT_STREAM_EVENT = "event";
     String EVENT_STREAM_SUBSCRIBER_LIST = "subscribers";
+    String EVENT_STREAM_MOVEMENT_SOURCE = "movementSource";
 
     String QUEUE_PLUGIN_BRIDGE = "jms/queue/UVMSPluginBridge";
     String QUEUE_MOBILE_TERMINAL_EVENT = "jms/queue/UVMSMobileTerminalEvent";
