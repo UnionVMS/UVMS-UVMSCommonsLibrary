@@ -124,5 +124,6 @@ public interface MessageConstants {
     int JMS_MAX_REDELIVERIES = 6;
     int JMS_REDELIVERY_DELAY = 100;
 
+    String QUEUE_INCIDENT = "jms/queue/IncidentEvent";
 
 }
