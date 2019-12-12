@@ -27,14 +27,14 @@ public class DateUtilsTest extends TestCase {
 
     public void testDateConversion() {
         Instant date = Instant.ofEpochMilli(1441065600000l);
-        Instant result = DateUtils.stringToDate(DateUtils.dateToString(date));
+        Instant result = DateUtils.stringToDate(DateUtils.dateToHumanReadableString(date));
         assertEquals(date, result);
     }
 
     public void testTDateString(){
         Instant date = DateUtils.stringToDate("2019-09-10T13:14:39");
 
-        String dateString = DateUtils.dateToString(date);
+        String dateString = DateUtils.dateToHumanReadableString(date);
 
         Instant date2 = DateUtils.stringToDate(dateString);
 
@@ -102,17 +102,17 @@ public class DateUtilsTest extends TestCase {
     public void testParseUTCDateToString() {
         Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 
-        String formatedDate = DateUtils.parseUTCDateToString(testDate);
+        String formatedDate = DateUtils.dateToHumanReadableString(testDate);
         assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 
         testDate = OffsetDateTime.of(2018,3, 9, 3, 26, 30, 00, ZoneOffset.ofHours(2)).toInstant();
         ZonedDateTime zonedTestDate = ZonedDateTime.of(2018,3, 9, 10, 26, 30, 00, ZoneId.of("CET"));			//Lets hop that it understand that this is supposed to be summer time internally
         zonedTestDate = zonedTestDate.withZoneSameInstant(ZoneId.of("CST", ZoneId.SHORT_IDS));
 
-        formatedDate = DateUtils.parseUTCDateToString(zonedTestDate.toInstant());
+        formatedDate = DateUtils.dateToHumanReadableString(zonedTestDate.toInstant());
         assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 
-        formatedDate = DateUtils.parseUTCDateToString(null);
+        formatedDate = DateUtils.dateToHumanReadableString(null);
         assertNull(formatedDate);
     }
 
