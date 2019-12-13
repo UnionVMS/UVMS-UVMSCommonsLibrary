@@ -43,7 +43,7 @@ public class DateUtilsTest extends TestCase {
     }
 
 
-    public void testGetDateFromString() throws ParseException {
+    public void testGetDateFromString() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss X");
 
 
@@ -119,5 +119,13 @@ public class DateUtilsTest extends TestCase {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_UI_FORMAT)
     public void testAnnotation() {
         // A test to make sure the (useless) annotation can be compiled. Values has to be constant expressions.
+    }
+
+    public void testParseTimestamp(){
+        String timestamp = "1576166138";
+        Instant date = DateUtils.stringToDate(timestamp);
+        String humanReadableTime = DateUtils.dateToHumanReadableString(date);
+        System.out.println(humanReadableTime);
+        assertEquals("2019-12-12 15:55:38 Z", humanReadableTime);
     }
 }

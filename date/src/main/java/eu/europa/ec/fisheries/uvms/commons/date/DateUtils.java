@@ -51,7 +51,7 @@ public class DateUtils extends XMLDateUtils {
         if(dateString == null){
             return null;
         }
-        if(Pattern.matches("\\d{13}", dateString)){
+        if(Pattern.matches("\\d{10}", dateString)){
             return parseEpochSecondsTimestamp(dateString);
         }
         if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
