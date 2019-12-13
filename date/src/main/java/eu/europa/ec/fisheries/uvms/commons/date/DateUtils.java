@@ -39,8 +39,8 @@ public class DateUtils extends XMLDateUtils {
         return dateString;
     }
 
-    public static String dateToEpochSeconds(Instant date){
-        return "" + date.getEpochSecond();
+    public static String dateToEpochMilliseconds(Instant date){
+        return "" + date.toEpochMilli();
     }
 
     public static Instant nowUTCMinusHours(final Instant now, final int hours)  {
@@ -54,11 +54,14 @@ public class DateUtils extends XMLDateUtils {
         if(Pattern.matches("\\d{10}", dateString)){
             return parseEpochSecondsTimestamp(dateString);
         }
+        if(Pattern.matches("\\d{13}", dateString)){
+            return parseEpochMillisecondsTimestamp(dateString);
+        }
         if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
             dateString = dateString.concat(" Z");
         }
         for (DateFormats format : DateFormats.values()) {
-            Instant date = convertDateTimeInUTC(dateString, format.getFormat());
+            Instant date = convertDateWithPattern(dateString, format.getFormat());
             if (date != null) {
                 return date;
             }
@@ -71,7 +74,11 @@ public class DateUtils extends XMLDateUtils {
         return Instant.ofEpochSecond(Long.parseLong(epochSeconds));
     }
 
-    public static Instant convertDateTimeInUTC(String dateString, String pattern){
+    public static Instant parseEpochMillisecondsTimestamp(String epochMilliseconds){
+        return Instant.ofEpochMilli(Long.parseLong(epochMilliseconds));
+    }
+
+    public static Instant convertDateWithPattern(String dateString, String pattern){
         if (dateString != null) {
             try {
                 return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)).toInstant();   //goes via ZonedDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z and does not cry in pain from a zone

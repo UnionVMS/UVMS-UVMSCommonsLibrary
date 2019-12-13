@@ -122,10 +122,10 @@ public class DateUtilsTest extends TestCase {
     }
 
     public void testParseTimestamp(){
-        String timestamp = "1576166138";
+        String timestamp = "1576229859132";
         Instant date = DateUtils.stringToDate(timestamp);
         String humanReadableTime = DateUtils.dateToHumanReadableString(date);
         System.out.println(humanReadableTime);
-        assertEquals("2019-12-12 15:55:38 Z", humanReadableTime);
+        assertEquals("2019-12-13 09:37:39 Z", humanReadableTime);
     }
 }
