@@ -15,8 +15,6 @@ package eu.europa.ec.fisheries.uvms.commons.date;
 
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -24,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class DateUtils extends XMLDateUtils {
 
@@ -32,13 +31,7 @@ public class DateUtils extends XMLDateUtils {
 
     public static final String DATE_TIME_UI_FORMAT = DateFormats.Strings.DATE_TIME_PATTERN_UTC_WITH_T;
 
-    // thread safe formatter
-
-    private DateUtils() {
-
-    }
-
-    public static String dateToString(Instant date) {
+    public static String dateToHumanReadableString(Instant date) {
         String dateString = null;
         if (date != null) {
             dateString = date.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(DateFormats.DATE_TIME_PATTERN.getFormat()));
@@ -46,80 +39,61 @@ public class DateUtils extends XMLDateUtils {
         return dateString;
     }
 
-    public static String parseUTCDateToString(Instant date) {
-        return dateToString(date);
+    public static String dateToEpochMilliseconds(Instant date){
+        if (date != null) {
+            return "" + date.toEpochMilli();
+        }
+        return null;
     }
 
-    public static Instant nowUTC() throws IllegalArgumentException {
-        return Instant.now();
-    }
-
-    public static Instant nowUTCMinusHours(final Instant now, final int hours) throws IllegalArgumentException {
+    public static Instant nowUTCMinusHours(final Instant now, final int hours)  {
         return now.minus(hours, ChronoUnit.HOURS );
     }
 
-    public static Instant nowUTCMinusSeconds(final Instant now, final Float hours) throws IllegalArgumentException {
-        return now.minus((int) (hours * 3600), ChronoUnit.HOURS);
-    }
-
-    public static Instant stringToDate(String dateString) throws IllegalArgumentException {
-        if (dateString != null) {
-            return convertDateTimeInUTC(dateString);
-        } else {
+    public static Instant stringToDate(String dateString){
+        if(dateString == null){
             return null;
         }
-    }
-
-    public static Instant convertDateTimeInUTC(String dateTimeInUTC){
-        if(dateTimeInUTC == null){
-            return null;
+        if(Pattern.matches("\\d{9,11}", dateString)){
+            return parseEpochSecondsTimestamp(dateString);
         }
-        if(dateTimeInUTC.length() < 20){    //if there is no offset info, assume UTC and add it
-            dateTimeInUTC = dateTimeInUTC.concat(" Z");
+        if(Pattern.matches("\\d{12,14}", dateString)){
+            return parseEpochMillisecondsTimestamp(dateString);
+        }
+        if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
+            dateString = dateString.concat(" Z");
         }
         for (DateFormats format : DateFormats.values()) {
-            Instant date = convertDateTimeInUTC(dateTimeInUTC, format.getFormat());
+            Instant date = convertDateWithPattern(dateString, format.getFormat());
             if (date != null) {
                 return date;
             }
         }
-        LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
+        LOG.error("Could not parse dateTimeInUTC: " + dateString + " with pattern any defined pattern.");
         return null;
     }
 
-    public static Instant convertDateTimeInUTC(String dateTimeInUTC, String pattern){
-        if (dateTimeInUTC != null) {
+    public static Instant parseEpochSecondsTimestamp(String epochSeconds){
+        return Instant.ofEpochSecond(Long.parseLong(epochSeconds));
+    }
+
+    public static Instant parseEpochMillisecondsTimestamp(String epochMilliseconds){
+        return Instant.ofEpochMilli(Long.parseLong(epochMilliseconds));
+    }
+
+    public static Instant convertDateWithPattern(String dateString, String pattern){
+        if (dateString != null) {
             try {
-                return ZonedDateTime.parse(dateTimeInUTC, DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)).toInstant();   //goes via ZonedDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z and does not cry in pain from a zone
+                return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)).toInstant();   //goes via ZonedDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z and does not cry in pain from a zone
             } catch (DateTimeParseException e) {
-                LOG.info("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern: " + pattern + ". Error: " + e.getMessage() + ". Trying next pattern");
+                LOG.info("Could not parse dateTimeInUTC: " + dateString + " with pattern: " + pattern + ". Error: " + e.getMessage() + ". Trying next pattern");
             }
         }
         return null;
     }
 
-    public static String stringToUTC(String dateTime){
-        Instant date = DateUtils.stringToDate(dateTime);
-        DateFormat df = new SimpleDateFormat(DateFormats.DATE_TIME_PATTERN_UTC.getFormat());
-        String dateString = df.format(date);
-        return dateString;
-    }
-	
-	public static Instant getNowDateUTC(){
+    public static Instant nowUTC(){         //It is with great sadness in my heart that I realise that I can not remove this wo untangling the great web of uvms dependency's..... ;(
         return Instant.now();
-    }
-
-    public static Instant parseToUTCDate(String dateString, String format) throws IllegalArgumentException {
-        try {
-            if (dateString != null) {
-                return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern(format)).toInstant();
-            } else {
-                return null;
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.error(e.getMessage());
-            throw new IllegalArgumentException(e);
-        }
     }
 
 }

@@ -12,9 +12,6 @@
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
-/**
- * Created by osdjup on 2016-10-06.
- */
 public enum DateFormats {
 
     FORMAT(Strings.FORMAT),
@@ -22,7 +19,8 @@ public enum DateFormats {
     DATE_TIME_PATTERN(Strings.DATE_TIME_PATTERN),
     DATE_TIME_PATTERN_WITH_T(Strings.DATE_TIME_PATTERN_WITH_T),
     DATE_TIME_PATTERN_UTC(Strings.DATE_TIME_PATTERN_UTC),
-    DATE_TIME_PATTERN_UTC_WITH_T(Strings.DATE_TIME_PATTERN_UTC_WITH_T);
+    DATE_TIME_PATTERN_UTC_WITH_T(Strings.DATE_TIME_PATTERN_UTC_WITH_T),
+    ISO_INSTANT_FORMAT(Strings.ISO_INSTANT_FORMAT);
 
     String format;
 
@@ -46,6 +44,7 @@ public enum DateFormats {
         public final static String DATE_TIME_PATTERN_WITH_T = "yyyy-MM-dd'T'HH:mm:ss X";
         public final static String DATE_TIME_PATTERN_UTC = "yyyy-MM-dd HH:mm:ss";
         public final static String DATE_TIME_PATTERN_UTC_WITH_T = "yyyy-MM-dd'T'HH:mm:ss";
+        public final static String ISO_INSTANT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
     }
 }
