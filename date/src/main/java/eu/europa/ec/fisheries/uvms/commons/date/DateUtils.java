@@ -40,7 +40,10 @@ public class DateUtils extends XMLDateUtils {
     }
 
     public static String dateToEpochMilliseconds(Instant date){
-        return "" + date.toEpochMilli();
+        if (date != null) {
+            return "" + date.toEpochMilli();
+        }
+        return null;
     }
 
     public static Instant nowUTCMinusHours(final Instant now, final int hours)  {
@@ -51,10 +54,10 @@ public class DateUtils extends XMLDateUtils {
         if(dateString == null){
             return null;
         }
-        if(Pattern.matches("\\d{10}", dateString)){
+        if(Pattern.matches("\\d{9,11}", dateString)){
             return parseEpochSecondsTimestamp(dateString);
         }
-        if(Pattern.matches("\\d{13}", dateString)){
+        if(Pattern.matches("\\d{12,14}", dateString)){
             return parseEpochMillisecondsTimestamp(dateString);
         }
         if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
@@ -87,6 +90,10 @@ public class DateUtils extends XMLDateUtils {
             }
         }
         return null;
+    }
+
+    public static Instant nowUTC(){         //It is with great sadness in my heart that I realise that I can not remove this wo untangling the great web of uvms dependency's..... ;(
+        return Instant.now();
     }
 
 }
