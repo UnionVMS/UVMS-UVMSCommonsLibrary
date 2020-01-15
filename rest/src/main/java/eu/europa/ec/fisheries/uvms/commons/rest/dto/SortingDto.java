@@ -10,8 +10,6 @@ details. You should have received a copy of the GNU General Public License along
  */
 package eu.europa.ec.fisheries.uvms.commons.rest.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Created by sanera on 01/12/2016.
  */
@@ -32,7 +30,6 @@ public class SortingDto {
         return isReversed;
     }
 
-    @JsonProperty("isReversed")
     public void setReversed(boolean reversed) {
         isReversed = reversed;
     }

@@ -1,6 +1,7 @@
 package eu.europa.ec.fisheries.uvms.commons.date;
 
 import javax.json.Json;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.bind.adapter.JsonbAdapter;
 import java.time.Instant;
@@ -16,6 +17,6 @@ public class JsonBInstantAdapter implements JsonbAdapter<Instant, JsonValue>
 
         @Override
         public Instant adaptFromJson(JsonValue json) {
-            return DateUtils.stringToDate(json.toString());
+            return DateUtils.stringToDate(((JsonString)json).getString());
         }
 }
