@@ -128,4 +128,12 @@ public class DateUtilsTest extends TestCase {
         System.out.println(humanReadableTime);
         assertEquals("2019-12-13 09:37:39 Z", humanReadableTime);
     }
+
+    public void testParseSecondsDotNanosecondsTimestamp(){
+        Instant now = Instant.now();
+        String timestamp = now.getEpochSecond() + "." + now.getNano();
+        Instant date = DateUtils.stringToDate(timestamp);
+        System.out.println(date);
+        assertTrue(date.equals(now));
+    }
 }
