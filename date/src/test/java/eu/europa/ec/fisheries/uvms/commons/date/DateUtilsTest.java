@@ -12,15 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.commons.date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import junit.framework.TestCase;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtilsTest extends TestCase {
@@ -114,11 +108,6 @@ public class DateUtilsTest extends TestCase {
 
         formatedDate = DateUtils.dateToHumanReadableString(null);
         assertNull(formatedDate);
-    }
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_UI_FORMAT)
-    public void testAnnotation() {
-        // A test to make sure the (useless) annotation can be compiled. Values has to be constant expressions.
     }
 
     public void testParseTimestamp(){

@@ -15,12 +15,9 @@ package eu.europa.ec.fisheries.uvms.commons.rest.dto;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 /**
  * Created by georgige on 19/09/2016.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaginatedResponse<T>  {
 
     private List<T> resultList;

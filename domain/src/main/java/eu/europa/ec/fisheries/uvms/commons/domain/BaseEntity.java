@@ -11,8 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.commons.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -26,7 +25,7 @@ public class BaseEntity implements Serializable {
     protected BaseEntity(){
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public Long getId() {
         return null;
     }
