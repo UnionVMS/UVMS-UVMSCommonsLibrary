@@ -28,8 +28,19 @@ public abstract class AbstractDAO<T extends Serializable> implements DAO<T> {
 
     @Override
     public T createEntity(final T entity) throws ServiceException {
+        return createEntityAndFlush(entity, false);
+    }
+    @Override
+    public T createEntityAndFlush(final T entity) throws ServiceException {
+        return createEntityAndFlush(entity, true);
+    }
+
+    private T createEntityAndFlush(final T entity, boolean flush) throws ServiceException {
         log.debug("Persisting {}", entity.getClass().getSimpleName());
         getEntityManager().persist(entity);
+        if( flush ) {
+            getEntityManager().flush();
+        }
         return entity;
     }
 
