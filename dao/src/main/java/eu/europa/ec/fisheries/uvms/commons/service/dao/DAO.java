@@ -21,6 +21,8 @@ public interface DAO<T> {
 
     T createEntity(T entity) throws ServiceException;
 
+    T createEntityAndFlush( T entity) throws ServiceException;
+
     T updateEntity(T entity) throws ServiceException;
 
     T saveOrUpdateEntity(T entity) throws ServiceException;
