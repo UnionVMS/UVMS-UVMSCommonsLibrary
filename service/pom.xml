@@ -4,18 +4,17 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>4.0.14-SNAPSHOT</version>
+		<version>4.1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>uvms-commons-service</artifactId>
 	<packaging>jar</packaging>
 
-	<version>4.0.14-SNAPSHOT</version>
+	<version>4.1.1-SNAPSHOT</version>
 	<name>uvms-commons-service</name>
 
     <properties>
-		<jackson.version>2.10.0</jackson.version>
     </properties>
 
 	<dependencies>	
@@ -28,31 +27,6 @@
 		<dependency>
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>${jackson.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>${jackson.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

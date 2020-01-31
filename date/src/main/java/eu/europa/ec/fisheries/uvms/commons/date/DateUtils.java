@@ -60,6 +60,9 @@ public class DateUtils extends XMLDateUtils {
         if(Pattern.matches("\\d{12,14}", dateString)){
             return parseEpochMillisecondsTimestamp(dateString);
         }
+        if(Pattern.matches("\\d{9,11}\\.\\d{0,10}", dateString)){
+            return parseEpochSecondsDotNanosecondsTimestamp(dateString);
+        }
         if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
             dateString = dateString.concat(" Z");
         }
@@ -79,6 +82,11 @@ public class DateUtils extends XMLDateUtils {
 
     public static Instant parseEpochMillisecondsTimestamp(String epochMilliseconds){
         return Instant.ofEpochMilli(Long.parseLong(epochMilliseconds));
+    }
+
+    public static Instant parseEpochSecondsDotNanosecondsTimestamp(String secondsDotNanoseconds){
+        String[] parts = secondsDotNanoseconds.split("\\.");
+        return Instant.ofEpochSecond(Long.parseLong(parts[0]), Long.parseLong(parts[1]));
     }
 
     public static Instant convertDateWithPattern(String dateString, String pattern){
