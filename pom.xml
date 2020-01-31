@@ -28,7 +28,7 @@
 		<scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
 		<javaee.version>8.0</javaee.version>
 		<commons.lang.version>2.6</commons.lang.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13</junit.version>
 	</properties>
 
 	<dependencyManagement>
