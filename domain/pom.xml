@@ -11,7 +11,6 @@
 	<artifactId>uvms-commons-domain</artifactId>
 	<packaging>jar</packaging>
 
-	<version>4.1.1-SNAPSHOT</version>
 	<name>uvms-commons-domain</name>
 
 	<properties>
@@ -37,16 +36,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>${javaee.version}</version>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>${commons.lang.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
