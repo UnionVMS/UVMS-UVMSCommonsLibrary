@@ -14,7 +14,7 @@
 	<name>uvms-commons-geometry</name>
 
 	<properties>
-		<geotools.version>22.0</geotools.version>
+		<geotools.version>22.2</geotools.version>
 		<mapstruct.version>1.3.0.Final</mapstruct.version>
 	</properties>
 
