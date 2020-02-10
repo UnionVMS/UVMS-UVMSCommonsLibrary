@@ -12,9 +12,9 @@ public class JsonBConfigurator implements ContextResolver<Jsonb> {
 
     Jsonb jsonb;
     public JsonBConfigurator(){
-        JsonbConfig config = new JsonbConfig().
-                withAdapters(new JsonBInstantAdapter()).
-                setProperty(JsonbConfig.DATE_FORMAT, JsonbDateFormat.TIME_IN_MILLIS);
+        JsonbConfig config = new JsonbConfig()
+                .withAdapters(new JsonBInstantAdapter(), new JsonBDurationAdapter())
+                .setProperty(JsonbConfig.DATE_FORMAT, JsonbDateFormat.TIME_IN_MILLIS);
 
         jsonb = JsonbBuilder.newBuilder().
                 withConfig(config).
