@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 		<artifactId>uvms-commons-parent</artifactId>
-		<version>4.0.14-SNAPSHOT</version>
+		<version>4.1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -33,9 +33,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>${javaee.version}</version>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
