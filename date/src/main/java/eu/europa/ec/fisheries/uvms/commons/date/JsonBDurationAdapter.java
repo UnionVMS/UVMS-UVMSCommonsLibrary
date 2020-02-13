@@ -12,7 +12,7 @@ public class JsonBDurationAdapter implements JsonbAdapter<Duration, JsonValue>
 
     @Override
     public JsonValue adaptToJson(Duration date) {
-        return Json.createValue(date.toMillis());
+        return Json.createValue("" + date.toMillis());
     }
 
     @Override
