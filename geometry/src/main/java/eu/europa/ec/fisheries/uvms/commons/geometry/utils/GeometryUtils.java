@@ -12,11 +12,7 @@ details. You should have received a copy of the GNU General Public License along
 
 package eu.europa.ec.fisheries.uvms.commons.geometry.utils;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.linearref.LengthIndexedLine;
 import eu.europa.ec.fisheries.uvms.commons.geometry.mapper.GeometryMapper;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ServiceException;
 import org.apache.commons.collections.CollectionUtils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -25,6 +21,9 @@ import org.geotools.measure.Longitude;
 import org.geotools.metadata.i18n.ErrorKeys;
 import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -64,15 +63,15 @@ public final class GeometryUtils {
      * @param crs
      *            The CRS the geometry is currently in.
      * @return The geometry transformed to be in {@link org.geotools.referencing.crs.DefaultGeographicCRS#WGS84}.
-     * @throws ServiceException
+     * @throws
      *             If at least one coordinate can't be transformed.
      */
-    public static Geometry toGeographic(Geometry geom, Integer crs) throws ServiceException {
+    public static Geometry toGeographic(Geometry geom, Integer crs) {
         try {
             CoordinateReferenceSystem decode = CRS.decode(EPSG + Integer.toString(crs), true);
             return JTS.toGeographic(geom, decode);
         } catch (TransformException  | FactoryException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -86,7 +85,7 @@ public final class GeometryUtils {
      *            The CRS the geometry is currently in.
      * @return The Point in WGS84.
      */
-    public static Geometry toGeographic(Double y, Double x, Integer crs) throws ServiceException {
+    public static Geometry toGeographic(Double y, Double x, Integer crs) {
 
         Point point = geometryFactory.createPoint(new Coordinate(x, y));
 
@@ -132,7 +131,7 @@ public final class GeometryUtils {
      * @return The longitude value in <strong>radians</strong>.
      * @throws IllegalArgumentException if {@code longitude} is not between -180 and +180 degrees.
      */
-    private static double checkLongitude(final double longitude) throws IllegalArgumentException {
+    private static double checkLongitude(final double longitude) {
         if (longitude >= Longitude.MIN_VALUE && longitude <= Longitude.MAX_VALUE) {
             return toRadians(longitude);
         }
@@ -148,7 +147,7 @@ public final class GeometryUtils {
      * @return The latitude value in <strong>radians</strong>.
      * @throws IllegalArgumentException if {@code latitude} is not between -90 and +90 degrees.
      */
-    private static double checkLatitude(final double latitude) throws IllegalArgumentException {
+    private static double checkLatitude(final double latitude) {
         if (latitude >= Latitude.MIN_VALUE && latitude <= Latitude.MAX_VALUE) {
             return toRadians(latitude);
         }
@@ -189,12 +188,12 @@ public final class GeometryUtils {
         return targetGeometry;
     }
 
-    public static Geometry calculateIntersectingPoint(LengthIndexedLine lengthIndexedLine, Double index) throws ServiceException {
+    public static Geometry calculateIntersectingPoint(LengthIndexedLine lengthIndexedLine, Double index) {
         Coordinate coordinate = lengthIndexedLine.extractPoint(index);
         return GeometryUtils.createPoint(coordinate);
     }
 
-    public static LengthIndexedLine createLengthIndexedLine(String wkt1, String wkt2) throws ServiceException {
+    public static LengthIndexedLine createLengthIndexedLine(String wkt1, String wkt2) {
         Geometry lineString = createLineString(wkt1, wkt2);
         return new LengthIndexedLine(lineString);
     }
@@ -231,7 +230,7 @@ public final class GeometryUtils {
         return multiPoint;
     }
 
-    public static Geometry createLineString(String wkt1, String wkt2) throws ServiceException {
+    public static Geometry createLineString(String wkt1, String wkt2) {
         LineString line;
 
         try {
@@ -245,27 +244,27 @@ public final class GeometryUtils {
             line.setSRID(DEFAULT_EPSG_SRID);
 
         } catch (ParseException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
 
         return line;
     }
 
-    public static CoordinateReferenceSystem toDefaultCoordinateReferenceSystem() throws ServiceException {
+    public static CoordinateReferenceSystem toDefaultCoordinateReferenceSystem() {
         try {
             return CRS.decode(EPSG + DEFAULT_EPSG_SRID);
         } catch (FactoryException e) {
             LOG.error(e.getMessage(), e);
-            throw new ServiceException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    public static CoordinateReferenceSystem toCoordinateReferenceSystem(Integer srid) throws ServiceException {
+    public static CoordinateReferenceSystem toCoordinateReferenceSystem(Integer srid) {
         try {
             return CRS.decode(EPSG + srid);
         } catch (FactoryException e) {
             LOG.error(e.getMessage(), e);
-            throw new ServiceException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }
