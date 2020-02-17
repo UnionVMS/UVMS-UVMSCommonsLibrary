@@ -125,4 +125,20 @@ public class DateUtilsTest extends TestCase {
         System.out.println(date);
         assertTrue(date.equals(now));
     }
+
+    public void testParseNegativeTimestamp(){
+        String timestamp = "-1576229859132";
+        Instant date = DateUtils.stringToDate(timestamp);
+        String humanReadableTime = DateUtils.dateToHumanReadableString(date);
+        System.out.println(humanReadableTime);
+        assertEquals("1920-01-20 14:22:20 Z", humanReadableTime);
+    }
+
+    public void testParseNegativeSecondsDotNanosecondsTimestamp(){
+        Instant now = Instant.now().atZone(ZoneId.of("UTC")).minusYears(100).toInstant();
+        String timestamp = now.getEpochSecond() + "." + now.getNano();
+        Instant date = DateUtils.stringToDate(timestamp);
+        System.out.println(date);
+        assertTrue(date.equals(now));
+    }
 }

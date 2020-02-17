@@ -54,13 +54,13 @@ public class DateUtils extends XMLDateUtils {
         if(dateString == null){
             return null;
         }
-        if(Pattern.matches("\\d{9,11}", dateString)){
+        if(Pattern.matches("-?\\d{9,11}", dateString)){
             return parseEpochSecondsTimestamp(dateString);
         }
-        if(Pattern.matches("\\d{12,14}", dateString)){
+        if(Pattern.matches("-?\\d{12,14}", dateString)){
             return parseEpochMillisecondsTimestamp(dateString);
         }
-        if(Pattern.matches("\\d{9,11}\\.\\d{0,10}", dateString)){
+        if(Pattern.matches("-?\\d{9,11}\\.\\d{0,10}", dateString)){
             return parseEpochSecondsDotNanosecondsTimestamp(dateString);
         }
         if(dateString.length() < 20){    //if there is no offset info, assume UTC and add it
