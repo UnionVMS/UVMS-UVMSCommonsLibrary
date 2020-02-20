@@ -22,11 +22,6 @@
 			<type>pom</type>
 		</dependency>
 		<dependency>
-			<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-			<artifactId>uvms-commons-service</artifactId>
-			<version>${project.version}</version>		
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
