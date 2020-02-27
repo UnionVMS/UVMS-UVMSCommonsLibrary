@@ -3,7 +3,9 @@ package eu.europa.ec.fisheries.uvms.commons.date;
 import java.util.Date;
 import javax.json.Json;
 import javax.json.JsonNumber;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.bind.adapter.JsonbAdapter;
 
 public class JsonBDateAdapter implements JsonbAdapter<Date, JsonValue> {
@@ -15,6 +17,10 @@ public class JsonBDateAdapter implements JsonbAdapter<Date, JsonValue> {
 
     @Override
     public Date adaptFromJson(JsonValue json) {
-        return new Date(((JsonNumber)json).longValue());
+        if (json.getValueType().equals(ValueType.NUMBER)) {
+            return new Date(((JsonNumber)json).longValue());
+        } else {
+            return Date.from(DateUtils.stringToDate(((JsonString)json).getString()));
+        }
     }
 }
