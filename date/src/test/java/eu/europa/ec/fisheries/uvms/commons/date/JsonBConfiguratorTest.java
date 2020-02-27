@@ -88,4 +88,16 @@ public class JsonBConfiguratorTest {
         
         assertThat(fromJson.getInstant(), is(instant));
     }
+
+    @Test
+    public void dateStringTest() {
+        Jsonb jsonb = new JsonBConfigurator().getContext(null);
+        Date date = new Date();
+
+        String json = "{\"date\": \"" + date.toInstant().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(DateFormats.Strings.ISO_INSTANT_FORMAT)) + "\" }";
+
+        JsonbSerializationTestClass fromJson = jsonb.fromJson(json, JsonbSerializationTestClass.class);
+
+        assertThat(fromJson.getDate(), is(date));
+    }
 }
