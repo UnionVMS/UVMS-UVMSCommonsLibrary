@@ -10,19 +10,22 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class JsonBConfigurator implements ContextResolver<Jsonb> {
 
-    Jsonb jsonb;
-    public JsonBConfigurator(){
-        JsonbConfig config = new JsonbConfig()
-                .withAdapters(new JsonBInstantAdapter(), new JsonBDurationAdapter(), new JsonBDateAdapter(), new JsonBXmlGregorianCalendarAdapter())
-                .setProperty(JsonbConfig.DATE_FORMAT, JsonbDateFormat.TIME_IN_MILLIS);
+    protected JsonbConfig config;
 
-        jsonb = JsonbBuilder.newBuilder().
-                withConfig(config).
-                build();
+    public JsonBConfigurator() {
+        config = new JsonbConfig()
+                .withAdapters(
+                        new JsonBInstantAdapter(),
+                        new JsonBDurationAdapter(),
+                        new JsonBDateAdapter(),
+                        new JsonBXmlGregorianCalendarAdapter())
+                .setProperty(JsonbConfig.DATE_FORMAT, JsonbDateFormat.TIME_IN_MILLIS);
     }
 
     @Override
     public Jsonb getContext(Class<?> type) {
-        return jsonb;
+        return JsonbBuilder.newBuilder()
+                .withConfig(config)
+                .build();
     }
 }
