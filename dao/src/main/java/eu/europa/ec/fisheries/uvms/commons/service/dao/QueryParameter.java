@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class QueryParameter {
 
-    private Map<String, Object> parameters = null;
+    private Map<String, Object> parameters;
 
     private QueryParameter(String name, Object value){
         this.parameters = new HashMap<>();
@@ -30,8 +30,7 @@ public class QueryParameter {
         this.parameters.put(name, value);
         return this;
     }
-    public Map parameters() { // TODO check generics
+    public Map<String, Object> parameters() {
         return this.parameters;
     }
-
 }
