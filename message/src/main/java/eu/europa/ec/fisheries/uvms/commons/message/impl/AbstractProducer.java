@@ -236,8 +236,7 @@ public abstract class AbstractProducer implements MessageProducer {
             connection = JMSUtils.getConnectionV2();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            destination = destin;
-            producer = session.createProducer(destination);
+            producer = session.createProducer(destin);
         } catch (JMSException e) {
             LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!");
         }
