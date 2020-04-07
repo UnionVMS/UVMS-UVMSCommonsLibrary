@@ -14,9 +14,10 @@ package eu.europa.ec.fisheries.uvms.commons.service.interceptor;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 
-import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +26,15 @@ public class TracingInterceptor {
     @AroundInvoke
     public Object logTraceAndPerformance(InvocationContext context) throws Exception {
 
-        final Stopwatch stopwatch = Stopwatch.createStarted();
-
+        Instant start = Instant.now();
+        
         try {
             LOG.info("START {} {}", context.getMethod().getName(), Arrays.toString(context.getParameters()));
             return context.proceed();
         }
         finally{
-            LOG.info("STOP Elapsed time ==> {}", stopwatch);
+            Instant stop = Instant.now();
+            LOG.info("STOP Elapsed time ==> {}", Duration.between(start, stop));
         }
     }
 }

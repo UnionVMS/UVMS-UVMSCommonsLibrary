@@ -20,17 +20,10 @@
 		<project.scm.id>github</project.scm.id>
 		<scm.connection>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.connection>
 		<scm.url>scm:git:https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary.git</scm.url>
-		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-logging-deps</artifactId>
-				<version>3.2</version>
-				<type>pom</type>
-			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-java11-deps</artifactId>
@@ -39,6 +32,14 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
+	<dependencies>
+		<dependency>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 	<modules>
 		<module>message</module>
@@ -80,18 +81,4 @@
 		<tag>uvms-commons-parent-3.1-SNAPSHOT</tag>
 	</scm>
 
-	<profiles>
-		<profile>
-			<id>belgium-local</id>
-			<properties>
-				<focus-pom.java.version>1.8</focus-pom.java.version>
-			</properties>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>lv-snapshots</id>
-					<url>https://apjenp01.dg3.be/nexus/repository/maven-snapshots/</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
-	</profiles>
 </project>
