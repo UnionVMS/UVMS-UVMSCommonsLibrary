@@ -20,11 +20,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>fish.focus.uvms.maven</groupId>
-			<artifactId>uvms-pom-logging-deps</artifactId>
-			<type>pom</type>
-		</dependency>
-		<dependency>
 			<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 			<artifactId>uvms-commons-date</artifactId>
 			<version>${project.version}</version>
@@ -47,12 +42,6 @@
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
