@@ -28,6 +28,7 @@ public interface MessageConstants {
     String MESSAGING_TYPE_STR = "messagingType";
     String DESTINATION_TYPE_STR = "destinationType";
     String DESTINATION_STR = "destination";
+    String DESTINATION_LOOKUP_STR = "destinationLookup";
     String DESTINATION_JNDI_NAME = "destinationJndiName";
     String CONNECTION_FACTORY_JNDI_NAME = "connectionFactoryJndiName";
 
