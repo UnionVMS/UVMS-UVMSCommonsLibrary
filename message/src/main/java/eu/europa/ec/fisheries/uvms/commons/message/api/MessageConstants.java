@@ -33,9 +33,11 @@ public interface MessageConstants {
 
     String QUEUE_SUBSCRIPTION_EVENT = "jms/queue/UVMSSubscriptionEvent";
     String QUEUE_NAME_SUBSCRIPTION_EVENT = "UVMSSubscriptionEvent";
-
     String QUEUE_SUBSCRIPTION = "jms/queue/UVMSSubscription";
     String QUEUE_NAME_SUBSCRIPTION = "UVMSSubscription";
+    /** This is the queue used from the business modules to notify the subscriptions module about changes, in case it needs to trigger a subscription. */
+    String QUEUE_SUBSCRIPTION_DATA = "jms/queue/UVMSSubscriptionData";
+    String QUEUE_NAME_SUBSCRIPTION_DATA = "UVMSSubscriptionData";
 
     String COMPONENT_MESSAGE_IN_QUEUE = "UVMSMovementEvent";
     String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
@@ -118,5 +120,5 @@ public interface MessageConstants {
     int JMS_MAX_REDELIVERIES = 6;
     int JMS_REDELIVERY_DELAY = 100;
 
-
+    String JMS_SUBSCRIPTION_SOURCE_PROPERTY = "subscriptionSource";
 }

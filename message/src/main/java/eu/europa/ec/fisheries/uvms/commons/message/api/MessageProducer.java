@@ -56,6 +56,13 @@ public interface MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo) throws MessageException;
 
+    String sendMessageToSpecificQueueSameTx(String messageToSend, Destination destination, Destination replyTo) throws MessageException;
+
+    String sendMessageToSpecificQueueSameTx(String messageToSend, Destination destination, Destination replyTo, Map<String, String> props) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, Map<String, String> props) throws MessageException;
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
