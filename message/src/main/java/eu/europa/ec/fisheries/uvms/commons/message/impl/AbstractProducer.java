@@ -131,6 +131,22 @@ public abstract class AbstractProducer implements MessageProducer {
     }
 
     @Override
+    public String sendMessageToSpecificQueueSameTx(String messageToSend, Destination destination, Destination replyTo) throws MessageException {
+        return sendMessageToSpecificQueue(messageToSend, destination, replyTo, Message.DEFAULT_TIME_TO_LIVE);
+    }
+
+    @Override
+    public String sendMessageToSpecificQueueSameTx(String messageToSend, Destination destination, Destination replyTo, Map<String, String> props) throws MessageException {
+        return sendMessageWithRetry(messageToSend, destination, replyTo, props, DeliveryMode.PERSISTENT, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, null, null, RETRIES);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, Map<String, String> props) throws MessageException {
+        return sendMessageWithRetry(messageToSend, destination, replyTo, props, DeliveryMode.PERSISTENT, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, null, null, RETRIES);
+    }
+
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageToSpecificQueue(String messageToSend, Destination destination, Destination replyTo, long timeToLiveInMillis) throws MessageException {
         return sendMessageToSpecificQueue(messageToSend, destination, replyTo, timeToLiveInMillis, DeliveryMode.PERSISTENT);
