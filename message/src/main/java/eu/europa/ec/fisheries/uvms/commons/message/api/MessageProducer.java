@@ -32,6 +32,12 @@ public interface MessageProducer {
     String sendModuleMessage(String text, Destination replyTo) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendModuleMessageInGroup(String text, Destination replyTo, String group) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    String sendModuleMessageInGroup(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis, String group) throws MessageException;
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageNonPersistent(String text, Destination replyTo, long timeToLiveInMillis) throws MessageException;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
