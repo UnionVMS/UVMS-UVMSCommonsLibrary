@@ -63,6 +63,18 @@ public abstract class AbstractProducer implements MessageProducer {
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.PERSISTENT, 0L);
     }
+    
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageInGroup(final String text, final Destination replyTo, final String group) throws MessageException {
+        return sendModuleMessageInGroup(text, replyTo, null, DeliveryMode.PERSISTENT, 0L, group);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageInGroup(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis, String group) throws MessageException {
+        return sendMessageWithRetry(text, null, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, null, null, group, RETRIES);
+    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
