@@ -16,6 +16,8 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
+import eu.europa.ec.fisheries.uvms.commons.message.context.FluxEnvelopeHolder;
+import eu.europa.ec.fisheries.uvms.commons.message.context.JmsFluxEnvelopeHelper;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.jms.*;
 import javax.xml.bind.JAXBException;
 import java.util.Map;
@@ -34,6 +37,12 @@ public abstract class AbstractProducer implements MessageProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
     private static final String ERROR_WHEN_SENDING_MESSAGE = "[ Error when sending message. ]";
+
+    @Inject
+    private FluxEnvelopeHolder fluxEnvelopeHolder;
+
+    @Inject
+    private JmsFluxEnvelopeHelper fluxEnvelopeHelper;
 
     private volatile Destination destination;
 
@@ -181,6 +190,7 @@ public abstract class AbstractProducer implements MessageProducer {
             if(StringUtils.isNotEmpty(grouping)){
                 message.setStringProperty(MessageConstants.JMS_MESSAGE_GROUP, grouping);
             }
+            fluxEnvelopeHelper.setHeaders(fluxEnvelopeHolder.get(), message);
             if(StringUtils.isNotEmpty(jmsCorrIdForResponseMessage)){
                 message.setJMSCorrelationID(jmsCorrIdForResponseMessage);
             }
@@ -215,6 +225,7 @@ public abstract class AbstractProducer implements MessageProducer {
         try {
             initializeConnectionAndDestination(destination);
             final TextMessage message = session.createTextMessage(messageToSend);
+            fluxEnvelopeHelper.setHeaders(fluxEnvelopeHolder.get(), message);
             if (StringUtils.isNotEmpty(jmsMessageID)) {
                 message.setJMSMessageID(jmsMessageID);
             }
