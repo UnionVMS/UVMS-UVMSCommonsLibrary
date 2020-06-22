@@ -26,12 +26,12 @@ public class SimpleTracingInterceptor {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {
-            log.info(String.format("[START] %s ", context.getMethod().getName()));
+            log.info(String.format("[START] %s.%s() ", context.getMethod().getDeclaringClass().getName(), context.getMethod().getName()));
 
             return context.proceed();
         }
         finally{
-            log.info(String.format("[END] It took %s to evaluate the message.", stopwatch));
+            log.info(String.format("[END]  %s took %s to evaluate the message.", context.getMethod().getName(), stopwatch));
         }
     }
 }
