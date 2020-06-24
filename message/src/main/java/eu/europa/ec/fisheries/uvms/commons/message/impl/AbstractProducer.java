@@ -70,6 +70,11 @@ public abstract class AbstractProducer implements MessageProducer {
         return sendModuleMessageWithProps(text, replyTo, props, DeliveryMode.PERSISTENT, 0L);
     }
 
+    @Override
+    public void sendModuleMessageWithPropsSameTx(final String text, Map<String, String> props) throws MessageException {
+        sendMessageWithRetry(text, null, null, props, DeliveryMode.PERSISTENT, 0L, null, null,null, RETRIES);
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessageNonPersistent(final String text, final Destination replyTo, final long timeToLiveInMillis) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.NON_PERSISTENT, timeToLiveInMillis);
