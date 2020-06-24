@@ -23,6 +23,8 @@ public interface MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props) throws MessageException;
 
+    void sendModuleMessageWithPropsSameTx(String text, Map<String, String> props) throws MessageException;
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     String sendModuleMessageWithProps(String text, Destination replyTo, Map<String, String> props, int jmsDeliveryMode, long timeToLiveInMillis) throws MessageException;
 
