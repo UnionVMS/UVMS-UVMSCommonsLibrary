@@ -3,6 +3,8 @@ package eu.europa.ec.fisheries.uvms.commons.message.context;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.time.ZonedDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,11 +33,11 @@ public class FluxEnvelopeHolderAndStackTest {
 
 	@Test
 	public void testPushGetAndPop() {
-		FluxEnvelopePropagatedData d1 = new FluxEnvelopePropagatedData("1", "2", "3");
+		FluxEnvelopePropagatedData d1 = new FluxEnvelopePropagatedData("1", "2", "3", ZonedDateTime.now());
 		sut.push(d1);
 		assertEquals(d1, sut.get());
 		assertEquals(d1, sut.get());
-		FluxEnvelopePropagatedData d2 = new FluxEnvelopePropagatedData("1", "2", "X");
+		FluxEnvelopePropagatedData d2 = new FluxEnvelopePropagatedData("1", "2", "X", ZonedDateTime.now());
 		sut.push(d2);
 		assertEquals(d2, sut.get());
 		assertEquals(d2, sut.get());
@@ -48,7 +50,7 @@ public class FluxEnvelopeHolderAndStackTest {
 	@Test
 	public void testWithContext() {
 		try {
-			FluxEnvelopePropagatedData d1 = new FluxEnvelopePropagatedData("1", "2", "3");
+			FluxEnvelopePropagatedData d1 = new FluxEnvelopePropagatedData("1", "2", "3", ZonedDateTime.now());
 			sut.withContext(d1, ctx -> {
 				assertEquals(d1, ctx);
 				assertEquals(d1, sut.get());

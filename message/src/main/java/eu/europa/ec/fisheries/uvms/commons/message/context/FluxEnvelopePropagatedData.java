@@ -11,6 +11,9 @@ details. You should have received a copy of the GNU General Public License along
 package eu.europa.ec.fisheries.uvms.commons.message.context;
 
 import javax.enterprise.inject.Vetoed;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -18,9 +21,13 @@ import java.util.Objects;
  */
 @Vetoed
 public class FluxEnvelopePropagatedData {
+
+	public static final DateTimeFormatter RECEPTION_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
 	private final String messageGuid;
 	private final String dataflow;
 	private final String senderOrReceiver;
+	private final ZonedDateTime receptionDateTime;
 
 	/**
 	 * Construct from all fields.
@@ -28,16 +35,18 @@ public class FluxEnvelopePropagatedData {
 	 * @param messageGuid The message GUID
 	 * @param dataflow The dataflow
 	 * @param senderOrReceiver The sender or receiver
+	 * @param receptionDateTime The reception datetime
 	 */
-	public FluxEnvelopePropagatedData(String messageGuid, String dataflow, String senderOrReceiver) {
+	public FluxEnvelopePropagatedData(String messageGuid, String dataflow, String senderOrReceiver, ZonedDateTime receptionDateTime) {
 		this.messageGuid = messageGuid;
 		this.dataflow = dataflow;
 		this.senderOrReceiver = senderOrReceiver;
+		this.receptionDateTime = receptionDateTime;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(messageGuid, dataflow, senderOrReceiver);
+		return Objects.hash(messageGuid, dataflow, senderOrReceiver, receptionDateTime);
 	}
 
 	@Override
@@ -46,7 +55,10 @@ public class FluxEnvelopePropagatedData {
 			return false;
 		}
 		FluxEnvelopePropagatedData other = (FluxEnvelopePropagatedData) obj;
-		return Objects.equals(messageGuid, other.messageGuid) && Objects.equals(dataflow, other.dataflow) && Objects.equals(senderOrReceiver, other.senderOrReceiver);
+		return Objects.equals(messageGuid, other.messageGuid)
+				&& Objects.equals(dataflow, other.dataflow)
+				&& Objects.equals(senderOrReceiver, other.senderOrReceiver)
+				&& Objects.equals(receptionDateTime, other.receptionDateTime);
 	}
 
 	/**
@@ -74,5 +86,14 @@ public class FluxEnvelopePropagatedData {
 	 */
 	public String getSenderOrReceiver() {
 		return senderOrReceiver;
+	}
+
+	/**
+	 * Get the reception datetime.
+	 *
+	 * @return The reception datetime
+	 */
+	public ZonedDateTime getReceptionDateTime() {
+		return receptionDateTime;
 	}
 }
