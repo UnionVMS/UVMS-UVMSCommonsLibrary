@@ -24,7 +24,7 @@ public class FluxEnvelopeHolderAndStack implements FluxEnvelopeHolder, FluxEnvel
 
 	private static final ThreadLocal<ArrayDeque<FluxEnvelopePropagatedData>> STACK_HOLDER = ThreadLocal.withInitial(ArrayDeque::new);
 
-	private static final FluxEnvelopePropagatedData NULL_ELEMENT = new FluxEnvelopePropagatedData(null, null, null) {
+	private static final FluxEnvelopePropagatedData NULL_ELEMENT = new FluxEnvelopePropagatedData(null, null, null, null) {
 		@Override
 		public int hashCode() {
 			return 0;
