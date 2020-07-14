@@ -50,6 +50,7 @@
 		<jaxb.version>2.3.0</jaxb.version>
 		<guava.version>20.0</guava.version>
 		<resteasy.version>3.0.13.Final</resteasy.version>
+		<version.mockito>3.3.3</version.mockito>
 	</properties>
 
 	<modules>
@@ -62,6 +63,17 @@
 		<module>notification</module>
 		<module>geometry</module>									
 	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${version.mockito}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
