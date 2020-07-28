@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,50 +197,15 @@ public class JMSUtils {
                 LOG.warn("Couldn't create connection.. Going to retry for the [-"+(RETRIES-retries)+"-] time now [After sleeping for 1.5 Seconds]..");
                 try {
                     Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                    LOG.warn("Thread woke with interruption",ignored1);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new MessageException("Thread interrupted...",ie);
                 }
                 int newRetries = retries - 1;
                 return getConnectionWithRetry(newRetries);
             }
             throw new MessageException("Couldn't create connection", e);
         }
-    }
-
-    /**
-     * Tries to create the {connection, sesssion, producer} objcects.
-     * If the can succesfully be created it means the broker accepts connections..
-     *
-     * It tries each second for @param secondsToWait times..
-     *
-     * @param secondsToWait
-     * @param destination
-     * @return
-     */
-    protected static boolean waitForConnection(int secondsToWait, Destination destination){
-        Connection connection = null;
-        Session session = null;
-        javax.jms.MessageProducer producer = null;
-        boolean couldConnect;
-        while(secondsToWait > 0){
-            try {
-                Thread.sleep(1000);
-                connection = JMSUtils.getConnection();
-                session = JMSUtils.createSessionAndStartConnection(connection);
-                producer = session.createProducer(destination);
-                couldConnect = true;
-            } catch (InterruptedException | JMSException ignored1) {
-                LOG.warn("Thread sleep interrupted",ignored1);
-                couldConnect = false;
-            } finally {
-                JMSUtils.disconnectQueue(connection, session, producer);
-            }
-            if(couldConnect){
-                return true;
-            }
-            secondsToWait--;
-        }
-        return false;
     }
 
     public static Connection getConnectionV2() throws JMSException {
@@ -249,7 +215,12 @@ public class JMSUtils {
             try {
                 Thread.sleep(5000); // Wait 5 seconds (JMS server restarted?)
                 connection.set(lookupConnectionFactory().createConnection());
-            } catch (InterruptedException | JMSException e) {
+            }
+            catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new MessageRuntimeException("Thread interrupted...",ie);
+            }
+            catch (JMSException e) {
                 throw new RuntimeException("[FATAL] Error pausing thread or retrying to create connection...",e);
             }
         });
