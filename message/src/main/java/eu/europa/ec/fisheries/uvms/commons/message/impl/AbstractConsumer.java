@@ -90,7 +90,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			MappedDiagnosticContext.addMessagePropertiesToThreadMappedDiagnosticContext((TextMessage) receivedMessage);
 			return receivedMessage;
 		} catch (final Exception e) {
-			LOGGER.error("[ Error when retrieving message. ] {}", e.getMessage());
+			LOGGER.error("Error when retrieving message. " + e.getMessage(),e);
 			return null;
 		} finally {
 			closeResources(consumer);
@@ -103,7 +103,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			connection.start();
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		} catch (JMSException e) {
-			LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!");
+			LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!",e);
 		}
 		destination = getDestination();
 	}
@@ -123,7 +123,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 				connection = null;
 			}
 		} catch (JMSException e) {
-			LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed! {} - {}", e.getMessage(), e.getStackTrace());
+			LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed!" + e.getMessage(), e);
 		}
 	}
 

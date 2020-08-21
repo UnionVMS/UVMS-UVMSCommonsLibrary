@@ -36,7 +36,7 @@ public class MappedDiagnosticContext {
             try {
                 messageToAddMessageProperties.setStringProperty(key, traceId);
             } catch (Exception e) {
-                LOGGER.warn("Unable to set mapped diagnostic context property key: " + key + " value: " + traceId + "  as message property. Reason: " + e.getMessage());
+                LOGGER.warn("Unable to set mapped diagnostic context property key: " + key + " value: " + traceId + "  as message property. Reason: " + e.getMessage(),e);
             }
         }
     }
@@ -56,7 +56,7 @@ public class MappedDiagnosticContext {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("Unable to add message properties to thread mapped diagnostic context. Reason: " + e.getMessage());
+            LOGGER.warn("Unable to add message properties to thread mapped diagnostic context. Reason: " + e.getMessage(),e);
         }
     }
 }

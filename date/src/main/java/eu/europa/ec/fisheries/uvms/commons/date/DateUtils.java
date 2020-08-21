@@ -103,7 +103,6 @@ public class DateUtils extends XMLDateUtils {
                 return null;
             }
         } catch (IllegalArgumentException e) {
-            LOG.error(e.getMessage());
             throw new IllegalArgumentException(e);
         }
     }
