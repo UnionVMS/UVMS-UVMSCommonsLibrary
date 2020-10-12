@@ -15,7 +15,7 @@
 
 	<properties>
 		<geotools.version>22.2</geotools.version>
-		<mapstruct.version>1.4.0.Final</mapstruct.version>
+		<mapstruct.version>1.4.1.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
