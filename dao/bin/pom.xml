@@ -20,7 +20,7 @@
         <logback.version>1.2.3</logback.version>
         <logback.core.version>1.2.3</logback.core.version>
         <javaee.version>7.0</javaee.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
 	<dependencies>	
