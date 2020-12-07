@@ -36,7 +36,7 @@ public abstract class AbstractProducer implements MessageProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProducer.class);
 
-    private static final String ERROR_WHEN_SENDING_MESSAGE = "[ Error when sending message. ]";
+    private static final String ERROR_WHEN_SENDING_MESSAGE = "Error when sending message. ";
 
     @Inject
     private FluxEnvelopeHolder fluxEnvelopeHolder;
@@ -62,6 +62,18 @@ public abstract class AbstractProducer implements MessageProducer {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(final String text, final Destination replyTo) throws MessageException {
         return sendModuleMessageWithProps(text, replyTo, null, DeliveryMode.PERSISTENT, 0L);
+    }
+    
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageInGroup(final String text, final Destination replyTo, final String group) throws MessageException {
+        return sendModuleMessageInGroup(text, replyTo, null, DeliveryMode.PERSISTENT, 0L, group);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessageInGroup(final String text, final Destination replyTo, Map<String, String> props, final int jmsDeliveryMode, final long timeToLiveInMillis, String group) throws MessageException {
+        return sendMessageWithRetry(text, null, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, null, null, group, RETRIES);
     }
 
     @Override
@@ -113,7 +125,7 @@ public abstract class AbstractProducer implements MessageProducer {
             jmsReplyTo = message.getJMSReplyTo();
             messageId = message.getJMSMessageID();
         } catch (JMSException e) {
-           throw new MessageException("Could Not get the sender destination to send the response to!! {}", e);
+           throw new MessageException("Could Not get the sender destination to send the response to!!", e);
         }
         sendMessageWithRetry(text, jmsReplyTo, null, null,deliveryMode, timeToLive, messageId, null, null, RETRIES);
     }
@@ -127,7 +139,7 @@ public abstract class AbstractProducer implements MessageProducer {
             faultMsgText = JAXBUtils.marshallJaxBObjectToString(fault);
             jmsReplyTo = message.getJMSReplyTo();
         } catch (JAXBException | JMSException e) {
-            throw new MessageException("Error while marshalling Fault message or getting JMSReplyTo!");
+            throw new MessageException("Error while marshalling Fault message or getting JMSReplyTo!",e);
         }
         sendMessageWithRetry(faultMsgText, jmsReplyTo, null, null, DeliveryMode.NON_PERSISTENT, TIME_TO_LIVE_FOR_NON_PERSISTENT_MESSAGES, null, null, null, RETRIES);
     }
@@ -214,12 +226,12 @@ public abstract class AbstractProducer implements MessageProducer {
                 try {
                     Thread.sleep(1500);
                 } catch (InterruptedException ignored1) {
+                    LOGGER.warn("Couldn't send message thread woke");
                 }
                 int newRetries = retries - 1;
                 return sendMessageWithRetry(messageToSend, destination, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, jmsCorrIdForResponseMessage, function, grouping, newRetries);
             } else {
-                LOGGER.error(FAILED_AFTER_RETRY);
-                throw new MessageException(ERROR_WHEN_SENDING_MESSAGE, e);
+                throw new MessageException(ERROR_WHEN_SENDING_MESSAGE + FAILED_AFTER_RETRY, e);
             }
         } finally {
             closeResources();
@@ -254,8 +266,7 @@ public abstract class AbstractProducer implements MessageProducer {
                 int newRetries = retries - 1;
                 return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, newRetries);
             } else {
-                LOGGER.error(FAILED_AFTER_RETRY);
-                throw new MessageException("Error send message with specific IDs!", e);
+                throw new MessageException(FAILED_AFTER_RETRY + " Error send message with specific IDs!", e);
             }
         } finally {
             closeResources();
@@ -270,7 +281,7 @@ public abstract class AbstractProducer implements MessageProducer {
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             producer = session.createProducer(destin);
         } catch (JMSException e) {
-            LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!");
+            LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!",e);
         }
     }
 
@@ -296,7 +307,7 @@ public abstract class AbstractProducer implements MessageProducer {
                 connection = null;
             }
         } catch (JMSException e) {
-            LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed! {} - {}", e.getMessage(), e.getStackTrace());
+            LOGGER.error("[CLOSE-ERROR] JMS Connection could not be closed! + " + e.getMessage(), e);
         }
     }
 

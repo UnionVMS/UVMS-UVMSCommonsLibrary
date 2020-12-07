@@ -55,7 +55,6 @@ public abstract class AbstractTopicProducer {
             LOGGER.info("Message with {} has been successfully sent.", message.getJMSMessageID());
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOGGER.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MessageException("[ Error when sending message. ]", e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
@@ -84,7 +83,7 @@ public abstract class AbstractTopicProducer {
             producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            throw new MessageException("Error while trying to send EventBus Message..");
+            throw new MessageException("Error while trying to send EventBus Message..",e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }
@@ -120,7 +119,7 @@ public abstract class AbstractTopicProducer {
             producer.send(message);
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            throw new MessageException("Error while trying to send EventBus Message..");
+            throw new MessageException("Error while trying to send EventBus Message..",e);
         } finally {
             JMSUtils.disconnectQueue(connection, session, producer);
         }

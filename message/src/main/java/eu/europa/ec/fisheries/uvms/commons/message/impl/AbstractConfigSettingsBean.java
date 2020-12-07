@@ -174,7 +174,7 @@ public abstract class AbstractConfigSettingsBean {
                     LOGGER.warn("[WARN] No settings found for module : " + moduleName);
                 }
             } catch (MessageException e) {
-                LOGGER.error("[ERROR] Error while trying to fetch settings for module [" + getModuleName() + "]. {}", e);
+                LOGGER.error("[ERROR] Error while trying to fetch settings for module " + getModuleName() , e);
             }
         } else {
             LOGGER.error("[ERROR] Module name cannot be null when fetching settings for it!");

@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import java.time.ZonedDateTime;
+
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageRuntimeException;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +28,7 @@ public class JmsFluxEnvelopeHelperImplTest {
 	private static final String VALUE_FR = "sender_or_receiver";
 	private static final String VALUE_DF = "dataflow";
 	private static final String VALUE_GUID = "the guid";
+	private static final ZonedDateTime VALUE_RECEPTION = ZonedDateTime.parse("2019-12-03T10:15:30Z", FluxEnvelopePropagatedData.RECEPTION_FORMATTER);
 
 	private JmsFluxEnvelopeHelperImpl sut;
 
@@ -80,7 +83,7 @@ public class JmsFluxEnvelopeHelperImplTest {
 	@Test
 	public void testSetHeadersWithMessageGuid() throws JMSException {
 		Message message = mock(Message.class);
-		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(VALUE_GUID, null, null);
+		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(VALUE_GUID, null, null, null);
 		sut.setHeaders(data, message);
 		verify(message).setStringProperty("FLUX_GUID", VALUE_GUID);
 		verifyNoMoreInteractions(message);
@@ -89,7 +92,7 @@ public class JmsFluxEnvelopeHelperImplTest {
 	@Test
 	public void testSetHeadersWithDataflow() throws JMSException {
 		Message message = mock(Message.class);
-		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, VALUE_DF, null);
+		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, VALUE_DF, null, null);
 		sut.setHeaders(data, message);
 		verify(message).setStringProperty("FLUX_DF", VALUE_DF);
 		verifyNoMoreInteractions(message);
@@ -98,9 +101,18 @@ public class JmsFluxEnvelopeHelperImplTest {
 	@Test
 	public void testSetHeadersWithSenderOrReceiver() throws JMSException {
 		Message message = mock(Message.class);
-		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, null, VALUE_FR);
+		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, null, VALUE_FR, null);
 		sut.setHeaders(data, message);
 		verify(message).setStringProperty("FLUX_FR", VALUE_FR);
+		verifyNoMoreInteractions(message);
+	}
+
+	@Test
+	public void testSetHeadersWithReceptionDateTime() throws JMSException {
+		Message message = mock(Message.class);
+		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, null, null, VALUE_RECEPTION);
+		sut.setHeaders(data, message);
+		verify(message).setStringProperty("FLUX_receptionDateTime", "2019-12-03T10:15:30Z");
 		verifyNoMoreInteractions(message);
 	}
 
@@ -108,7 +120,7 @@ public class JmsFluxEnvelopeHelperImplTest {
 	public void testSetHeadersWithException() throws JMSException {
 		Message message = mock(Message.class);
 		doThrow(JMSException.class).when(message).setStringProperty(anyString(), anyString());
-		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, null, VALUE_FR);
+		FluxEnvelopePropagatedData data = new FluxEnvelopePropagatedData(null, null, VALUE_FR, null);
 		try {
 			sut.setHeaders(data, message);
 			fail("should throw");

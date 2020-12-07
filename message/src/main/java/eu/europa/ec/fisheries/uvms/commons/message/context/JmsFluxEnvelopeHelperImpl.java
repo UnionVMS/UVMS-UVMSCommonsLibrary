@@ -14,6 +14,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
+import java.util.Optional;
+
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageRuntimeException;
 
 /**
@@ -25,6 +29,7 @@ public class JmsFluxEnvelopeHelperImpl implements JmsFluxEnvelopeHelper {
 	private static final String NAME_MESSAGE_GUID = FluxEnvelopeConstants.PREFIX + '_' + FluxEnvelopeConstants.MESSAGE_GUID;
 	private static final String NAME_DATAFLOW = FluxEnvelopeConstants.PREFIX + '_' + FluxEnvelopeConstants.DF;
 	private static final String NAME_SENDER_OR_RECEIVER = FluxEnvelopeConstants.PREFIX + '_' + FluxEnvelopeConstants.FR;
+	private static final String NAME_RECEPTION_DATE_TIME = FluxEnvelopeConstants.PREFIX + "_receptionDateTime";
 
 	@Override
 	public FluxEnvelopePropagatedData extract(Message message) {
@@ -32,10 +37,14 @@ public class JmsFluxEnvelopeHelperImpl implements JmsFluxEnvelopeHelper {
 			String messageGuid = message.getStringProperty(NAME_MESSAGE_GUID);
 			String dataflow = message.getStringProperty(NAME_DATAFLOW);
 			String senderOrReceiver = message.getStringProperty(NAME_SENDER_OR_RECEIVER);
+			String receptionDateTimeStr = message.getStringProperty(NAME_RECEPTION_DATE_TIME);
 			if (allNull(messageGuid, dataflow, senderOrReceiver)) {
 				return null;
 			} else {
-				return new FluxEnvelopePropagatedData(messageGuid, dataflow, senderOrReceiver);
+				ZonedDateTime receptionDateTime = Optional.ofNullable(message.getStringProperty(NAME_RECEPTION_DATE_TIME))
+						.map(value -> ZonedDateTime.parse(value, FluxEnvelopePropagatedData.RECEPTION_FORMATTER))
+						.orElse(null);
+				return new FluxEnvelopePropagatedData(messageGuid, dataflow, senderOrReceiver, receptionDateTime);
 			}
 		} catch (JMSException e) {
 			throw new MessageRuntimeException(e);
@@ -56,6 +65,9 @@ public class JmsFluxEnvelopeHelperImpl implements JmsFluxEnvelopeHelper {
 			}
 			if (data.getSenderOrReceiver() != null) {
 				message.setStringProperty(NAME_SENDER_OR_RECEIVER, data.getSenderOrReceiver());
+			}
+			if (data.getReceptionDateTime() != null) {
+				message.setStringProperty(NAME_RECEPTION_DATE_TIME, FluxEnvelopePropagatedData.RECEPTION_FORMATTER.format(data.getReceptionDateTime()));
 			}
 		} catch (JMSException e) {
 			throw new MessageRuntimeException(e);

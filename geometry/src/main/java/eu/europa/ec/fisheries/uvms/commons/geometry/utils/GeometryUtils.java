@@ -253,7 +253,6 @@ public final class GeometryUtils {
         try {
             return CRS.decode(EPSG + DEFAULT_EPSG_SRID);
         } catch (FactoryException e) {
-            log.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -262,7 +261,6 @@ public final class GeometryUtils {
         try {
             return CRS.decode(EPSG + srid);
         } catch (FactoryException e) {
-            log.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }

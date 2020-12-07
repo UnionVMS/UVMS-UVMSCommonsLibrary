@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.commons.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
@@ -26,6 +27,8 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class BaseEntity implements Serializable {
+
+    final static org.slf4j.Logger LOG = LoggerFactory.getLogger(BaseEntity.class);
 
     protected BaseEntity(){
     }
@@ -47,7 +50,7 @@ public class BaseEntity implements Serializable {
                 }
             }
         } catch (Exception e){
-            //Handle your exception here.
+            LOG.info("Couldn't add field",e);
         }
         return fields;
     }

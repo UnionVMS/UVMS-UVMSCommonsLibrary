@@ -51,8 +51,7 @@ public class JMSUtils {
             try {
                 connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
             } catch (final Exception e) {
-                LOG.error("[ERROR] Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName);
-                throw new RuntimeException(e);
+                throw new RuntimeException("[ERROR] Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY + " and " + wfName,e);
             }
         } finally {
             closeInitialContext(ctx);
@@ -67,20 +66,19 @@ public class JMSUtils {
             try {
                 queueObj = (Queue) ctx.lookup(queueName);
             } catch (final NamingException e) {
-                // if we did not find the queue we might need to add java:/ at the start
+                LOG.info("if we did not find the queue we might need to add java:/ at the start",e);
                 final String wfQueueName = "java:/" + queueName;
                 try {
                     queueObj = (Queue) ctx.lookup(wfQueueName);
                 } catch (final Exception e2) {
-                    LOG.error("Queue lookup failed for both " + queueName + " and " + wfQueueName);
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Queue lookup failed for both " + queueName + " and " + wfQueueName,e);
                 }
             } finally {
                 ctx.close();
             }
             return queueObj;
         } catch (final NamingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not lookup queue: "+ queueName,e);
         }
     }
 
@@ -90,13 +88,12 @@ public class JMSUtils {
         try {
             topicObj = (Topic) ctx.lookup(topicName);
         } catch (final NamingException e) {
-            // if we did not find the queue we might need to add java:/ at the start
+            LOG.info("if we did not find the queue we might need to add java:/ at the start");
             final String wfTopicName = "java:/" + topicName;
             try {
                 topicObj = (Topic) ctx.lookup(wfTopicName);
             } catch (final Exception e2) {
-                LOG.error("Topic lookup failed for both " + topicName + " and " + wfTopicName);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Topic lookup failed for both " + topicName + " and " + wfTopicName,e2);
             }
         }
         return topicObj;
@@ -108,7 +105,8 @@ public class JMSUtils {
         try {
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        } catch (JMSException ex){ // Probably the connection was already closed by the broker..!
+        } catch (JMSException ex){
+            LOG.info("Probably the connection was already closed by the broker..!",ex);
             if(session != null){
                 session.close();
             }
@@ -128,21 +126,21 @@ public class JMSUtils {
                 producer.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing producer ] {}", e);
+            LOG.error("Error when closing producer ", e);
         }
         try {
             if (session != null) {
                 session.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing session ] {}", e);
+            LOG.error("Error when closing session ", e);
         }
         try {
             if (connection != null) {
                 connection.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e);
+            LOG.error("Error when closing JMS connection ", e);
         }
     }
 
@@ -152,21 +150,21 @@ public class JMSUtils {
                 consumer.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing consumer ] {}", e);
+            LOG.error("Error when closing consumer ", e);
         }
         try {
             if (session != null) {
                 session.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing session ] {}", e);
+            LOG.error("Error when closing session ", e);
         }
         try {
             if (connection != null) {
                 connection.close();
             }
         } catch (final JMSException e) {
-            LOG.error("[ Error when closing JMS connection ] {}", e);
+            LOG.error("Error when closing JMS connection ] ", e);
         }
     }
 
@@ -175,7 +173,7 @@ public class JMSUtils {
             try {
                 ctx.close();
             } catch (NamingException e) {
-                LOG.error("[ERROR] Error while trying to close context!");
+                LOG.error("[ERROR] Error while trying to close context!",e);
             }
         }
     }
@@ -184,7 +182,7 @@ public class JMSUtils {
         try {
             return new InitialContext();
         } catch (NamingException e) {
-            throw new RuntimeException("Couldn't initialize the IntialContext!");
+            throw new RuntimeException("Couldn't initialize the IntialContext!",e);
         }
     }
 
@@ -199,6 +197,7 @@ public class JMSUtils {
                 try {
                     Thread.sleep(1500);
                 } catch (InterruptedException ignored1) {
+                    LOG.warn("Thread woke with interruption",ignored1);
                 }
                 int newRetries = retries - 1;
                 return getConnectionWithRetry(newRetries);
@@ -230,6 +229,7 @@ public class JMSUtils {
                 producer = session.createProducer(destination);
                 couldConnect = true;
             } catch (InterruptedException | JMSException ignored1) {
+                LOG.warn("Thread sleep interrupted",ignored1);
                 couldConnect = false;
             } finally {
                 JMSUtils.disconnectQueue(connection, session, producer);
@@ -250,8 +250,7 @@ public class JMSUtils {
                 Thread.sleep(5000); // Wait 5 seconds (JMS server restarted?)
                 connection.set(lookupConnectionFactory().createConnection());
             } catch (InterruptedException | JMSException e) {
-                LOG.error("Error pausing thread or retrying to create connection! -> {}", e.getMessage());
-                throw new RuntimeException("[FATAL] Unrecoverable error during Connection creation...");
+                throw new RuntimeException("[FATAL] Error pausing thread or retrying to create connection...",e);
             }
         });
         return connection.get();
