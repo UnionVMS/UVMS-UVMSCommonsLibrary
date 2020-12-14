@@ -10,7 +10,7 @@
  *
  */
 
-package eu.europa.ec.fisheries.uvms.commons.message.impl;
+package eu.europa.ec.fisheries.uvms.commons.xml;
 
 import java.util.function.Function;
 
