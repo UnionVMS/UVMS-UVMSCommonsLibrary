@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.Fault;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageProducer;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageRuntimeException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.FluxEnvelopeHolder;
 import eu.europa.ec.fisheries.uvms.commons.message.context.JmsFluxEnvelopeHelper;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
@@ -225,8 +226,9 @@ public abstract class AbstractProducer implements MessageProducer {
                 LOGGER.warn("Couldn't send message.. Going to retry for the [-" + (RETRIES - retries) + "-] time now [After sleeping for 1.5 Seconds]..");
                 try {
                     Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
-                    LOGGER.warn("Couldn't send message thread woke");
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new MessageException("Thread interrupted...",ie);
                 }
                 int newRetries = retries - 1;
                 return sendMessageWithRetry(messageToSend, destination, replyTo, props, jmsDeliveryMode, timeToLiveInMillis, jmsCorrIdForResponseMessage, function, grouping, newRetries);
@@ -261,7 +263,9 @@ public abstract class AbstractProducer implements MessageProducer {
                 LOGGER.warn("Couldn't return response message.. Going to retry for the [-" + (RETRIES - retries) + "-] time now [After sleeping for 1.5 Seconds]..");
                 try {
                     Thread.sleep(1500);
-                } catch (InterruptedException ignored1) {
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new MessageException("Thread interrupted...",ie);
                 }
                 int newRetries = retries - 1;
                 return sendMessageWithSpecificIdsWithRetry(messageToSend, destination, replyTo, jmsMessageID, jmsCorrelationID, newRetries);
@@ -280,8 +284,8 @@ public abstract class AbstractProducer implements MessageProducer {
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             producer = session.createProducer(destin);
-        } catch (JMSException e) {
-            LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!",e);
+        } catch (MessageRuntimeException | JMSException e) {
+            LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!", e);
         }
     }
 

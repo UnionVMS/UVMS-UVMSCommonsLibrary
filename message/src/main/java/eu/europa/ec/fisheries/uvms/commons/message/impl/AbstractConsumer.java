@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.commons.message.impl;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageRuntimeException;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public abstract class AbstractConsumer implements MessageConsumer {
 	private <T> T getMessageInFiveSeconds(final String correlationId) throws MessageException {
 		javax.jms.MessageConsumer consumer = null;
 		try {
-			LOGGER.debug("Trying to receive message with correlationId:[{}], class type:[{}], timeout: {}", correlationId, FIVE_SECONDS_TO_CONSUME);
+			LOGGER.debug("Trying to receive message with correlationId:[{}], timeout: {}", correlationId, FIVE_SECONDS_TO_CONSUME);
 			if (correlationId == null || correlationId.isEmpty()) {
 				throw new MessageException("No CorrelationID provided! Cannot consume synchronously without a CorrelationID!");
 			}
@@ -102,8 +103,8 @@ public abstract class AbstractConsumer implements MessageConsumer {
 			connection = JMSUtils.getConnectionV2();
 			connection.start();
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		} catch (JMSException e) {
-			LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!",e);
+		} catch (MessageRuntimeException | JMSException e) {
+			LOGGER.error("[INIT-ERROR] JMS Connection could not be estabelished!", e);
 		}
 		destination = getDestination();
 	}
