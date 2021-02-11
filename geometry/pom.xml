@@ -51,13 +51,13 @@
 			<exclusions>
 				<exclusion>
 					<groupId>com.vividsolutions</groupId>
-					<artifactId>jts</artifactId>
+					<artifactId>jts-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
+			<artifactId>jts-core</artifactId>
 			<version>${jts.version}</version>
 			<scope>provided</scope>
 		</dependency>
