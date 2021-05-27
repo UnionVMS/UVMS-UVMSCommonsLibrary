@@ -29,6 +29,7 @@
 				<artifactId>uvms-pom-java11-deps</artifactId>
 				<version>3.6</version>
 				<type>pom</type>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
