@@ -36,6 +36,8 @@ public class DateUtils extends XMLDateUtils {
     public static final String FORMAT = "yyyy-MM-dd HH:mm:ss Z";
     public final static String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
+    public static final String DATE_TIME_UI_FORMAT_MS = "yyyy-MM-dd HH:mm:ss.S";
+
     // thread safe formatter
     public static DateTimeFormatter UI_FORMATTER = DateTimeFormat.forPattern(DATE_TIME_UI_FORMAT);
 
