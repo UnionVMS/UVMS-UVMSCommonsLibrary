@@ -11,7 +11,7 @@
 	<artifactId>uvms-commons-parent</artifactId>
 	<packaging>pom</packaging>
 
-	<version>4.1.10</version>
+	<version>4.1.11-SNAPSHOT</version>
 	<name>uvms-commons-parent</name>
 	<url>https://github.com/UnionVMS/UVMS-UVMSCommonsLibrary</url>
 
@@ -79,7 +79,7 @@
 
 	<scm>
 		<connection>${scm.connection}</connection>
-		<tag>uvms-commons-parent-4.1.10</tag>
+		<tag>uvms-commons-parent-3.1-SNAPSHOT</tag>
 	</scm>
 
 </project>
