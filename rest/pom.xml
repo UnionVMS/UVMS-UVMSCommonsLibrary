@@ -13,38 +13,4 @@
 
 	<name>uvms-commons-rest</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-multipart-provider</artifactId>
-            <version>3.8.1.Final</version>	<!-- Upgrading this to 4.x.x causes weird errors in configs rest tests. Handle with care -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.james</groupId>
-					<artifactId>apache-mime4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.resteasy</groupId>
-					<artifactId>resteasy-jaxb-provider</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.resteasy</groupId>
-					<artifactId>resteasy-client</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.resteasy</groupId>
-					<artifactId>resteasy-jaxrs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>jboss-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
-
 </project>
