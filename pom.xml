@@ -3,8 +3,8 @@
 
 	<parent>
 		<groupId>eu.europa.ec.fisheries.uvms</groupId>
-		<artifactId>mare-pom-2</artifactId>
-		<version>2.0.0-MARE-SNAPSHOT</version>
+		<artifactId>mare-pom</artifactId>
+		<version>1.6.0-MARE-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 
@@ -123,9 +123,8 @@
 		<profile>
 			<id>enforce-jdk-version</id>
 			<activation>
-				<!-- To disable profile, define property -Dfocus-pom.enforce.jdk.version.disabled=true -->
 				<property>
-					<name>!focus-pom.enforce.jdk.version.disabled</name>
+					<name>focus-pom.enforce.jdk.version.enabled</name>
 				</property>
 			</activation>
 			<build>
